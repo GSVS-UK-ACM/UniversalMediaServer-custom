@@ -565,7 +565,10 @@ public class FFMpegVideo extends Engine {
 		}
 
 		// Give priority to the renderer's maximum bitrate setting over the user's setting
-		if (rendererMaxBitrates[0] > 0 && rendererMaxBitrates[0] < defaultMaxBitrates[0]) {
+		if (
+			rendererMaxBitrates[0] > 0 &&
+			(defaultMaxBitrates[0] == 0 || rendererMaxBitrates[0] < defaultMaxBitrates[0])
+		) {
 			LOGGER.trace(
 				"Using video bitrate limit from {} configuration ({} Mb/s) because " +
 				"it is lower than the general configuration bitrate limit ({} Mb/s)",

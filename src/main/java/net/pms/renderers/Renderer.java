@@ -100,6 +100,7 @@ public class Renderer extends RendererDeviceConfiguration {
 	private long buffer;
 	private int maximumBitrateTotal = 0;
 	private String automaticVideoQuality = "Automatic (Wireless)";
+	private volatile RendererPlaybackMode playbackMode;
 
 	private volatile MediaStore mediaStore;
 	private List<String> sharedPath;
@@ -251,7 +252,71 @@ public class Renderer extends RendererDeviceConfiguration {
 
 	@Override
 	protected void uuidChanged() {
+		playbackMode = null;
+		maximumBitrateTotal = 0;
 		resetRenderer();
+	}
+
+	/**
+	 * Returns the playback policy selected for this device.
+	 *
+	 * @return The selected playback policy.
+	 */
+	public RendererPlaybackMode getPlaybackMode() {
+		RendererPlaybackMode result = playbackMode;
+		if (result == null) {
+			synchronized (this) {
+				result = playbackMode;
+				if (result == null) {
+					RendererPlaybackModeStore store = RendererPlaybackModeStore.getDefault();
+					result = uuid == null ? RendererPlaybackMode.AUTOMATIC : store.get(uuid);
+					if (result == RendererPlaybackMode.AUTOMATIC && getAddress() != null) {
+						result = store.get(getAddress().getHostAddress());
+					}
+					playbackMode = result;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Selects and persists a playback policy for this device. The renderer
+	 * profile remains unchanged, so its format and codec capabilities are still
+	 * used when deciding whether transcoding is necessary.
+	 *
+	 * @param mode The new playback policy.
+	 */
+	public synchronized void setPlaybackMode(RendererPlaybackMode mode) {
+		if (mode == null || mode == getPlaybackMode()) {
+			return;
+		}
+
+		playbackMode = mode;
+		maximumBitrateTotal = 0;
+		RendererPlaybackModeStore store = RendererPlaybackModeStore.getDefault();
+		store.set(uuid, mode);
+		if (getAddress() != null) {
+			store.set(getAddress().getHostAddress(), mode);
+		}
+		resetMediaStore();
+		LOGGER.info("Playback mode for {} changed to {}", getRendererName(), mode.getPersistedValue());
+	}
+
+	/**
+	 * Returns whether the selected device policy disables transcoding. A remote
+	 * policy deliberately overrides the global disable-transcoding setting.
+	 *
+	 * @return {@code true} when content should always be streamed directly.
+	 */
+	public boolean isTranscodingDisabledForPlaybackMode() {
+		RendererPlaybackMode mode = getPlaybackMode();
+		return mode.isForceDirectPlay() || (!mode.isRemote() && getUmsConfiguration().isDisableTranscoding());
+	}
+
+	@Override
+	public String getStreamedExtensions() {
+		return getPlaybackMode().isForceDirectPlay() ? "*" : super.getStreamedExtensions();
 	}
 
 	/**
@@ -599,7 +664,10 @@ public class Renderer extends RendererDeviceConfiguration {
 		}
 
 		// Give priority to the renderer's maximum bitrate setting over the user's setting
-		if (rendererMaxBitrates[0] > 0 && rendererMaxBitrates[0] < defaultMaxBitrates[0]) {
+		if (
+			rendererMaxBitrates[0] > 0 &&
+			(defaultMaxBitrates[0] == 0 || rendererMaxBitrates[0] < defaultMaxBitrates[0])
+		) {
 			LOGGER.trace(
 				"Using video bitrate limit from {} configuration ({} Mb/s) because " +
 				"it is lower than the general configuration bitrate limit ({} Mb/s)",
@@ -728,6 +796,10 @@ public class Renderer extends RendererDeviceConfiguration {
 	 */
 	@Override
 	public int getMaxVideoBitrate() {
+		int playbackModeBitrate = getPlaybackMode().getMaximumBitrateMbps();
+		if (playbackModeBitrate > 0) {
+			return playbackModeBitrate;
+		}
 		if (PMS.getConfiguration().isAutomaticMaximumBitrate() && !PMS.isRunningTests()) {
 			try {
 				int calculatedSpeed = calculatedSpeed();

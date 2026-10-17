@@ -24,6 +24,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,6 +32,7 @@ import javax.swing.SwingUtilities;
 import net.pms.Messages;
 import net.pms.gui.IRendererGuiListener;
 import net.pms.renderers.Renderer;
+import net.pms.renderers.RendererPlaybackMode;
 import net.pms.renderers.devices.players.BasicPlayer;
 import net.pms.renderers.devices.players.PlayerState;
 import net.pms.swing.components.FixedPanel;
@@ -47,8 +49,10 @@ public class RendererPanel implements ActionListener, IRendererGuiListener {
 	private static final int MINIMUM_FILENAME_DISPLAY_SIZE = 200;
 	private static final Color BUF_COLOR = new Color(255, 128, 0, 128);
 
+	private Renderer renderer;
 	private final RendererImage rendererImage;
 	private final JLabel label;
+	private final JComboBox<RendererPlaybackMode> playbackMode;
 	private final MarqueeLabel playingLabel;
 	private final FixedPanel playing;
 	private final JLabel time;
@@ -58,14 +62,25 @@ public class RendererPanel implements ActionListener, IRendererGuiListener {
 	private RendererFrame rendererFrame;
 	private String name = " ";
 	private JPanel panel = null;
+	private boolean updatingPlaybackMode;
 
 	public RendererPanel(Renderer renderer) {
+		this.renderer = renderer;
 		rendererImage = new RendererImage(renderer);
 		String rendererName = renderer.getRendererName();
 		if ("UnknownRenderer".equals(rendererName)) {
 			rendererName = Messages.getGuiString(rendererName);
 		}
 		label = new JLabel(rendererName);
+		playbackMode = new JComboBox<>(RendererPlaybackMode.values());
+		playbackMode.setSelectedItem(renderer.getPlaybackMode());
+		playbackMode.setToolTipText(Messages.getGuiString("RendererPlaybackMode.Tooltip"));
+		playbackMode.setFocusable(false);
+		playbackMode.addActionListener(e -> {
+			if (!updatingPlaybackMode) {
+				this.renderer.setPlaybackMode((RendererPlaybackMode) playbackMode.getSelectedItem());
+			}
+		});
 		playingLabel = new MarqueeLabel(" ");
 		playingLabel.setForeground(Color.gray);
 		int h = (int) playingLabel.getSize().getHeight();
@@ -172,15 +187,16 @@ public class RendererPanel implements ActionListener, IRendererGuiListener {
 		if (panel == null) {
 			UmsFormBuilder b = UmsFormBuilder.create().layout(new FormLayout(
 					"center:pref",
-					"max(140px;pref), 3dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref"
+					"max(140px;pref), 3dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref"
 			));
 			b.opaque(true);
 			CellConstraints cc = new CellConstraints();
 			b.add(rendererImage).at(cc.xy(1, 1));
 			b.add(label).at(cc.xy(1, 3, CellConstraints.CENTER, CellConstraints.DEFAULT));
 			b.add(rendererProgressBar).at(cc.xy(1, 5));
-			b.add(playing).at(cc.xy(1, 7, CellConstraints.CENTER, CellConstraints.DEFAULT));
-			b.add(time).at(cc.xy(1, 9));
+			b.add(playbackMode).at(cc.xy(1, 7, CellConstraints.CENTER, CellConstraints.DEFAULT));
+			b.add(playing).at(cc.xy(1, 9, CellConstraints.CENTER, CellConstraints.DEFAULT));
+			b.add(time).at(cc.xy(1, 11));
 			panel = b.getPanel();
 		}
 		return panel;
@@ -189,12 +205,19 @@ public class RendererPanel implements ActionListener, IRendererGuiListener {
 	@Override
 	public void updateRenderer(final Renderer renderer) {
 		SwingUtilities.invokeLater(() -> {
+			this.renderer = renderer;
 			rendererImage.set(renderer);
 			String rendererName = renderer.getRendererName();
 			if ("UnknownRenderer".equals(rendererName)) {
 				rendererName = Messages.getGuiString(rendererName);
 			}
 			label.setText(rendererName);
+			updatingPlaybackMode = true;
+			try {
+				playbackMode.setSelectedItem(renderer.getPlaybackMode());
+			} finally {
+				updatingPlaybackMode = false;
+			}
 			// Update the popup panel if it's been opened
 			if (rendererFrame != null) {
 				rendererFrame.update();
