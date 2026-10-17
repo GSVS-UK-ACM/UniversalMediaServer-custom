@@ -438,7 +438,7 @@ public abstract class StoreItem extends StoreResource {
 			return null;
 		}
 
-		if (renderer.getUmsConfiguration().isDisableTranscoding()) {
+		if (renderer.isTranscodingDisabledForPlaybackMode()) {
 			LOGGER.debug("Final verdict: \"{}\" will be streamed since transcoding is disabled", getName());
 			return null;
 		}

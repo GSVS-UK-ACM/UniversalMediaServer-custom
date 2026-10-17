@@ -1121,12 +1121,13 @@ public class RendererConfiguration extends BaseConfiguration {
 			mediaInfo = null;
 		}
 
+		boolean transcodingDisabled = umsConfiguration != null && umsConfiguration.isDisableTranscoding();
+		if (this instanceof Renderer renderer) {
+			transcodingDisabled = renderer.isTranscodingDisabledForPlaybackMode();
+		}
 		if (
 			umsConfiguration != null &&
-			(
-				umsConfiguration.isDisableTranscoding() ||
-				(format != null && format.skip(umsConfiguration.getDisableTranscodeForExtensions()))
-			)
+			(transcodingDisabled || (format != null && format.skip(umsConfiguration.getDisableTranscodeForExtensions())))
 		) {
 			return true;
 		}
