@@ -490,7 +490,8 @@ public abstract class StoreItem extends StoreResource {
 		String rendererForceExtensions = renderer.getTranscodedExtensions();
 		String rendererSkipExtensions = renderer.getStreamedExtensions();
 		String configurationForceExtensions = renderer.getUmsConfiguration().getForceTranscodeForExtensions();
-		String configurationSkipExtensions = renderer.getUmsConfiguration().getDisableTranscodeForExtensions();
+		String configurationSkipExtensions = renderer.getPlaybackMode().isRemote() ? "" :
+			renderer.getUmsConfiguration().getDisableTranscodeForExtensions();
 
 		// Should transcoding be skipped for this format?
 		skipTranscode = format.skip(configurationSkipExtensions, rendererSkipExtensions);
