@@ -49,3 +49,12 @@ Samsung S24 Ultra the normal Android direct-play defaults. Keep Automatic
 maximum bandwidth disabled in UMS when using the explicit Local and Remote
 modes. Media-library scanning at startup is a separate setting and can stay off
 on large libraries.
+
+## Windows protected-install fallback
+
+If Windows blocks replacing `ums.jar` in Program Files, keep the tested custom
+jar at `D:\GPTVibeCodes\UMS-runtime\ums-15.8.2-playback-fix.jar` and use
+`scripts/windows/Start-UMS-Custom.ps1` from a per-user Startup shortcut. The
+helper waits for the installer-owned UMS process, verifies that it owns port
+5001, then replaces only that process with the custom jar. It never changes
+Program Files or Windows security settings.
