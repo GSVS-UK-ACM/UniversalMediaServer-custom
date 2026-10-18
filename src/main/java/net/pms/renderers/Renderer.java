@@ -316,7 +316,16 @@ public class Renderer extends RendererDeviceConfiguration {
 
 	@Override
 	public String getStreamedExtensions() {
-		return getPlaybackMode().isForceDirectPlay() ? "*" : super.getStreamedExtensions();
+		RendererPlaybackMode mode = getPlaybackMode();
+		if (mode.isForceDirectPlay()) {
+			return "*";
+		}
+		if (mode.isRemote()) {
+			// A renderer profile can force common extensions to stream. Ignore
+			// that shortcut remotely so compatibility and bitrate checks still run.
+			return "";
+		}
+		return super.getStreamedExtensions();
 	}
 
 	/**
@@ -796,7 +805,11 @@ public class Renderer extends RendererDeviceConfiguration {
 	 */
 	@Override
 	public int getMaxVideoBitrate() {
-		int playbackModeBitrate = getPlaybackMode().getMaximumBitrateMbps();
+		RendererPlaybackMode playbackMode = getPlaybackMode();
+		if (playbackMode.isForceDirectPlay()) {
+			return 0;
+		}
+		int playbackModeBitrate = playbackMode.getMaximumBitrateMbps();
 		if (playbackModeBitrate > 0) {
 			return playbackModeBitrate;
 		}

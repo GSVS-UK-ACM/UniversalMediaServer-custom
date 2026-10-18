@@ -6,11 +6,16 @@ device's renderer profile.
 
 Available modes:
 
-- **Automatic** — standard UMS behaviour.
-- **Local - Direct play** — streams the original file and never transcodes it.
-- **Remote - 8 Mbps** — keeps direct play for compatible media at or below the
+- **Automatic** uses standard UMS behaviour.
+- **Local - Direct play** streams the original file and never transcodes it. It
+  also bypasses UMS automatic bandwidth testing completely.
+- **Remote - 8 Mbps** keeps direct play for compatible media at or below the
   limit, and transcodes higher-bitrate or incompatible media with an 8 Mbps cap.
-- **Remote - 4 Mbps** — the same behaviour with a 4 Mbps cap.
+- **Remote - 4 Mbps** has the same behaviour with a 4 Mbps cap.
+
+Remote modes ignore renderer and global extension lists that force files to
+stream. This makes sure the selected bitrate cap is always checked. Format and
+codec compatibility still comes from the device renderer profile.
 
 Selections are saved per renderer in
 `renderer-playback-modes.properties` inside the UMS profile directory. Both a
@@ -31,10 +36,16 @@ git merge upstream/main
 Resolve any conflicts, run the targeted test and a compile, then push the branch:
 
 ```powershell
-mvn -Dtest=RendererPlaybackModeTest test
+mvn -Dtest=RendererPlaybackModeTest,RendererConfigurationTest test
 mvn -DskipTests compile
 git push origin feature/per-device-playback-modes
 ```
 
 Do not replace a working UMS installation until the custom build has passed
 those checks and has been tried as a separate installation.
+
+The included `VLC-Android-Samsung-S24-Ultra.conf` profile gives VLC on the
+Samsung S24 Ultra the normal Android direct-play defaults. Keep Automatic
+maximum bandwidth disabled in UMS when using the explicit Local and Remote
+modes. Media-library scanning at startup is a separate setting and can stay off
+on large libraries.

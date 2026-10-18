@@ -17,13 +17,21 @@
 package net.pms.renderers;
 
 import java.nio.file.Path;
+import net.pms.PMS;
+import net.pms.configuration.UmsConfiguration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class RendererPlaybackModeTest {
+	@BeforeAll
+	public static void setUpClass() throws Exception {
+		System.setProperty(PMS.PROPERTY_RUNNING_TESTS, "true");
+		PMS.setConfiguration(new UmsConfiguration(false));
+	}
 
 	@TempDir
 	Path temporaryDirectory;
@@ -51,5 +59,32 @@ public class RendererPlaybackModeTest {
 			RendererPlaybackMode.AUTOMATIC,
 			new RendererPlaybackModeStore(storePath).get("phone")
 		);
+	}
+
+	@Test
+	public void testLocalDirectPlayAlwaysBypassesBitrateDetection() throws Exception {
+		Renderer renderer = rendererFor(RendererPlaybackMode.LOCAL_DIRECT_PLAY);
+		assertEquals(0, renderer.getMaxVideoBitrate());
+		assertEquals("*", renderer.getStreamedExtensions());
+		assertTrue(renderer.isTranscodingDisabledForPlaybackMode());
+	}
+
+	@Test
+	public void testRemoteModesEnforceTheirOwnBitrateChecks() throws Exception {
+		Renderer remote8 = rendererFor(RendererPlaybackMode.REMOTE_8_MBPS);
+		Renderer remote4 = rendererFor(RendererPlaybackMode.REMOTE_4_MBPS);
+		assertEquals(8, remote8.getMaxVideoBitrate());
+		assertEquals(4, remote4.getMaxVideoBitrate());
+		assertEquals("", remote8.getStreamedExtensions());
+		assertFalse(remote8.isTranscodingDisabledForPlaybackMode());
+	}
+
+	private static Renderer rendererFor(RendererPlaybackMode mode) throws Exception {
+		return new Renderer((String) null) {
+			@Override
+			public RendererPlaybackMode getPlaybackMode() {
+				return mode;
+			}
+		};
 	}
 }

@@ -93,6 +93,11 @@ public class RendererConfigurationTest {
 			"User-Agent: NSPlayer/4.1.0.3856"
 		);
 
+		testHeaders(
+			"Phone VLC",
+			"User-Agent: VLC/3.6.5 LibVLC/3.0.21 (Linux; U; Android 15; SM-S928B Build/AP3A.240905.015.A2)"
+		);
+
 		testHeaders("D-Link DSM-510", "User-Agent: DLNADOC/1.50 INTEL_NMPR/2.1");
 
 		testUPNPDetails("Denon AVR-4311CI", "manufacturer=DENON, modelName=AVR-4311");
