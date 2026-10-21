@@ -91,3 +91,8 @@ setup and installation. Automatic approval review blocked the installation
 command because the earlier explicit shutdown-confirmation condition was still
 retained. No installation command executed. The requested confirmation is
 pending. Merge is not authorised.
+
+Superseding deployment checkpoint: the owner explicitly confirmed shutdown and
+installation on 21 October 2026. Installation and live server checks completed.
+See the Windows release record for installed hash, checks and recovery evidence.
+Phone/TV acceptance is still pending. Merge remains unauthorised.

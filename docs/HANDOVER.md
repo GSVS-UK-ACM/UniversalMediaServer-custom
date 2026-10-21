@@ -25,11 +25,12 @@ covered by five focused tests and an owner-triggered self-hosted Linux workflow.
 - Projects Hub: registered and pushed at Hub commit `b7cd71c`
 - Merged: no
 - Packaged: `ums-15.9.0-folder-artwork.jar`, see release record.
-- Installed: no. Automatic approval review blocked the command while explicit
-  owner shutdown confirmation is pending.
+- Installed: yes, on 21 October 2026 after explicit owner shutdown confirmation.
+  Installed jar hash matches the verified package. Live browsing, matching
+  film/folder artwork and VLC direct-file HTTP 206 delivery passed.
 
-Do not change the live UMS installation until the owner confirms it is shut
-down and explicitly approves installation.
+Next: owner refreshes VLC/TV browsing and checks artwork and playback on those
+devices. Device acceptance is not yet claimed. No further restart is needed.
 
 Detailed evidence: `docs/tasks/UMSC-M3-001-folder-thumbnails.md`,
 `docs/tasks/UMSC-M1-001-linux-runner.md` and

@@ -45,5 +45,23 @@ inspection showed the live instance stopped and only the isolated verification
 instance running. A shutdown/installation confirmation request is pending.
 The completed isolated test process has since been stopped as cleanup.
 
+### Installed checkpoint, 21 October 2026
+
+The owner subsequently explicitly confirmed shutdown and approved installation.
+The elevated installer completed successfully. The installed jar matches the
+package SHA-256 above, and the Windows startup helper now selects this package.
+UMS was started normally and is listening on its media and web ports.
+
+Live UPnP browsing succeeded. A real film folder and its direct video's artwork
+both returned HTTP 200 with identical bytes. A direct-file request with the VLC
+user agent returned HTTP 206, exactly 1,024 bytes and the expected Content-Range.
+An earlier probe reused isolated-instance object IDs and returned UPnP 701;
+rediscovering the live tree resolved it. A range probe without the VLC user
+agent selected a transcoded resource and ended prematurely. This is not claimed
+as a successful transcoded seek test. Device playback remains owner verification.
+
+The deployment is installed, not merged or publicly released. The earlier
+pending-confirmation record above is superseded by this checkpoint.
+
 The old jar and backup profile remain available for rollback. Do not overwrite
 the database with an older copy while UMS is running.

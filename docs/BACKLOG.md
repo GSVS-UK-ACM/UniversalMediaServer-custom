@@ -46,7 +46,8 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
   custom-fork tests pass on Windows and Linux. An isolated Windows runtime
   check confirms matching film/folder artwork and working HTTP byte ranges.
   The full suite has only the reproduced baseline timeout failure. Installation
-  awaits explicit shutdown confirmation after an automatic approval block.
+  completed after explicit owner shutdown confirmation. Live artwork and VLC
+  direct-file byte ranges pass. Owner phone/TV acceptance remains outstanding.
 
 ## Future direction
 
