@@ -17,9 +17,10 @@
 package net.pms.network.mediaserver.jupnp.model.meta;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import net.pms.configuration.UmsConfiguration;
 import net.pms.network.mediaserver.MediaServer;
 import net.pms.network.mediaserver.jupnp.support.connectionmanager.UmsConnectionManagerService;
 import net.pms.network.mediaserver.jupnp.support.contentdirectory.UmsContentDirectoryService;
@@ -107,37 +108,19 @@ public class UmsLocalDevice extends LocalDevice {
 
 	private static Icon[] createDeviceIcons() {
 		List<Icon> icons = new ArrayList<>();
+		Path iconDirectory = Path.of(UmsConfiguration.getProfileDirectory(), "server-icons");
 		try {
-			icons.add(new Icon("image/png", 256, 256, 24, "images/icon-square-256.png", getResourceInputStream("images/icon-square-256.png")));
-			icons.add(new Icon("image/png", 128, 128, 24, "images/icon-square-128.png", getResourceInputStream("images/icon-square-128.png")));
-			icons.add(new Icon("image/png", 120, 120, 24, "images/icon-square-120.png", getResourceInputStream("images/icon-square-120.png")));
-			icons.add(new Icon("image/png", 48, 48, 24, "images/icon-square-48.png", getResourceInputStream("images/icon-square-48.png")));
-			icons.add(new Icon("image/jpeg", 128, 128, 24, "images/icon-square-128.jpg", getResourceInputStream("images/icon-square-128.jpg")));
-			icons.add(new Icon("image/jpeg", 120, 120, 24, "images/icon-square-120.jpg", getResourceInputStream("images/icon-square-120.jpg")));
-			icons.add(new Icon("image/jpeg", 48, 48, 24, "images/icon-square-48.jpg", getResourceInputStream("images/icon-square-48.jpg")));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-256.png", "image/png", 256));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-128.png", "image/png", 128));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-120.png", "image/png", 120));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-48.png", "image/png", 48));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-128.jpg", "image/jpeg", 128));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-120.jpg", "image/jpeg", 120));
+			icons.add(ServerIconProvider.load(iconDirectory, "icon-square-48.jpg", "image/jpeg", 48));
 		} catch (IOException ex) {
 			LOGGER.debug("Error in device icons creation: {}", ex);
 		}
 		return icons.toArray(Icon[]::new);
-	}
-
-	/**
-	 * Returns an InputStream associated with the fileName.
-	 * @param fileName TODO Absolute or relative file path.
-	 * @return If found, an InputStream associated with the fileName. null otherwise.
-	 */
-	private static InputStream getResourceInputStream(String fileName) {
-		fileName = "/resources/" + fileName;
-		fileName = fileName.replace("//", "/");
-		ClassLoader cll = UmsLocalDevice.class.getClassLoader();
-		InputStream is = cll.getResourceAsStream(fileName.substring(1));
-
-		while (is == null && cll.getParent() != null) {
-			cll = cll.getParent();
-			is = cll.getResourceAsStream(fileName.substring(1));
-		}
-
-		return is;
 	}
 
 	/**

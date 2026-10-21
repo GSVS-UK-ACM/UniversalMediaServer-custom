@@ -40,3 +40,14 @@ removed by final cleanup.
 
 See `docs/runbooks/SELF_HOSTED_CI.md` for registration, dispatch, cleanup and
 recovery.
+
+## Samsung TV app
+
+`tv-app/` has pinned development-only dependencies and native browser runtime
+code. CI selects Node 22, runs `npm ci --ignore-scripts`, `npm run check`,
+`npm test`, then `npm run build`. Output and private connection configuration
+are ignored. These checks do not sign a TV package or verify native AVPlay.
+Optional workstation browser checks use `node scripts/browser-check.cjs` from
+`tv-app/`, with `TV_CHROMIUM_PATH` for a locally installed Chrome binary.
+`TV_DESCRIPTION_URL` switches that check to read-only live UMS rendering.
+Its CORS bridge exists only in the test browser, never on the UMS server.

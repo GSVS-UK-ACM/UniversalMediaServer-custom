@@ -33,6 +33,9 @@ generated_paths=(
 	"react-client/node_modules"
 	"react-client/test-results"
 	"src/main/external-resources/web/react-client"
+	"tv-app/node_modules"
+	"tv-app/dist"
+	"tv-app/test-results"
 )
 
 for relative_path in "${generated_paths[@]}"; do

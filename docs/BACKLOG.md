@@ -54,3 +54,22 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 A child-friendly web library with a streaming-service-style home page and
 search is the next product direction. It is intentionally outside
 UMSC-M3-001 and still needs its own scoped milestone.
+
+### UMSC-M3-002: Persistent server icon and Samsung folder artwork
+
+- Status: IN_PROGRESS
+- Goal: Restore private Spidey branding without future jar updates removing it;
+  test Samsung single-JPEG/versioned-ID folder artwork compatibility.
+- Evidence: `docs/tasks/UMSC-M3-002-samsung-artwork.md`.
+- Delivery: source edits only, not yet tested or installed. No folder flattening.
+
+## M4: Samsung Kids TV app
+
+### UMSC-M4-001: Remote-friendly UMS frontend
+
+- Status: IN_PROGRESS
+- Goal: A small installable Tizen app with artwork shelves, categories, search,
+  native playback and TV-local progress. Network install is owner-authorised.
+- Evidence: `docs/tasks/UMSC-M4-001-tv-app.md` and `tv-app/README.md`.
+- Delivery: development build and initial contract tests pass locally. Signing,
+  self-hosted verification and physical TV acceptance remain separate steps.

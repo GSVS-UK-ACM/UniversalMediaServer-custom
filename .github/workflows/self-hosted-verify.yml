@@ -11,6 +11,7 @@ on:
       - 'react-client/**'
       - 'scripts/ci/**'
       - 'src/**'
+      - 'tv-app/**'
 
 permissions:
   contents: read
@@ -52,7 +53,20 @@ jobs:
           git rev-parse HEAD
 
       - name: Run custom-fork regression tests
-        run: mvn --batch-mode -P testing '-Dtest=RealFolderThumbnailTest,RendererPlaybackModeTest,RendererConfigurationTest' test
+        run: mvn --batch-mode -P testing '-Dtest=RealFolderThumbnailTest,RendererPlaybackModeTest,RendererConfigurationTest,ServerIconProviderTest,SamsungFolderArtworkTest' test
+
+      - name: Set up TV app test runtime
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check and build Samsung TV app
+        working-directory: tv-app
+        run: |
+          npm ci --ignore-scripts
+          npm run check
+          npm test
+          npm run build
 
       - name: Run Linux verification
         # UMS tests replace process-wide configuration and engine state. A new

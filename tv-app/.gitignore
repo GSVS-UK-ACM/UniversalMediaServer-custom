@@ -1,0 +1,8 @@
+/node_modules/
+/dist/
+/connection.local.json
+/*.wgt
+/*.p12
+/*.pfx
+/profiles.xml
+/test-results/

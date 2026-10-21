@@ -3,6 +3,8 @@
 ## Current task
 
 UMSC-M3-001 is verifying on `feature/umsc-m3-001-folder-thumbnails`.
+UMSC-M3-002 is the compatibility/branding follow-up, see its task report.
+UMSC-M4-001 adds the Samsung TV frontend in `tv-app/`.
 
 The implementation preserves explicit folder artwork, then falls back to real
 artwork from the alphabetically first direct video file. It does not recurse
@@ -29,8 +31,29 @@ covered by five focused tests and an owner-triggered self-hosted Linux workflow.
   Installed jar hash matches the verified package. Live browsing, matching
   film/folder artwork and VLC direct-file HTTP 206 delivery passed.
 
-Next: owner refreshes VLC/TV browsing and checks artwork and playback on those
-devices. Device acceptance is not yet claimed. No further restart is needed.
+Owner acceptance: Android VLC shows direct-film folder artwork. Samsung TV
+does not show folder artwork, and both clients lost the Spidey discovery icon.
+The previous jar comparison used a baseline that already lacked custom icons.
+Private original artwork remains available. UMSC-M3-002 stages an external
+profile icon loader and Samsung JPEG_SM/versioned-ID compatibility settings.
+The live server has not been changed by this follow-up.
+
+Latest request: build a small installable Samsung TV frontend. Target model is
+known privately (2020 TU7100). Owner approved developer-mode network install.
+App source and development build exist, with 13 passing Node contract tests.
+Live UMS client browsing returned the root and kids library with artwork, and
+subtree search returned matching titles. No live server restart was required.
+18 Java regressions also pass on workstation JDK 21 compiling for Java 17.
+Official Tizen CLI 10 SDK download is in progress. Signing requires a Samsung
+certificate for the TV, not a generic unsigned WGT. No installation is claimed.
+Owner is enabling TV Developer Mode. Its dialog requested a proper reboot.
+Do not flatten folders: the owner's conditional answer is a product discussion,
+not approval for changing the existing DLNA layout.
+
+Next: finish self-hosted checks and browser UI checks, then sign/install with
+official SDK after licence/account interaction and TV connection. Private app
+connection settings and original Spidey images stay out of Git. M3-002 remains
+uninstalled and requires a separate UMS shutdown confirmation before deployment.
 
 Detailed evidence: `docs/tasks/UMSC-M3-001-folder-thumbnails.md`,
 `docs/tasks/UMSC-M1-001-linux-runner.md` and

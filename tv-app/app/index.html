@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <title>Kids TV</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="shell">
+    <header>
+      <div class="brand"><span class="brand-mark">K</span> KIDS<span class="brand-light">TV</span></div>
+      <nav aria-label="Main navigation">
+        <button id="home">Home</button><button id="search">Search</button><button id="settings">Connection</button>
+      </nav>
+      <span id="server-name">Your own little cinema</span>
+    </header>
+    <main id="content"></main>
+    <footer><span>Arrows to explore</span><span>OK to open</span><span>Back to return</span><span id="status" role="status"></span></footer>
+  </div>
+  <section id="setup" class="overlay hidden" aria-label="Server connection">
+    <div class="panel"><div class="eyebrow">AT HOME. ALL YOUR FAVOURITES.</div><h1>Let’s find your server.</h1>
+      <p>The PC setup normally fills this in. You can also paste the UMS device-description URL.</p>
+      <label for="server-url">UMS description URL</label><input id="server-url" type="url" autocomplete="off" placeholder="http://your-pc:5001/dev/…/desc">
+      <p id="connection-error" role="alert"></p><button id="connect" class="primary">Connect to UMS</button><button id="cancel-setup">Cancel</button>
+    </div>
+  </section>
+  <section id="search-panel" class="overlay hidden" aria-label="Search library">
+    <div class="panel"><div class="eyebrow">FIND SOMETHING GOOD</div><h1>What shall we watch?</h1>
+      <label for="query">Film or episode title</label><input id="query" type="search" autocomplete="off">
+      <button id="do-search" class="primary">Search library</button><button id="cancel-search">Cancel</button>
+    </div>
+  </section>
+  <section id="playback" class="hidden" aria-label="Video player">
+    <object id="av-player" type="application/avplayer"></object><video id="browser-player"></video>
+    <div id="player-hud"><h2 id="playing-title"></h2><p id="player-message" role="status"></p><div class="track"><div id="play-progress"></div></div>
+      <div id="player-buttons"><button id="pause">Pause / play</button><button id="rewind">−30 seconds</button><button id="forward">+30 seconds</button><button id="stop">Back to library</button></div>
+      <p>OK: pause/play · Left/Right: seek · Back: library</p>
+    </div>
+  </section>
+  <script src="$WEBAPIS/webapis/webapis.js"></script>
+  <script src="core.js"></script><script src="player.js"></script><script src="app.js"></script>
+</body>
+</html>

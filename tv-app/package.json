@@ -1,0 +1,14 @@
+{
+  "name": "ums-kids-tv",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.cjs",
+    "check": "node --check app/core.js && node --check app/player.js && node --check app/app.js && node --check scripts/build.cjs",
+    "build": "node scripts/build.cjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@xmldom/xmldom": "0.9.12"
+  }
+}

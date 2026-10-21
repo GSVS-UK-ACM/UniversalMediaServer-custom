@@ -1,0 +1,50 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; color: #f3f5fa; font: 28px Arial, sans-serif; background: #090e19; }
+body { overflow: hidden; }
+button, input { font: inherit; }
+button { border: 2px solid transparent; border-radius: 12px; background: #202939; color: white; padding: 16px 26px; cursor: pointer; }
+button:focus, input:focus { outline: 4px solid #7de6d0; outline-offset: 5px; background-color: #2c3e50; }
+button.primary { background: #77e0c6; color: #071c1a; font-weight: bold; }
+button:disabled { opacity: .45; }
+.hidden { display: none !important; }
+header { height: 128px; padding: 34px 70px; display: flex; align-items: center; border-bottom: 1px solid #242c3a; }
+.brand { font-size: 34px; font-weight: bold; letter-spacing: 3px; white-space: nowrap; }
+.brand-mark { display: inline-block; background: #7de6d0; color: #0b1e20; border-radius: 12px; padding: 8px 14px; margin-right: 14px; }
+.brand-light { font-weight: normal; color: #7de6d0; }
+nav { margin-left: 100px; display: flex; }
+nav button { background: transparent; margin-right: 18px; padding: 12px 20px; }
+#server-name { margin-left: auto; color: #9daabc; font-size: 23px; max-width: 410px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+main { height: calc(100vh - 198px); overflow-y: auto; padding: 0 70px 65px; }
+.hero { padding: 55px 0 30px; position: relative; }
+.eyebrow { color: #7de6d0; font-size: 19px; font-weight: bold; letter-spacing: 4px; }
+h1 { font-size: 66px; margin: 17px 0; font-weight: bold; max-width: 1300px; }
+.hero p, .panel p { color: #a8b4c5; font-size: 25px; line-height: 1.5; }
+.row-heading { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 20px; }
+h2 { font-size: 32px; margin: 0; }
+.row-heading button { font-size: 21px; padding: 9px 20px; background: transparent; color: #7de6d0; }
+.shelf { display: flex; overflow-x: auto; padding: 9px 9px 18px; margin-left: -9px; scrollbar-width: none; }
+.tile { flex: 0 0 276px; padding: 0; margin-right: 24px; text-align: left; border-radius: 15px; background: #182231; overflow: hidden; }
+.tile-art { width: 272px; height: 164px; position: relative; background: linear-gradient(135deg, #32495b, #1a2637); overflow: hidden; }
+.tile-art img { width: 100%; height: 100%; object-fit: cover; }
+.tile-art .fallback { padding: 50px 22px; display: block; font-size: 32px; color: #b0d6ce; }
+.tile-label { padding: 17px 18px 19px; display: block; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile small { display: block; font-size: 18px; color: #9daabc; padding: 0 18px 16px; }
+.badge { position: absolute; bottom: 10px; right: 10px; background: #071c1ae8; color: #7de6d0; font-size: 18px; padding: 6px 10px; border-radius: 7px; }
+.empty { padding: 45px 0; color: #a8b4c5; }
+footer { height: 70px; padding: 20px 70px; border-top: 1px solid #242c3a; color: #8b9cb1; font-size: 20px; display: flex; }
+footer span { margin-right: 36px; } #status { margin-left: auto; color: #7de6d0; }
+.overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 20; background: #060b15f5; display: flex; align-items: center; justify-content: center; }
+.panel { width: 1160px; padding: 60px; background: #141e2d; border: 1px solid #3a4c60; border-radius: 24px; }
+.panel label { display: block; margin: 28px 0 14px; color: #b8c6d7; }
+.panel input { width: 100%; padding: 22px; background: #080e18; color: white; border: 1px solid #526074; border-radius: 10px; margin-bottom: 26px; }
+.panel button { margin-right: 20px; }
+#connection-error { color: #ffb29f; min-height: 38px; }
+#playback { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 30; background: transparent; }
+body.playing { background: transparent; }
+#av-player, #browser-player { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+#browser-player { background: black; display: none; }
+#player-hud { position: absolute; bottom: 0; left: 0; width: 100%; padding: 100px 70px 40px; background: linear-gradient(transparent, #000e 35%); }
+#player-hud p { color: #c0cbd8; font-size: 22px; } #player-message { min-height: 30px; }
+#player-buttons { display: flex; } #player-buttons button { margin-right: 22px; }
+.track { height: 7px; background: #526074; margin: 25px 0; border-radius: 5px; overflow: hidden; }
+#play-progress { width: 0; height: 100%; background: #7de6d0; }
