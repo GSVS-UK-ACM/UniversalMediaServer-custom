@@ -13,16 +13,24 @@ covered by five focused tests and an owner-triggered self-hosted Linux workflow.
 
 - Source implementation: complete
 - Workstation verification: all 12 focused custom-fork tests pass
-- Linux runner verification: run `39594077028` queued, waiting for the new
-  `ums-custom-ci` runner
-- Pushed: source commit `5d745afc75775ff3b16d1af1eb0a4e26dfe80fe2`;
-  verification head `5504b45a8b224a01289a52f390bab151211bc10a`
+- Linux runner: UMSC-M1-001 complete. Runner `gsvs-ums-custom` is online, idle
+  and managed by an enabled user service with lingering.
+- Linux verification: run `39638146430` at `a10969834` passed the separate
+  12-test custom-fork step. Full suite: 532 tests, one reproduced baseline
+  timeout failure, no errors, eight skips. Final cleanup passed.
+- Runtime verification: isolated Windows startup, browsing, identical film and
+  folder artwork, and HTTP 206 byte-range delivery passed.
+- Pushed: source feature `5d745afc7`; runner and installation staging
+  `a10969834`.
 - Projects Hub: registered and pushed at Hub commit `b7cd71c`
 - Merged: no
-- Packaged or installed: no
+- Packaged: `ums-15.9.0-folder-artwork.jar`, see release record.
+- Installed: no. Automatic approval review blocked the command while explicit
+  owner shutdown confirmation is pending.
 
 Do not change the live UMS installation until the owner confirms it is shut
 down and explicitly approves installation.
 
-Detailed evidence and remaining work are in
-`docs/tasks/UMSC-M3-001-folder-thumbnails.md`.
+Detailed evidence: `docs/tasks/UMSC-M3-001-folder-thumbnails.md`,
+`docs/tasks/UMSC-M1-001-linux-runner.md` and
+`docs/releases/UMSC-M3-001-windows.md`.

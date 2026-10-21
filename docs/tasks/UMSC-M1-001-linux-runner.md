@@ -45,3 +45,20 @@ unchanged.
 The timeout assertion requires `SocketTimeoutException` from an external
 unroutable address. This LAN returns `SocketException` instead. The assertion
 has not been weakened or skipped.
+
+The full baseline ran 527 tests: one failure, no errors and eight skips. Its
+only failure was the same timeout assertion. The final feature workflow is run
+`39638146430`, job `119354264443`, against commit
+`a10969834f01b481bd4e248e298d0d055a309ae1`. Its separate 12-test custom-fork
+regression step passed. The full suite ran 532 tests with one failure, no errors
+and eight skips. Both FFmpeg tests passed with JVM isolation. The only remaining
+failure is the reproduced baseline Jetty timeout assertion.
+
+The job completed in 4m14s. Final cleanup passed. Independent SSH inspection
+confirmed a clean Git worktree, no `target` or `.ci-profile` directory, valid
+Bash syntax, an active runner service, enabled lingering and an online idle
+runner with the expected labels. The temporary baseline worktree was removed
+after both comparisons; its source remains recoverable from the baseline Git
+commit. Private test logs were retained outside the repository.
+
+UMSC-M1-001 is complete. UMSC-M1-002 tracks the existing network-dependent test.

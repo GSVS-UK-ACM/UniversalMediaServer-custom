@@ -38,7 +38,12 @@ Before testing, the stopped installation's complete profile and database,
 previous custom jar and launch script were copied to a private timestamped
 backup. Live configuration was not used by the isolated test process.
 
-The owner authorised installation. Deployment status is pending completion of
-the Linux baseline comparison. The old jar and backup profile remain available
-for rollback. Do not overwrite the database with an older copy while UMS is
-running.
+The owner authorised installation. Automatic approval review then blocked the
+installation command because the retained earlier instruction required explicit
+confirmation that UMS was shut down. The command did not execute. Read-only
+inspection showed the live instance stopped and only the isolated verification
+instance running. A shutdown/installation confirmation request is pending.
+The completed isolated test process has since been stopped as cleanup.
+
+The old jar and backup profile remain available for rollback. Do not overwrite
+the database with an older copy while UMS is running.

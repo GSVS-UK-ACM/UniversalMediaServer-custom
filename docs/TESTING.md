@@ -31,5 +31,12 @@ generated paths inside the verified GitHub workspace.
 The host must already provide Git, Java 17, Maven, `libmms0`, `libzen`, and
 `libmediainfo`. Ordinary jobs must not use `sudo` or alter host packages.
 
+Runner `gsvs-ums-custom` is registered and managed by the user service template
+in `scripts/ci/ums-custom-ci.service`. Its Java, Maven, FFmpeg and native
+libraries are provisioned in private user directories. The workflow reports
+the 12 custom-fork tests separately, then runs the full suite with a fresh JVM
+per test class. Its synthetic UMS profile stays inside `.ci-profile/` and is
+removed by final cleanup.
+
 See `docs/runbooks/SELF_HOSTED_CI.md` for registration, dispatch, cleanup and
 recovery.

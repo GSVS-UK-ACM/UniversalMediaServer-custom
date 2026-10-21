@@ -6,13 +6,23 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 
 ### UMSC-M1-001: Provision the GSVS Linux runner
 
-- Status: VERIFYING
+- Status: DONE
 - Goal: Execute the fork's automated checks on a dedicated GSVS Linux runner.
 - Progress: Runner `gsvs-ums-custom` is registered, online and managed by an
   enabled user systemd service with lingering. Java, Maven, FFmpeg and native
-  media libraries are provisioned privately. Full-suite baseline failures are
-  being characterised before the final workflow checkpoint.
+  media libraries are provisioned privately. Custom-fork tests pass and final
+  cleanup is verified. The full suite preserves one reproduced baseline
+  network-timeout failure, tracked below.
 - Evidence: `docs/tasks/UMSC-M1-001-linux-runner.md`.
+
+### UMSC-M1-002: Make the Jetty timeout test independent of LAN routing
+
+- Status: PLANNED
+- Goal: Exercise connection timeout deterministically without depending on an
+  external unroutable address or weakening the asserted client behaviour.
+- Evidence: The same assertion fails on baseline `9599bee06635a5653fe06f4c1aa3ed2b91dffcd9`
+  and feature workflow `39638146430`. The LAN produces `SocketException`
+  rather than the expected `SocketTimeoutException`.
 
 ## M3: Child-friendly library browsing
 
@@ -35,7 +45,8 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 - Progress: Source and five focused regression cases are implemented. All 12
   custom-fork tests pass on Windows and Linux. An isolated Windows runtime
   check confirms matching film/folder artwork and working HTTP byte ranges.
-  Full-suite baseline comparison and the authorised installation are underway.
+  The full suite has only the reproduced baseline timeout failure. Installation
+  awaits explicit shutdown confirmation after an automatic approval block.
 
 ## Future direction
 
