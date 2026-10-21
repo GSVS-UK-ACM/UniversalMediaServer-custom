@@ -67,6 +67,10 @@ head is `5504b45a8b224a01289a52f390bab151211bc10a`. Linux run `39594077028`, job
 two full jobs on the same runner. Runner identity, labels, result and final
 cleanup evidence remain required before this task can be marked done.
 
+The canonical fork is registered in the GSVS Projects Hub as a source-only
+project. The verified 0-issue, 0-PR snapshot was pushed in Hub commit
+`b7cd71c` on 21 October 2026.
+
 ## Delivery boundary
 
 The owner authorised pushing the feature branch. Merge and installation are

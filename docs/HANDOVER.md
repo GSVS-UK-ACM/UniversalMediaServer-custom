@@ -6,7 +6,7 @@ UMSC-M3-001 is verifying on `feature/umsc-m3-001-folder-thumbnails`.
 
 The implementation preserves explicit folder artwork, then falls back to real
 artwork from the alphabetically first direct video file. It does not recurse
-into nested folders and does not borrow generic video icons. Focused tests are
+into nested folders and does not borrow generic video icons. The behaviour is
 covered by five focused tests and an owner-triggered self-hosted Linux workflow.
 
 ## Current delivery state
@@ -17,6 +17,7 @@ covered by five focused tests and an owner-triggered self-hosted Linux workflow.
   `ums-custom-ci` runner
 - Pushed: source commit `5d745afc75775ff3b16d1af1eb0a4e26dfe80fe2`;
   verification head `5504b45a8b224a01289a52f390bab151211bc10a`
+- Projects Hub: registered and pushed at Hub commit `b7cd71c`
 - Merged: no
 - Packaged or installed: no
 
