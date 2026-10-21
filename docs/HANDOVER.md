@@ -55,12 +55,15 @@ Tizen baseline CLI is installed. Official SDB connected to the actual TV and
 its capability response confirms Samsung TV, ARMv7 and Tizen 5.5, matching the
 app target. Connection disappeared during standby, then returned when the
 owner switched the TV back on. Developer Mode did not need re-enabling.
-No signing profile exists yet. Certificate Manager is installed. The official
-package manager stopped before the Samsung `cert-add-on` because it requires
-explicit licence acceptance. The complete licence is open in a private local
-file for the owner to review, and an acceptance question is pending. Do not
-run `--accept-license` until the owner accepts that agreement. TV extension
-tools and the Samsung certificate flow remain pending.
+No signing profile exists yet. The owner explicitly accepted the displayed
+Samsung certificate-extension licence, superseding the earlier pause. Official
+installation of Certificate Manager, `cert-add-on` 2.0.75 and TV extension
+resources completed successfully. Certificate Manager has been launched for
+the owner to create a Samsung TV profile named `UMSTV`, choose their private
+certificate password and sign in directly to Samsung. The owner must add the
+connected TV to a Public distributor certificate and finish the profile.
+An async completion/help question is pending. No credentials were requested in
+chat and no certificate, signed WGT or TV app installation is claimed yet.
 Signing requires a Samsung certificate for the TV, not an unsigned WGT.
 No TV app installation is claimed.
 Generic public app name: UMS TV Client. Owner-specific label and Spidey launcher
@@ -76,8 +79,8 @@ The official `tizen build-web` command also passed against the private app
 build; its output stays in ignored `tv-app/dist/.buildResult`. This is still
 unsigned build validation, not installation or native playback acceptance.
 
-Next: after explicit licence acceptance, finish official extension installation and the owner-assisted Samsung
-certificate flow, sign and install, then verify actual playback/audio/seek. Private app
+Next: after the owner creates `UMSTV`, confirm it through CLI profile listing,
+sign and install on the connected TV, then verify actual playback/audio/seek. Private app
 connection settings and original Spidey images stay out of Git. M3-002 remains
 uninstalled and requires a separate UMS shutdown confirmation before deployment.
 

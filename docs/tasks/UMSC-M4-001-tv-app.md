@@ -132,3 +132,13 @@ Final source run `39649720531`, job on the same `gsvs-ums-custom` runner,
 commit `2c67c6add`, passed 18 Java custom regressions and all 14 app tests,
 syntax checks and development build. Full suite remains 538 tests, one known
 baseline Jetty timeout assertion, zero errors, eight skips. Cleanup passed.
+
+### Superseding licence and signing-tools checkpoint
+
+The owner explicitly accepted the displayed Samsung extension licence. The
+official package manager then completed `cert-add-on` and TV extension-resource
+installation. Certificate Manager was launched for the owner-controlled
+Samsung login and `UMSTV` profile creation. Public distributor privileges and
+the connected TV's DUID are sufficient for this app. Passwords, account details
+and certificates must stay private. Owner profile creation is pending; no
+certificate issuance, signed WGT, device install or native playback is claimed.
