@@ -26,6 +26,7 @@ esac
 git -C "$workspace" restore --worktree -- react-client/.yarn/install-state.gz
 
 generated_paths=(
+	".ci-profile"
 	"target"
 	"react-client/dist"
 	"react-client/node"

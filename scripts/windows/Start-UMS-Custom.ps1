@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $installDirectory = 'C:\Program Files\Universal Media Server'
 $javaExecutable = Join-Path $installDirectory 'jre17\bin\javaw.exe'
-$customJar = 'D:\GPTVibeCodes\UMS-runtime\ums-15.8.2-playback-fix.jar'
+$customJar = 'D:\GPTVibeCodes\UMS-runtime\ums-15.9.0-folder-artwork.jar'
 $logFile = 'D:\GPTVibeCodes\UMS-runtime\startup.log'
 
 function Write-StartupLog([string] $message) {

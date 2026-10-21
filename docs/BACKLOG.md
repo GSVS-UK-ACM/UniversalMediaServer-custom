@@ -2,6 +2,18 @@
 
 Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 
+## M1: Build and verification infrastructure
+
+### UMSC-M1-001: Provision the GSVS Linux runner
+
+- Status: VERIFYING
+- Goal: Execute the fork's automated checks on a dedicated GSVS Linux runner.
+- Progress: Runner `gsvs-ums-custom` is registered, online and managed by an
+  enabled user systemd service with lingering. Java, Maven, FFmpeg and native
+  media libraries are provisioned privately. Full-suite baseline failures are
+  being characterised before the final workflow checkpoint.
+- Evidence: `docs/tasks/UMSC-M1-001-linux-runner.md`.
+
 ## M3: Child-friendly library browsing
 
 ### UMSC-M3-001: Inherit film artwork for real folders
@@ -20,10 +32,10 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
   - Regression tests cover precedence, one-level scope and stable selection.
   - Compatible automated checks pass on the dedicated GSVS Linux runner.
   - Live installation remains a separate owner-approved delivery step.
-- Progress: Source, five focused regression cases and the dedicated runner
-  workflow are implemented. Workstation tests pass. Linux verification is
-  waiting for the new repository runner instance to be registered on the GSVS
-  box.
+- Progress: Source and five focused regression cases are implemented. All 12
+  custom-fork tests pass on Windows and Linux. An isolated Windows runtime
+  check confirms matching film/folder artwork and working HTTP byte ranges.
+  Full-suite baseline comparison and the authorised installation are underway.
 
 ## Future direction
 

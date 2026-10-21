@@ -25,6 +25,8 @@ jobs:
     name: Linux Java verification
     runs-on: [self-hosted, Linux, X64, ums-custom-ci]
     timeout-minutes: 90
+    env:
+      JAVA_TOOL_OPTIONS: -Dums.profile.path=${{ github.workspace }}/.ci-profile/UMS.conf
     steps:
       - name: Checkout exact requested commit
         uses: actions/checkout@v7
@@ -46,10 +48,16 @@ jobs:
         run: |
           java -version
           mvn -version
+          ffmpeg -version | sed -n '1p'
           git rev-parse HEAD
 
+      - name: Run custom-fork regression tests
+        run: mvn --batch-mode -P testing '-Dtest=RealFolderThumbnailTest,RendererPlaybackModeTest,RendererConfigurationTest' test
+
       - name: Run Linux verification
-        run: mvn --batch-mode verify -P testing -DdisableXmlReport=true
+        # UMS tests replace process-wide configuration and engine state. A new
+        # JVM per test class prevents that state leaking into later classes.
+        run: mvn --batch-mode verify -P testing -DdisableXmlReport=true -DreuseForks=false
 
       - name: Check patch whitespace
         run: git diff --check

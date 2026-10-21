@@ -16,6 +16,7 @@ pms.iml
 Thumbs.db
 extras/
 target/
+/.ci-profile/
 win32/
 portable/
 .vscode/settings.json

@@ -60,7 +60,7 @@ on large libraries.
 ## Windows protected-install fallback
 
 If Windows blocks replacing `ums.jar` in Program Files, keep the tested custom
-jar at `D:\GPTVibeCodes\UMS-runtime\ums-15.8.2-playback-fix.jar` and use
+jar at `D:\GPTVibeCodes\UMS-runtime\ums-15.9.0-folder-artwork.jar` and use
 `scripts/windows/Start-UMS-Custom.ps1` from a per-user Startup shortcut. The
 helper waits for the installer-owned UMS process, verifies that it owns port
 5001, then replaces only that process with the custom jar. It never changes
