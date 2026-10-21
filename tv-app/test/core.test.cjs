@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const { DOMParser } = require('@xmldom/xmldom');
 const C = require('../app/core.js');
 const base = 'http://192.0.2.1:5001/dev/test/desc';
@@ -61,4 +63,10 @@ test('progress is finite, watched starts at 95%, and renderer URL is not its ide
   assert.equal(C.progress(-10, 0).position, 0);
   assert.equal(C.progress(Infinity, NaN).position, 0);
   assert.equal(C.progressKey(base, { parentId: '8', title: 'Movie', url: '/renderer-1' }), C.progressKey(base, { parentId: '8', title: 'Movie', url: '/renderer-2' }));
+});
+test('packaged TV policy permits its local connection settings and targets Tizen 5.5', () => {
+  const doc = C.parseXml(fs.readFileSync(path.resolve(__dirname, '../app/config.xml'), 'utf8'), DOMParser);
+  const policy = doc.getElementsByTagNameNS('*', 'content-security-policy')[0].textContent;
+  assert.match(policy, /connect-src 'self' http: https:/);
+  assert.equal(doc.getElementsByTagNameNS('*', 'application')[0].getAttribute('required_version'), '5.5');
 });

@@ -115,6 +115,12 @@ are missing and are being installed through the official package manager.
 No licence was accepted automatically and no certificate or app install exists
 at this checkpoint. Device identifiers and capability output are private.
 
+Packaging review corrected the local connection-file policy: the packaged
+app's explicit `connect-src` must include `'self'` as well as HTTP(S). The
+workstation HTTP preview alone would not catch a file-origin deployment
+failure. A fifteenth Node contract now guards this manifest requirement and
+the actual device's Tizen 5.5 target.
+
 Final source run `39649720531`, job on the same `gsvs-ums-custom` runner,
 commit `2c67c6add`, passed 18 Java custom regressions and all 14 app tests,
 syntax checks and development build. Full suite remains 538 tests, one known

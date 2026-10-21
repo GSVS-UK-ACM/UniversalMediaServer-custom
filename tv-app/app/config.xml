@@ -10,5 +10,5 @@
   <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice" />
   <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable" />
   <tizen:metadata key="http://samsung.com/tv/metadata/screen.size" value="normal" />
-  <tizen:content-security-policy>default-src 'self'; script-src 'self' $WEBAPIS; style-src 'self'; connect-src http: https:; img-src 'self' http: https: data:; media-src http: https: blob:; object-src 'self'</tizen:content-security-policy>
+  <tizen:content-security-policy>default-src 'self'; script-src 'self' $WEBAPIS; style-src 'self'; connect-src 'self' http: https:; img-src 'self' http: https: data:; media-src http: https: blob:; object-src 'self'</tizen:content-security-policy>
 </widget>
