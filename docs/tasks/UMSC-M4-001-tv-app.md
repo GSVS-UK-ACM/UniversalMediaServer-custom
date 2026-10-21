@@ -66,3 +66,39 @@ Actual addresses/titles are kept out of this portable report.
 Official baseline SDK docs now deprecate the old Eclipse Tizen Studio IDE.
 Use the current CLI installer, TV extension and Samsung certificate tooling:
 https://github.com/Samsung/tizen-docs/blob/master/docs/sdk-tools/baseline-sdk/setup/install-sdk.md
+
+## Verification and private branding
+
+Self-hosted run `39648265328`, job `119389492166`, commit `7bd319bd8` passed
+the app's 13 tests, syntax checks and development build using Node 22. The
+existing full Java suite retains only the known Jetty timeout failure (538
+tests, one failure, zero errors, eight skips). Always-run cleanup passed.
+No hosted-compute fallback was used.
+The current generic-branding build adds a fourteenth contract for late native
+events after a stream is stopped. The run above predates that extra test.
+
+Installed Chrome workstation checks passed fixture navigation, player entry,
+Back and search. Read-only live UMS rendering also passed. The downloaded
+Playwright Chromium could not launch (`spawn UNKNOWN`); using installed Chrome
+resolved that environment issue. A browser-test wait incorrectly expected a
+hidden player to be visible; it was corrected to assert `state: hidden`.
+Neither browser check proves Samsung native decoding or physical D-pad use.
+
+Owner requested a personal app label and their original Spidey launcher icon,
+with generic Git naming. The public component is **UMS TV Client**. Private
+ignored build configuration supplies the installed label and PNG. Packaged icon
+bytes were compared to the supplied private original and match. Personal names,
+LAN settings, icon paths and character artwork are not committed.
+
+Official Tizen SDK 10 CLI installer downloaded from Samsung-linked
+`download.tizen.org`, SHA-256
+`AD373548A261B4383B6F74D4A74EB853B439C726CECA331A451D89081B7F7920`.
+It has no Authenticode signature. It was opened after explicit owner approval
+to display its licence/setup UI. No licence was accepted by the agent. Samsung
+certificate setup and TV connection remain pending. TV is online on its remote
+information port but actively refused developer SDB port 26101 at the latest
+check. Owner is cold-rebooting it; no device install is claimed.
+
+Projects Hub checkpoint: the canonical UMS fork remains registered as a
+source-only project. This local development build is not a public app release
+and does not require a second Hub entry.

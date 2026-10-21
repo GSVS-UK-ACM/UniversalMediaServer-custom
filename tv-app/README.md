@@ -1,4 +1,4 @@
-# Kids TV for Samsung
+# UMS TV Client for Samsung
 
 A small Tizen 5.5 web app for the custom UMS fork. It draws its own artwork
 shelves and category browsing rather than relying on the TV's DLNA folder icons.
@@ -27,6 +27,10 @@ Optionally create ignored `connection.local.json` before building:
 
 The server UUID is in the UMS profile. Keep actual LAN addresses and identities
 out of Git. The connection screen is also available inside the app.
+Optional private `displayName` and `iconFile` settings customise the installed
+app name and PNG launcher artwork. `iconFile` is a build-time filesystem path,
+not exported in the runtime connection JSON. Keep family names and private
+artwork in ignored local configuration, not public source or release notes.
 Choose a collection and select **Use this collection as Home** to make the app
 open there next time. Home loads previews for at most six direct collections.
 Search uses UMS's existing subtree search; it does not scan or alter media.

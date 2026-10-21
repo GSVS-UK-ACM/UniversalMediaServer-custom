@@ -42,6 +42,20 @@ Source compiles and all 18 focused Java regressions pass on workstation JDK
 missing files, corrupt images, dimensions, MIME mismatch and oversized files.
 A Samsung metadata test verifies one JPEG_SM album-art URI. No live change or
 restart performed. Self-hosted verification is the next checkpoint.
+
+### Superseding verification
+
+Self-hosted run `39648265328`, job `119389492166`, commit `7bd319bd8` passed
+all 18 focused Java tests. Full suite: 538 tests, one already reproduced baseline
+Jetty timeout failure, zero errors, eight skips. Final cleanup passed.
+
+Package `ums-15.9.0-tv-branding.jar` was built separately with
+`mvn --batch-mode -P testing -DskipTests -Doffline package` after the tests.
+SHA-256: `C9B7B2C22D7C9B8BE02AF18639D8094496E0CB64DF9FB0450D032D8653C763F7`.
+An isolated cloned-profile Windows process served all seven advertised PNG/JPEG
+discovery icons with HTTP 200 and bytes identical to the private originals.
+The isolated process was stopped afterwards. Live UMS stayed running unchanged.
+TV folder display acceptance and live branding deployment remain outstanding.
 Owner now requests a small Samsung TV app installable by USB, with rich rows,
 categories and search as the intended direction. Official Samsung documentation
 states ordinary WGT packages cannot be installed by USB. USB demo delivery uses

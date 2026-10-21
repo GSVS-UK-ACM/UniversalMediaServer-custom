@@ -52,10 +52,14 @@ let server, browser;
     await page.locator('.tile').first().click();
     await page.getByRole('heading', { name: 'Adventure collection', exact: true }).waitFor();
     await page.locator('.tile').first().click(); await page.locator('#playback:not(.hidden)').waitFor();
-    await page.keyboard.press('Escape'); await page.locator('#playback.hidden').waitFor();
+    await page.keyboard.press('Escape'); await page.locator('#playback').waitFor({ state: 'hidden' });
     await page.locator('#search').click(); await page.locator('#query').fill('adventure'); await page.locator('#do-search').click();
     await page.getByRole('heading', { name: 'Found in your library' }).waitFor();
   }
+  await page.waitForFunction(() => Array.from(document.images).filter(image => {
+    const rect = image.getBoundingClientRect();
+    return rect.top < innerHeight && rect.left < innerWidth && rect.bottom > 0 && rect.right > 0;
+  }).every(image => image.complete), null, { timeout: 15000 });
   fs.mkdirSync(path.resolve(__dirname, '../test-results'), { recursive: true });
   await page.screenshot({ path: path.resolve(__dirname, '../test-results/preview.png') });
   assert.deepEqual(errors, []);

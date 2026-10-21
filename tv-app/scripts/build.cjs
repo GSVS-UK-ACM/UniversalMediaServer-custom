@@ -13,7 +13,13 @@ if (config.descriptionUrl) {
   const url = new URL(config.descriptionUrl);
   if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error('Invalid private connection URL');
 }
-fs.writeFileSync(path.join(out, 'connection.json'), JSON.stringify(config));
+const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder };
+fs.writeFileSync(path.join(out, 'connection.json'), JSON.stringify(runtimeConfig));
+if (config.displayName) {
+  const escaped = String(config.displayName).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c]));
+  const manifestPath = path.join(out, 'config.xml');
+  fs.writeFileSync(manifestPath, fs.readFileSync(manifestPath, 'utf8').replace('<name>UMS TV Client</name>', '<name>' + escaped + '</name>'));
+}
 // Provide a deterministic, code-generated PNG icon without copying private
 // character artwork into the source repository or public application package.
 const zlib = require('node:zlib');
@@ -27,4 +33,9 @@ for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
 }
 const header = Buffer.alloc(13); header.writeUInt32BE(size, 0); header.writeUInt32BE(size, 4); header[8] = 8; header[9] = 2;
 fs.writeFileSync(path.join(out, 'icon.png'), Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', header), chunk('IDAT', zlib.deflateSync(scan)), chunk('IEND', Buffer.alloc(0))]));
+if (config.iconFile) {
+  const artwork = fs.readFileSync(path.resolve(root, config.iconFile));
+  if (artwork.length > 1024 * 1024 || !artwork.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) throw new Error('Private app icon must be a PNG smaller than 1 MiB');
+  fs.writeFileSync(path.join(out, 'icon.png'), artwork);
+}
 console.log('Built TV web app in tv-app/dist. This is not signed or installed.');

@@ -59,5 +59,6 @@ test('search calls the subtree action without crawling folders', async () => {
 test('progress is finite, watched starts at 95%, and renderer URL is not its identity', () => {
   assert.equal(C.progress(94, 100).watched, false); assert.equal(C.progress(95, 100).watched, true);
   assert.equal(C.progress(-10, 0).position, 0);
+  assert.equal(C.progress(Infinity, NaN).position, 0);
   assert.equal(C.progressKey(base, { parentId: '8', title: 'Movie', url: '/renderer-1' }), C.progressKey(base, { parentId: '8', title: 'Movie', url: '/renderer-2' }));
 });

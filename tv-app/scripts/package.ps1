@@ -18,6 +18,6 @@ Get-FileHash -LiteralPath $package.FullName -Algorithm SHA256
 if ($Target) {
     & $TizenCli install -n $package.Name -t $Target -- $dist
     if ($LASTEXITCODE -ne 0) { throw 'TV installation failed. Check Developer Mode and permit-to-install.' }
-    & $TizenCli run -p GSVSKidsTV.KidsTV -t $Target
-    if ($LASTEXITCODE -ne 0) { throw 'Installed, but launching Kids TV failed.' }
+    & $TizenCli run -p GSVSUMSTVC.TVClient -t $Target
+    if ($LASTEXITCODE -ne 0) { throw 'Installed, but launching UMS TV Client failed.' }
 }

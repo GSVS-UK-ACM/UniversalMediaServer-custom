@@ -61,7 +61,8 @@ UMSC-M3-001 and still needs its own scoped milestone.
 - Goal: Restore private Spidey branding without future jar updates removing it;
   test Samsung single-JPEG/versioned-ID folder artwork compatibility.
 - Evidence: `docs/tasks/UMSC-M3-002-samsung-artwork.md`.
-- Delivery: source edits only, not yet tested or installed. No folder flattening.
+- Delivery: 18 focused Java tests pass on Windows and Linux. Isolated HTTP checks
+  verify all seven private server icons. Not installed. No folder flattening.
 
 ## M4: Samsung Kids TV app
 
@@ -71,5 +72,6 @@ UMSC-M3-001 and still needs its own scoped milestone.
 - Goal: A small installable Tizen app with artwork shelves, categories, search,
   native playback and TV-local progress. Network install is owner-authorised.
 - Evidence: `docs/tasks/UMSC-M4-001-tv-app.md` and `tv-app/README.md`.
-- Delivery: development build and initial contract tests pass locally. Signing,
-  self-hosted verification and physical TV acceptance remain separate steps.
+- Delivery: development build and 13 contracts pass locally and on the Linux
+  runner; workstation fixture and live UMS browser rendering pass. SDK licence,
+  Samsung signing certificate and TV developer connection are still pending.

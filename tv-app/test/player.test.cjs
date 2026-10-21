@@ -22,3 +22,9 @@ test('seek clamps to timeline and play/pause is reversible', () => {
 test('failed preparation is actionable instead of silently closing', () => {
   const f = fixture(); f.player.open('http://server/movie', 0); f.native.fail('NOT_SUPPORTED'); assert.ok(f.calls.some(x => x[0] === 'error' && x[1].includes('NOT_SUPPORTED')));
 });
+test('late native events from a stopped stream cannot corrupt the next stream', () => {
+  const f = fixture(); let ticks = 0; f.callbacks.time = () => ticks++;
+  f.player.open('http://server/first', 0); const previous = f.native.listener;
+  f.player.open('http://server/second', 0); previous.oncurrentplaytime(99000); previous.onerror('OLD_STREAM');
+  assert.equal(ticks, 0); assert.equal(f.calls.some(x => x[0] === 'error'), false);
+});

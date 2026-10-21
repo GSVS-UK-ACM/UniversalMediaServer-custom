@@ -137,7 +137,7 @@
     else if (!$('setup').classList.contains('hidden')) hideSetup();
     else if (!$('search-panel').classList.contains('hidden')) { $('search-panel').classList.add('hidden'); $('search').focus(); }
     else if (history.length) openFolder(history.pop(), false);
-    else if (window.tizen && window.confirm('Exit Kids TV?')) window.tizen.application.getCurrentApplication().exit();
+    else if (window.tizen && window.confirm('Exit ' + document.title + '?')) window.tizen.application.getCurrentApplication().exit();
   }
   function moveFocus(direction) {
     var focused = document.activeElement, rect = focused.getBoundingClientRect(), x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
@@ -172,7 +172,11 @@
   document.addEventListener('keydown', function (event) {
     var code = event.keyCode;
     if (code === 10009 || code === 27 || (code === 8 && document.activeElement.tagName !== 'INPUT')) { event.preventDefault(); back(); return; }
-    if (document.activeElement.tagName === 'INPUT') { if (code === 13) { event.preventDefault(); if (document.activeElement.id === 'query') search(); else connect($('server-url').value.trim()); } return; }
+    if (document.activeElement.tagName === 'INPUT') {
+      if (code === 13 || code === 65376) { event.preventDefault(); if (document.activeElement.id === 'query') search(); else connect($('server-url').value.trim()); }
+      else if (code === 40) { event.preventDefault(); moveFocus('down'); }
+      return;
+    }
     if (activeItem) {
       if (code === 13 || code === 10252 || code === 415 || code === 19 || code === 32) { event.preventDefault(); player.toggle(); showHud(); }
       else if (code === 37 || code === 412) { event.preventDefault(); player.seek(-30); showHud(); }
@@ -185,6 +189,7 @@
   if (window.tizen && window.tizen.tvinputdevice) ['MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop', 'MediaFastForward', 'MediaRewind'].forEach(function (name) { try { window.tizen.tvinputdevice.registerKey(name); } catch (e) {} });
   request('connection.json', {}).then(function (text) {
     var config = JSON.parse(text); defaultHome = config.homeFolder;
+    if (config.displayName) { document.title = config.displayName; $('brand-name').textContent = config.displayName; }
     if (connection || config.descriptionUrl) connect(connection || config.descriptionUrl); else showSetup();
   }).catch(function () { if (connection) connect(connection); else showSetup(); });
 }());

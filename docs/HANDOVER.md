@@ -44,14 +44,25 @@ App source and development build exist, with 13 passing Node contract tests.
 Live UMS client browsing returned the root and kids library with artwork, and
 subtree search returned matching titles. No live server restart was required.
 18 Java regressions also pass on workstation JDK 21 compiling for Java 17.
-Official Tizen CLI 10 SDK download is in progress. Signing requires a Samsung
-certificate for the TV, not a generic unsigned WGT. No installation is claimed.
-Owner is enabling TV Developer Mode. Its dialog requested a proper reboot.
+Self-hosted run `39648265328` passed 18 Java custom tests and the app's 13 tests
+and build. Full suite: 538 tests, only the previously reproduced Jetty timeout
+failure, no errors, eight skips. Final cleanup passed.
+Official Tizen CLI 10 installer is downloaded and open, with explicit owner
+approval. Licence acceptance and Samsung certificate setup need owner input.
+Signing requires a Samsung certificate for the TV, not an unsigned WGT.
+Owner is enabling TV Developer Mode. TV is online but developer port 26101
+refused connections at the latest check. No TV installation is claimed.
+Generic public app name: UMS TV Client. Owner-specific label and Spidey launcher
+icon are configured only in ignored private build settings.
 Do not flatten folders: the owner's conditional answer is a product discussion,
 not approval for changing the existing DLNA layout.
 
-Next: finish self-hosted checks and browser UI checks, then sign/install with
-official SDK after licence/account interaction and TV connection. Private app
+Workstation fixture browser navigation/player/Back/search and live UMS rendering
+passed using installed Chrome. All seven server discovery icons passed HTTP
+byte comparisons in an isolated Windows instance, which has since been stopped.
+
+Next: finish SDK setup after owner licence/account interaction, connect to the
+rebooted TV, sign and install, then verify actual playback/audio/seek. Private app
 connection settings and original Spidey images stay out of Git. M3-002 remains
 uninstalled and requires a separate UMS shutdown confirmation before deployment.
 
