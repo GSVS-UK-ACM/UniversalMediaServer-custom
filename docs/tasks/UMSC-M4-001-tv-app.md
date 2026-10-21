@@ -142,3 +142,12 @@ Samsung login and `UMSTV` profile creation. Public distributor privileges and
 the connected TV's DUID are sufficient for this app. Passwords, account details
 and certificates must stay private. Owner profile creation is pending; no
 certificate issuance, signed WGT, device install or native playback is claimed.
+
+### Superseding installation checkpoint
+
+Owner confirmed `UMSTV` profile creation. CLI listing verified it was active.
+Signed packaging and the actual television installation succeeded. Details,
+package identity, safe-filename workaround and exact acceptance boundary are
+recorded once in `docs/releases/UMSC-M4-001-tv.md`. The TV became unreachable
+before remote launch completed, so physical UI/native playback still need
+owner verification. No UMS server restart or live configuration change occurred.

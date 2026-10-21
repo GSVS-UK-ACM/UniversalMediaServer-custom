@@ -53,10 +53,17 @@ Search uses UMS's existing subtree search; it does not scan or alter media.
 ./scripts/package.ps1 -TizenCli 'PATH/TO/tizen.bat' -CertificateProfile 'PROFILE' -Target 'TV_TARGET_NAME'
 ```
 
-Without `-Target`, this only signs a package. The SDK is responsible for signing
+With neither `-Target` nor `-Serial`, this only signs a package. The SDK is responsible for signing
 and deployment; an unsigned ZIP is not an installable TV app. No USB workaround
 or certificate bypass is used. Uninstall through the TV's Apps menu. Uninstall
 deletes TV-local resume/home state, not the UMS library.
+
+Use `-Serial 'TV_ADDRESS:26101'` instead of `-Target` to select a connected SDB
+device directly. With neither option the script only builds and signs. The
+helper builds through the official SDK, then copies the signed output to the
+shell-safe transport filename `UMSTVClient.wgt`. This does not change the app's
+displayed name or signature. Device deployment must never use a private label
+containing spaces or shell metacharacters as its transport filename.
 
 ## Controls and limits
 

@@ -72,6 +72,7 @@ UMSC-M3-001 and still needs its own scoped milestone.
 - Goal: A small installable Tizen app with artwork shelves, categories, search,
   native playback and TV-local progress. Network install is owner-authorised.
 - Evidence: `docs/tasks/UMSC-M4-001-tv-app.md` and `tv-app/README.md`.
-- Delivery: development build and 13 contracts pass locally and on the Linux
-  runner; workstation fixture and live UMS browser rendering pass. SDK licence,
-  Samsung signing certificate and TV developer connection are still pending.
+- Delivery: source app, 15 contracts, browser checks and official SDK build
+  pass. Owner signing profile is created and private app installation succeeded
+  on the actual TV. Remote launch lost the target afterwards. Owner UI/native
+  playback acceptance remains pending. See `docs/releases/UMSC-M4-001-tv.md`.
