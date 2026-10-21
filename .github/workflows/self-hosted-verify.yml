@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - 'feature/**'
+    paths:
+      - '.github/workflows/self-hosted-verify.yml'
+      - 'pom.xml'
+      - 'react-client/**'
+      - 'scripts/ci/**'
+      - 'src/**'
 
 permissions:
   contents: read

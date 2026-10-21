@@ -59,8 +59,11 @@ not a source or test failure.
 
 The fork currently reports zero registered self-hosted runners. A dedicated
 owner-only workflow, cleanup script and registration runbook are included. The
-exact pushed commit, run URL, job ID, runner identity, labels and final cleanup
-result remain required before this task can be marked done.
+source implementation was pushed as
+`5d745afc75775ff3b16d1af1eb0a4e26dfe80fe2`. Linux run `39593844565`, job
+`119201179593`, queued successfully against that exact commit. Runner identity,
+labels, result and final cleanup evidence remain required before this task can
+be marked done.
 
 ## Delivery boundary
 

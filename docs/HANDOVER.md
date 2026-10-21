@@ -13,8 +13,8 @@ covered by five focused tests and an owner-triggered self-hosted Linux workflow.
 
 - Source implementation: complete
 - Workstation verification: all 12 focused custom-fork tests pass
-- Linux runner verification: waiting for the new `ums-custom-ci` runner route
-- Pushed: not yet
+- Linux runner verification: queued, waiting for the new `ums-custom-ci` runner
+- Pushed: implementation commit `5d745afc75775ff3b16d1af1eb0a4e26dfe80fe2`
 - Merged: no
 - Packaged or installed: no
 
