@@ -60,10 +60,12 @@ not a source or test failure.
 The fork currently reports zero registered self-hosted runners. A dedicated
 owner-only workflow, cleanup script and registration runbook are included. The
 source implementation was pushed as
-`5d745afc75775ff3b16d1af1eb0a4e26dfe80fe2`. Linux run `39593844565`, job
-`119201179593`, queued successfully against that exact commit. Runner identity,
-labels, result and final cleanup evidence remain required before this task can
-be marked done.
+`5d745afc75775ff3b16d1af1eb0a4e26dfe80fe2`. The verification and evidence
+head is `5504b45a8b224a01289a52f390bab151211bc10a`. Linux run `39594077028`, job
+`119202005136`, is queued against that head. The earlier source-only run
+`39593844565` was cancelled after the verification head superseded it, avoiding
+two full jobs on the same runner. Runner identity, labels, result and final
+cleanup evidence remain required before this task can be marked done.
 
 ## Delivery boundary
 
