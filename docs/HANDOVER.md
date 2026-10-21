@@ -1,6 +1,6 @@
 # Handover
 
-## Current checkpoint: 21 October 2026
+## Current checkpoint: TV app 21 October, Windows service 22 October 2026
 
 The UMS fork and **UMS TV Client** share this repository. Continue on
 `feature/umsc-m3-001-folder-thumbnails`; source/tooling checkpoint is
@@ -16,6 +16,14 @@ Next product work is **UMSC-M5-001**, agreeing a library layout and repeatable
 addition/tagging/grouping rules, followed by **UMSC-M5-002**, app polish based on
 that agreed contract. Both are PLANNED in [BACKLOG.md](BACKLOG.md). No media
 reorganisation, migration, scan or deployment is authorised by this checkpoint.
+
+Owner subsequently authorised UMSC-M1-003, moving the existing build to Windows
+service startup. That migration is installed and running under LocalService in
+session zero with delayed automatic startup. Settings and library are unchanged;
+both UMS login shortcuts are recoverably disabled. Manage it through Windows
+Services and the existing web settings, not a second desktop UMS process.
+Cold-boot/login-screen acceptance still needs the owner. See the
+[service task/recovery record](tasks/UMSC-M1-003-windows-service.md).
 
 ## Delivery and outstanding work
 

@@ -24,6 +24,23 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
   and feature workflow `39638146430`. The LAN produces `SocketException`
   rather than the expected `SocketTimeoutException`.
 
+### UMSC-M1-003: Run the existing custom build before Windows login
+
+- Status: VERIFYING
+- Goal: Use UMS's bundled Windows service wrapper to start the current custom
+  jar and existing profile without an interactive login.
+- Acceptance: Automatic service startup, explicit existing profile, preserved
+  jar/settings/library identity, session-zero read-only browse/media checks,
+  recoverable removal of duplicate login startup and documented recovery.
+- Boundary: Owner authorised the service migration. No build upgrade, library
+  reorganisation, database reset or PC reboot is included.
+- Evidence: `docs/tasks/UMSC-M1-003-windows-service.md`.
+- Delivery: Built-in LocalService service is running with delayed automatic
+  startup. Session-zero browse, artwork and direct-file HTTP 206 checks pass;
+  jar, main settings, shares and renderer modes/profiles are preserved. Both
+  login shortcuts were recoverably disabled. Cold-boot/login-screen acceptance
+  remains pending with the owner; no reboot was performed.
+
 ## M3: Child-friendly library browsing
 
 ### UMSC-M3-001: Inherit film artwork for real folders
