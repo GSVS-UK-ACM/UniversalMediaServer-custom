@@ -1,0 +1,53 @@
+name: Self-hosted Linux verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'feature/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ums-custom-self-hosted
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.actor == github.repository_owner
+    name: Linux Java verification
+    runs-on: [self-hosted, Linux, X64, ums-custom-ci]
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact requested commit
+        uses: actions/checkout@v7
+        with:
+          clean: true
+          persist-credentials: false
+
+      - name: Prepare persistent workspace
+        run: bash scripts/ci/clean-self-hosted-runner.sh
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: 17
+          cache: maven
+
+      - name: Record toolchain
+        run: |
+          java -version
+          mvn -version
+          git rev-parse HEAD
+
+      - name: Run Linux verification
+        run: mvn --batch-mode verify -P testing -DdisableXmlReport=true
+
+      - name: Check patch whitespace
+        run: git diff --check
+
+      - name: Clean persistent workspace
+        if: always()
+        run: bash scripts/ci/clean-self-hosted-runner.sh

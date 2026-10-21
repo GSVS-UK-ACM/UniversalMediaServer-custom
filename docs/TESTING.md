@@ -1,0 +1,35 @@
+# Testing
+
+## Workstation checks
+
+Use Maven 3.8.6 or newer with Java 17. The focused folder-art check is:
+
+```powershell
+mvn -Dtest=RealFolderThumbnailTest test
+```
+
+Also run `git diff --check`. Windows runtime acceptance is separate from source
+or unit-test verification.
+
+## GSVS Linux runner
+
+Compatible automated checks run through `.github/workflows/self-hosted-verify.yml`
+on the private GSVS Linux box. The dedicated runner labels are:
+
+- `self-hosted`
+- `Linux`
+- `X64`
+- `ums-custom-ci`
+
+The workflow is owner-only because this is a public repository. It runs for an
+owner push to `feature/**` and can also be dispatched manually after the
+workflow reaches the default branch. It must not gain a `pull_request` trigger
+while using a private self-hosted runner. The runner is persistent and handles
+one UMS job at a time. Preparation and always-run cleanup remove only known
+generated paths inside the verified GitHub workspace.
+
+The host must already provide Git, Java 17, Maven, `libmms0`, `libzen`, and
+`libmediainfo`. Ordinary jobs must not use `sudo` or alter host packages.
+
+See `docs/runbooks/SELF_HOSTED_CI.md` for registration, dispatch, cleanup and
+recovery.

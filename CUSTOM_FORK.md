@@ -1,5 +1,12 @@
 # UMS custom fork
 
+## Child-friendly folder artwork
+
+When a real folder has no artwork of its own, this fork uses real artwork from
+the alphabetically first video directly inside it. Explicit folder artwork
+still wins, nested folders are not searched, and generic video icons are not
+reused as folder artwork.
+
 This fork adds a per-device playback-mode selector to each renderer card in the
 desktop Status tab. The selector changes playback policy without replacing the
 device's renderer profile.

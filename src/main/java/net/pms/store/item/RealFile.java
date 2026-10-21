@@ -264,10 +264,27 @@ public class RealFile extends StoreItem implements SystemFileResource {
 
 	@Override
 	public DLNAThumbnailInputStream getThumbnailInputStream() throws IOException {
+		DLNAThumbnailInputStream result = getMediaThumbnailInputStream();
+		return result != null ? result : super.getThumbnailInputStream();
+	}
+
+	/**
+	 * Returns artwork that belongs to this media file without substituting a
+	 * generic format icon. Containers can use this when they need a real child
+	 * thumbnail as a fallback without accidentally displaying a video-file icon
+	 * as folder artwork.
+	 *
+	 * @return local, embedded or generated artwork, or {@code null} when none is
+	 *         available
+	 * @throws IOException if reading the artwork fails
+	 */
+	public DLNAThumbnailInputStream getMediaThumbnailInputStream() throws IOException {
 		File cachedThumbnail = null;
 		MediaType mediaType = getMediaInfo() != null ? getMediaInfo().getMediaType() : MediaType.UNKNOWN;
+		boolean isAudioOrVideo = mediaType == MediaType.AUDIO || mediaType == MediaType.VIDEO ||
+			getType() == Format.AUDIO || getType() == Format.VIDEO;
 
-		if (mediaType == MediaType.AUDIO || mediaType == MediaType.VIDEO) {
+		if (isAudioOrVideo) {
 			String alternativeFolder = renderer.getUmsConfiguration().getAlternateThumbFolder();
 			ArrayList<File> folders = new ArrayList<>(2);
 			if (file.getParentFile() != null) {
@@ -289,7 +306,7 @@ public class RealFile extends StoreItem implements SystemFileResource {
 					break;
 				}
 			}
-			if (cachedThumbnail == null && (mediaType == MediaType.AUDIO || mediaType == MediaType.VIDEO) && getParent() instanceof VirtualFolder virtualFolder) {
+			if (cachedThumbnail == null && getParent() instanceof VirtualFolder virtualFolder) {
 				cachedThumbnail = virtualFolder.getPotentialCover();
 			}
 		}
@@ -303,10 +320,10 @@ public class RealFile extends StoreItem implements SystemFileResource {
 				result = getMediaInfo().getThumbnailInputStream();
 			}
 		} catch (IOException e) {
-			LOGGER.debug("An error occurred while getting thumbnail for \"{}\", using generic thumbnail instead: {}", getName(), e.getMessage());
+			LOGGER.debug("An error occurred while getting media thumbnail for \"{}\", using its configured fallback instead: {}", getName(), e.getMessage());
 			LOGGER.trace("", e);
 		}
-		return result != null ? result : super.getThumbnailInputStream();
+		return result;
 	}
 
 	@Override

@@ -20,11 +20,17 @@ import com.sun.jna.Platform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Locale;
 import net.pms.dlna.DLNAThumbnailInputStream;
+import net.pms.formats.Format;
+import net.pms.formats.FormatFactory;
 import net.pms.platform.PlatformUtils;
 import net.pms.renderers.Renderer;
 import net.pms.store.SystemFileResource;
 import net.pms.store.SystemFilesHelper;
+import net.pms.store.item.RealFile;
 import net.pms.util.ProcessUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +85,78 @@ public class RealFolder extends VirtualFolder implements SystemFileResource {
 				result = getMediaInfo().getThumbnailInputStream();
 			}
 		} catch (IOException e) {
-			LOGGER.debug("An error occurred while getting thumbnail for \"{}\", using generic thumbnail instead: {}", getName(), e.getMessage());
+			LOGGER.debug("An error occurred while getting explicit thumbnail for folder \"{}\": {}", getName(), e.getMessage());
 			LOGGER.trace("", e);
 		}
+		if (result == null) {
+			result = getDirectChildVideoThumbnailInputStream();
+		}
 		return result != null ? result : super.getThumbnailInputStream();
+	}
+
+	/**
+	 * Uses the first direct video child's real artwork when this folder has no
+	 * artwork of its own. This deliberately inspects one filesystem level only:
+	 * nested folders must choose their own preview and an empty parent must keep
+	 * the normal generic folder icon.
+	 */
+	private DLNAThumbnailInputStream getDirectChildVideoThumbnailInputStream() {
+		File[] childVideos;
+		try {
+			childVideos = directory.listFiles(file -> {
+				if (!file.isFile() || file.isHidden() || !file.canRead()) {
+					return false;
+				}
+				Format format = FormatFactory.getAssociatedFormat(file.getAbsolutePath());
+				return format != null && format.isVideo();
+			});
+		} catch (SecurityException e) {
+			LOGGER.debug("Unable to inspect direct children of folder \"{}\": {}", getName(), e.getMessage());
+			LOGGER.trace("", e);
+			return null;
+		}
+		if (childVideos == null || childVideos.length == 0) {
+			return null;
+		}
+
+		Arrays.sort(childVideos, Comparator
+			.comparing((File file) -> file.getName().toLowerCase(Locale.ROOT))
+			.thenComparing(File::getName));
+
+		for (File childVideo : childVideos) {
+			RealFile thumbnailSource = new RealFile(renderer, childVideo);
+			try {
+				if (!thumbnailSource.isValid() || thumbnailSource.getType() != Format.VIDEO) {
+					continue;
+				}
+				thumbnailSource.setParent(this);
+
+				// Sidecar artwork can be returned without parsing the media file.
+				DLNAThumbnailInputStream result = thumbnailSource.getMediaThumbnailInputStream();
+				if (result != null) {
+					return result;
+				}
+
+				// Reuse the media database entry, or generate a frame thumbnail if the
+				// renderer configuration permits it. The resulting thumbnail is cached
+				// by UMS in the same way as a normal video thumbnail.
+				thumbnailSource.resolve();
+				thumbnailSource.checkThumbnail();
+				result = thumbnailSource.getMediaThumbnailInputStream();
+				if (result != null) {
+					return result;
+				}
+			} catch (IOException | RuntimeException e) {
+				LOGGER.debug(
+					"Unable to use direct child \"{}\" as thumbnail for folder \"{}\": {}",
+					childVideo.getName(),
+					getName(),
+					e.getMessage()
+				);
+				LOGGER.trace("", e);
+			}
+		}
+		return null;
 	}
 
 	@Override
