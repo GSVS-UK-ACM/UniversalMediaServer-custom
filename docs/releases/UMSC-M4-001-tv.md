@@ -85,3 +85,9 @@ Hub update was pushed to `main` at
 exactly one canonical project entry. No Android rebuild or viewer refresh was
 performed. This checkpoint follows the GSVS continuity workflow: short current
 handover, stable future task IDs, detailed acceptance evidence here.
+
+The owner confirmed one consolidated repository and Hub entry for both
+components. Hub commit `34724fe65db3462de378aee77a2603a5380fa537` is pushed on
+`main` and expands the same row with server/app functionality, pending native
+acceptance and deferred library/polish work. Canonical-row and table-cell
+checks plus `git diff --check` passed; the Hub working tree is clean.
