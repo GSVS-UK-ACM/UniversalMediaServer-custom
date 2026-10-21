@@ -54,3 +54,34 @@ update. No live UMS jar/profile was changed in this TV deployment.
 Delivery: privately packaged and installed, not merged or publicly released.
 The existing source-only Projects Hub entry remains appropriate. No public
 binary, private branding, certificate or device identifier was published.
+
+## Owner acceptance and saved checkpoint, 21 October 2026
+
+The owner subsequently opened the installed app manually, confirmed its visual
+appearance and reported that starting UMS populated the library perfectly.
+The initial disconnected view occurred while UMS was stopped. Launch and
+populated browsing are now owner-observed. Native video/audio, seek, persisted
+resume/watched and full physical remote behaviour remain unverified.
+
+Latest source/tooling run [39685477408](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/39685477408)
+at `d1c86e08af87db126ca79127d25b462208185ca3` passed the custom Java regression
+and TV check/build steps on the existing self-hosted runner. Full Java suite
+still reports 538 tests, the same single Jetty timeout assertion, zero errors
+and eight skips; final cleanup passed. No tests were rerun for this docs-only
+checkpoint. Workstation `git diff --check` is the proportional patch check.
+
+The owner requested a saved/pushed handover and project-manager entry before
+finishing the remaining DVD rips. Backlog M5 records library/intake rules first,
+then app polish. No library changes or further deployment occurred.
+
+Hub checkpoint: one canonical source-project row covers the UMS fork and its
+TV app, with direct app, feature-branch handover and backlog links. GitHub API
+checks on 21 October confirm a public repository, disabled issues and zero open
+PRs. The old zero-issue badge is corrected to disabled. This is a README-only
+catalogue change, not a public package release or Android device acceptance.
+
+Hub update was pushed to `main` at
+`38887d8333fac720d8aef6d213149c995eea9562`. The row has four table cells and
+exactly one canonical project entry. No Android rebuild or viewer refresh was
+performed. This checkpoint follows the GSVS continuity workflow: short current
+handover, stable future task IDs, detailed acceptance evidence here.

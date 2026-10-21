@@ -1,6 +1,6 @@
-# UMSC-M4-001: Kids TV Samsung frontend
+# UMSC-M4-001: Samsung TV frontend
 
-- Status: IN_PROGRESS
+- Status: VERIFYING
 - Owner: Codex, authorised by repository owner on 21 October 2026.
 - Branch: `feature/umsc-m3-001-folder-thumbnails`
 - Baseline: `9aa187e9f`, with UMSC-M3-002 source work retained separately.
@@ -151,3 +151,15 @@ package identity, safe-filename workaround and exact acceptance boundary are
 recorded once in `docs/releases/UMSC-M4-001-tv.md`. The TV became unreachable
 before remote launch completed, so physical UI/native playback still need
 owner verification. No UMS server restart or live configuration change occurred.
+
+### Owner-observed checkpoint, 21 October 2026
+
+The owner manually opened the installed app and confirmed it looks good. It was
+initially disconnected while UMS was stopped. Starting UMS populated the
+library successfully without another reported setup step. This supersedes the
+earlier unverified launch/UI state, but is not evidence of native playback,
+audio, seek, persisted resume/watched or full physical remote acceptance.
+
+The owner will finish roughly 100 more DVD rips before library design and app
+polish. UMSC-M5-001 and UMSC-M5-002 in the backlog track those deferred phases.
+Keep the current working installation and media untouched meanwhile.

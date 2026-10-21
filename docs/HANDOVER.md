@@ -1,85 +1,62 @@
 # Handover
 
-## Current task
+## Current checkpoint: 21 October 2026
 
-UMSC-M3-001 is verifying on `feature/umsc-m3-001-folder-thumbnails`.
-UMSC-M3-002 is the compatibility/branding follow-up, see its task report.
-UMSC-M4-001 adds the Samsung TV frontend in `tv-app/`.
+The UMS fork and **UMS TV Client** share this repository. Continue on
+`feature/umsc-m3-001-folder-thumbnails`; source/tooling checkpoint is
+`d1c86e08af87db126ca79127d25b462208185ca3` before this documentation update.
 
-The implementation preserves explicit folder artwork, then falls back to real
-artwork from the alphabetically first direct video file. It does not recurse
-into nested folders and does not borrow generic video icons. The behaviour is
-covered by five focused tests and an owner-triggered self-hosted Linux workflow.
+The owner confirmed the installed TV app opens, looks good and populates the
+library after UMS starts. Initial disconnection was observed while UMS was not
+running. Native video/audio, seek, persisted resume/watched and physical remote
+acceptance still need explicit checks. Do not infer them from browsing success.
 
-## Current delivery state
+The owner is finishing roughly 100 more DVD rips. Leave the working setup alone.
+Next product work is **UMSC-M5-001**, agreeing a library layout and repeatable
+addition/tagging/grouping rules, followed by **UMSC-M5-002**, app polish based on
+that agreed contract. Both are PLANNED in [BACKLOG.md](BACKLOG.md). No media
+reorganisation, migration, scan or deployment is authorised by this checkpoint.
 
-- Source implementation: complete
-- Workstation verification: all 12 focused custom-fork tests pass
-- Linux runner: UMSC-M1-001 complete. Runner `gsvs-ums-custom` is online, idle
-  and managed by an enabled user service with lingering.
-- Linux verification: run `39638146430` at `a10969834` passed the separate
-  12-test custom-fork step. Full suite: 532 tests, one reproduced baseline
-  timeout failure, no errors, eight skips. Final cleanup passed.
-- Runtime verification: isolated Windows startup, browsing, identical film and
-  folder artwork, and HTTP 206 byte-range delivery passed.
-- Pushed: source feature `5d745afc7`; runner and installation staging
-  `a10969834`.
-- Projects Hub: registered and pushed at Hub commit `b7cd71c`
-- Merged: no
-- Packaged: `ums-15.9.0-folder-artwork.jar`, see release record.
-- Installed: yes, on 21 October 2026 after explicit owner shutdown confirmation.
-  Installed jar hash matches the verified package. Live browsing, matching
-  film/folder artwork and VLC direct-file HTTP 206 delivery passed.
+## Delivery and outstanding work
 
-Owner acceptance: Android VLC shows direct-film folder artwork. Samsung TV
-does not show folder artwork, and both clients lost the Spidey discovery icon.
-The previous jar comparison used a baseline that already lacked custom icons.
-Private original artwork remains available. UMSC-M3-002 stages an external
-profile icon loader and Samsung JPEG_SM/versioned-ID compatibility settings.
-The live server has not been changed by this follow-up.
+- UMSC-M3-001 folder-artwork server build is installed. Owner confirms inherited
+  film-folder artwork in VLC; Samsung built-in Sources did not display it.
+- UMSC-M3-002 persistent server-icon/Samsung metadata candidate is implemented
+  and isolated-tested, but **not installed**. The server discovery icon fix is
+  separate from the working private Spidey TV launcher icon. A live UMS update
+  still requires a separate shutdown/deployment approval.
+- UMSC-M4-001 TV app 0.1.0 is privately signed and installed on the actual
+  Tizen 5.5 TV. Launch and populated UI are owner-observed; remaining device
+  acceptance keeps the task VERIFYING. See its [release record](releases/UMSC-M4-001-tv.md).
+- Work is pushed on the feature branch, not merged or publicly released.
+- Private branding, LAN configuration, signed packages and signing keys remain
+  outside Git. Preserve the owner author certificate for future app updates.
+  Do not uninstall just to update, since that removes TV-local progress.
 
-Latest request: build a small installable Samsung TV frontend. Target model is
-known privately (2020 TU7100). Owner approved developer-mode network install.
-App source and development build exist, with 14 passing Node contract tests.
-Live UMS client browsing returned the root and kids library with artwork, and
-subtree search returned matching titles. No live server restart was required.
-18 Java regressions also pass on workstation JDK 21 compiling for Java 17.
-Self-hosted run `39648265328` passed 18 Java custom tests and the app's 13 tests
-and build. Full suite: 538 tests, only the previously reproduced Jetty timeout
-failure, no errors, eight skips. Final cleanup passed.
-Latest self-hosted run `39649720531` at `2c67c6add` passed 18 Java custom
-regressions and the updated 14-test TV app checks/build. Full suite still has
-only the known baseline timeout failure (538 tests, zero errors, eight skips).
-Always-run cleanup passed.
-Tizen baseline CLI is installed. Official SDB connected to the actual TV and
-its capability response confirms Samsung TV, ARMv7 and Tizen 5.5, matching the
-app target. Connection disappeared during standby, then returned when the
-owner switched the TV back on. Developer Mode did not need re-enabling.
-The owner created `UMSTV`; CLI confirmed it as the active profile. Signing and
-actual TV installation now succeeded. The signed package hash and exact device
-evidence are in `docs/releases/UMSC-M4-001-tv.md`. A shell-safe transport filename
-was required, without changing the requested private display label or icon.
-The TV then became unreachable before remote launch completed. Owner was asked
-to turn it on and open the installed app manually. Visible UI and native media
-playback are not yet verified. No live UMS update occurred during this install.
-Generic public app name: UMS TV Client. Owner-specific label and Spidey launcher
-icon are configured only in ignored private build settings.
-Do not flatten folders: the owner's conditional answer is a product discussion,
-not approval for changing the existing DLNA layout.
+## Verification and project manager
 
-Workstation fixture browser navigation/player/Back/search and live UMS rendering
-passed using installed Chrome. All seven server discovery icons passed HTTP
-byte comparisons in an isolated Windows instance, which has since been stopped.
+Latest source/tooling Linux run [39685477408](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/39685477408)
+at `d1c86e08a` passed the custom Java regression and TV app check/build steps
+on `gsvs-ums-custom`. Final cleanup passed. Full Java suite: 538 tests, one
+known baseline Jetty timeout assertion, zero errors, eight skips. This remains
+UMSC-M1-002, not an all-green suite. Earlier runtime/browser evidence is in the
+task and release reports; this checkpoint changes documentation only.
 
-The official `tizen build-web` command also passed against the private app
-build; its output stays in ignored `tv-app/dist/.buildResult`. This is still
-unsigned build validation, not installation or native playback acceptance.
+Projects Hub keeps one canonical project entry for the fork and app, with
+direct links to the app, this handover and backlog. Its README-only checkpoint
+does not require an Android viewer rebuild. Hub publication evidence is in the
+TV release record; actual viewer refresh is not claimed.
 
-Next: owner opens the installed TV app; confirm its UI/artwork, then test native
-playback/audio/seek and app-local resume. Reconnect SDB if diagnosis is needed. Private app
-connection settings and original Spidey images stay out of Git. M3-002 remains
-uninstalled and requires a separate UMS shutdown confirmation before deployment.
+## Exact next action
 
-Detailed evidence: `docs/tasks/UMSC-M3-001-folder-thumbnails.md`,
-`docs/tasks/UMSC-M1-001-linux-runner.md` and
-`docs/releases/UMSC-M3-001-windows.md`.
+When the owner says the rips are done, read this file and the backlog, inspect
+the real library read-only with permission, and propose the naming/layout and
+intake rules before changing files or binding app behaviour to a layout.
+Retain category shelves, search and remote-friendly focus as product goals.
+Finish the pending native playback checks before calling the TV task DONE.
+
+Detailed evidence: [folder artwork](tasks/UMSC-M3-001-folder-thumbnails.md),
+[server branding](tasks/UMSC-M3-002-samsung-artwork.md),
+[TV app](tasks/UMSC-M4-001-tv-app.md),
+[Windows server delivery](releases/UMSC-M3-001-windows.md), and
+[Linux runner](tasks/UMSC-M1-001-linux-runner.md).

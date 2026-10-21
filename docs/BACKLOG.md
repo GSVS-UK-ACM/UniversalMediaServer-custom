@@ -47,13 +47,8 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
   check confirms matching film/folder artwork and working HTTP byte ranges.
   The full suite has only the reproduced baseline timeout failure. Installation
   completed after explicit owner shutdown confirmation. Live artwork and VLC
-  direct-file byte ranges pass. Owner phone/TV acceptance remains outstanding.
-
-## Future direction
-
-A child-friendly web library with a streaming-service-style home page and
-search is the next product direction. It is intentionally outside
-UMSC-M3-001 and still needs its own scoped milestone.
+  direct-file byte ranges pass. Owner confirms VLC folder artwork; Samsung's
+  built-in Sources does not show it. The custom TV app is now the preferred UI.
 
 ### UMSC-M3-002: Persistent server icon and Samsung folder artwork
 
@@ -64,15 +59,45 @@ UMSC-M3-001 and still needs its own scoped milestone.
 - Delivery: 18 focused Java tests pass on Windows and Linux. Isolated HTTP checks
   verify all seven private server icons. Not installed. No folder flattening.
 
-## M4: Samsung Kids TV app
+## M4: Samsung TV app
 
 ### UMSC-M4-001: Remote-friendly UMS frontend
 
-- Status: IN_PROGRESS
+- Status: VERIFYING
 - Goal: A small installable Tizen app with artwork shelves, categories, search,
   native playback and TV-local progress. Network install is owner-authorised.
 - Evidence: `docs/tasks/UMSC-M4-001-tv-app.md` and `tv-app/README.md`.
 - Delivery: source app, 15 contracts, browser checks and official SDK build
   pass. Owner signing profile is created and private app installation succeeded
-  on the actual TV. Remote launch lost the target afterwards. Owner UI/native
-  playback acceptance remains pending. See `docs/releases/UMSC-M4-001-tv.md`.
+  on the actual TV. Owner confirms launch, visual appearance and populated
+  library after starting UMS. Native playback/audio/seek, persisted progress
+  and physical remote acceptance remain pending. See `docs/releases/UMSC-M4-001-tv.md`.
+
+## M5: Library conventions and app polish
+
+Work is deferred until the owner finishes the remaining DVD rips. These are
+plans, not an agreed filesystem layout or permission to move existing media.
+
+### UMSC-M5-001: Agree library layout and addition rules
+
+- Status: PLANNED
+- Goal: Define a stable film/series layout and naming, artwork, metadata and
+  collection conventions that make new additions predictable and child-friendly.
+- Next action: With permission, inspect the completed library read-only and
+  propose rules from its actual contents, including exceptions and DVD extras.
+- Acceptance: Owner agrees the layout, repeatable intake/validation rules and
+  tagging/grouping contract. Any migration has a preview, recovery plan and
+  separate approval. Preserve playback and existing media throughout.
+- Boundary: No automatic recursive scan, rename or move is approved yet.
+
+### UMSC-M5-002: Polish the TV library experience
+
+- Status: PLANNED
+- Depends on: UMSC-M5-001 and the remaining UMSC-M4-001 device checks.
+- Goal: Refine the streaming-service-style shelves, grouped content, search,
+  labels, artwork and visible remote focus around the agreed library contract.
+- Acceptance: Agreed layout drives predictable grouping and new additions;
+  navigation/search/playback/progress are tested on the actual TV, with bounded
+  browsing and no regression to the existing VLC/DLNA layout.
+- Next action: Agree a small visual/navigation design after the library rules,
+  then implement and verify it. Do not redesign or deploy during the rip phase.
