@@ -121,6 +121,13 @@ workstation HTTP preview alone would not catch a file-origin deployment
 failure. A fifteenth Node contract now guards this manifest requirement and
 the actual device's Tizen 5.5 target.
 
+Official SDK `tizen build-web -out .buildResult -- <private app dist>` passed.
+Certificate Manager installed successfully. The package manager then stopped
+at Samsung certificate-extension licence acceptance, without installing that
+extension. The full licence was saved outside Git and opened for owner review.
+An explicit acceptance question is pending. No `--accept-license`, account
+login, certificate creation, TV install or app launch has occurred yet.
+
 Final source run `39649720531`, job on the same `gsvs-ums-custom` runner,
 commit `2c67c6add`, passed 18 Java custom regressions and all 14 app tests,
 syntax checks and development build. Full suite remains 538 tests, one known

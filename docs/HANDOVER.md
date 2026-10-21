@@ -55,9 +55,12 @@ Tizen baseline CLI is installed. Official SDB connected to the actual TV and
 its capability response confirms Samsung TV, ARMv7 and Tizen 5.5, matching the
 app target. Connection disappeared during standby, then returned when the
 owner switched the TV back on. Developer Mode did not need re-enabling.
-No signing profile exists yet. The missing Certificate Manager, Samsung
-certificate extension and TV extension tools are being installed through the
-official package manager. Licence/account interaction remains owner-controlled.
+No signing profile exists yet. Certificate Manager is installed. The official
+package manager stopped before the Samsung `cert-add-on` because it requires
+explicit licence acceptance. The complete licence is open in a private local
+file for the owner to review, and an acceptance question is pending. Do not
+run `--accept-license` until the owner accepts that agreement. TV extension
+tools and the Samsung certificate flow remain pending.
 Signing requires a Samsung certificate for the TV, not an unsigned WGT.
 No TV app installation is claimed.
 Generic public app name: UMS TV Client. Owner-specific label and Spidey launcher
@@ -69,7 +72,11 @@ Workstation fixture browser navigation/player/Back/search and live UMS rendering
 passed using installed Chrome. All seven server discovery icons passed HTTP
 byte comparisons in an isolated Windows instance, which has since been stopped.
 
-Next: finish official extension installation and the owner-assisted Samsung
+The official `tizen build-web` command also passed against the private app
+build; its output stays in ignored `tv-app/dist/.buildResult`. This is still
+unsigned build validation, not installation or native playback acceptance.
+
+Next: after explicit licence acceptance, finish official extension installation and the owner-assisted Samsung
 certificate flow, sign and install, then verify actual playback/audio/seek. Private app
 connection settings and original Spidey images stay out of Git. M3-002 remains
 uninstalled and requires a separate UMS shutdown confirmation before deployment.
