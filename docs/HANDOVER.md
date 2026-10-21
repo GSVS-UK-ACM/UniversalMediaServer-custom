@@ -40,18 +40,26 @@ The live server has not been changed by this follow-up.
 
 Latest request: build a small installable Samsung TV frontend. Target model is
 known privately (2020 TU7100). Owner approved developer-mode network install.
-App source and development build exist, with 13 passing Node contract tests.
+App source and development build exist, with 14 passing Node contract tests.
 Live UMS client browsing returned the root and kids library with artwork, and
 subtree search returned matching titles. No live server restart was required.
 18 Java regressions also pass on workstation JDK 21 compiling for Java 17.
 Self-hosted run `39648265328` passed 18 Java custom tests and the app's 13 tests
 and build. Full suite: 538 tests, only the previously reproduced Jetty timeout
 failure, no errors, eight skips. Final cleanup passed.
-Official Tizen CLI 10 installer is downloaded and open, with explicit owner
-approval. Licence acceptance and Samsung certificate setup need owner input.
+Latest self-hosted run `39649720531` at `2c67c6add` passed 18 Java custom
+regressions and the updated 14-test TV app checks/build. Full suite still has
+only the known baseline timeout failure (538 tests, zero errors, eight skips).
+Always-run cleanup passed.
+Tizen baseline CLI is installed. Official SDB connected to the actual TV and
+its capability response confirms Samsung TV, ARMv7 and Tizen 5.5, matching the
+app target. Connection disappeared during standby, then returned when the
+owner switched the TV back on. Developer Mode did not need re-enabling.
+No signing profile exists yet. The missing Certificate Manager, Samsung
+certificate extension and TV extension tools are being installed through the
+official package manager. Licence/account interaction remains owner-controlled.
 Signing requires a Samsung certificate for the TV, not an unsigned WGT.
-Owner is enabling TV Developer Mode. TV is online but developer port 26101
-refused connections at the latest check. No TV installation is claimed.
+No TV app installation is claimed.
 Generic public app name: UMS TV Client. Owner-specific label and Spidey launcher
 icon are configured only in ignored private build settings.
 Do not flatten folders: the owner's conditional answer is a product discussion,
@@ -61,8 +69,8 @@ Workstation fixture browser navigation/player/Back/search and live UMS rendering
 passed using installed Chrome. All seven server discovery icons passed HTTP
 byte comparisons in an isolated Windows instance, which has since been stopped.
 
-Next: finish SDK setup after owner licence/account interaction, connect to the
-rebooted TV, sign and install, then verify actual playback/audio/seek. Private app
+Next: finish official extension installation and the owner-assisted Samsung
+certificate flow, sign and install, then verify actual playback/audio/seek. Private app
 connection settings and original Spidey images stay out of Git. M3-002 remains
 uninstalled and requires a separate UMS shutdown confirmation before deployment.
 

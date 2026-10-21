@@ -102,3 +102,20 @@ check. Owner is cold-rebooting it; no device install is claimed.
 Projects Hub checkpoint: the canonical UMS fork remains registered as a
 source-only project. This local development build is not a public app release
 and does not require a second Hub entry.
+
+## Signing/deployment continuation
+
+Owner explicitly authorised installation after confirming the developer
+connection. Official SDB connected successfully to the actual TV. Its capability
+response confirms Samsung TV profile, ARMv7 CPU and Tizen 5.5. After standby the
+connection disappeared, then returned when the owner switched the TV back on.
+The base CLI is installed (Tizen CLI 2.5.25), but `security-profiles list` is
+empty. Certificate Manager, Samsung `cert-add-on` 2.0.75 and TV extension tools
+are missing and are being installed through the official package manager.
+No licence was accepted automatically and no certificate or app install exists
+at this checkpoint. Device identifiers and capability output are private.
+
+Final source run `39649720531`, job on the same `gsvs-ums-custom` runner,
+commit `2c67c6add`, passed 18 Java custom regressions and all 14 app tests,
+syntax checks and development build. Full suite remains 538 tests, one known
+baseline Jetty timeout assertion, zero errors, eight skips. Cleanup passed.
