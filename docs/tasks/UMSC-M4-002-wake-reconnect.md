@@ -64,7 +64,7 @@ Actual sleep/shutdown wake support remains the owner's hardware prerequisite.
 
 ## Verified and installed checkpoint, 22 October 2026
 
-- Node 26.5.0: `npm run check`, `npm test` and `npm run build` passed. All 29
+- Node 26.5.0: `npm run check`, `npm test` and `npm run build` passed. All 30
   contracts passed, including late-result cancellation and no wake after stop.
 - Installed Chrome with `TV_CHROMIUM_PATH`: `node scripts/browser-check.cjs`
   passed for `TV_STARTUP_SCENARIO=online`, `offline` and `empty`. Each includes
@@ -77,7 +77,7 @@ Actual sleep/shutdown wake support remains the owner's hardware prerequisite.
   `package -t wgt -s <existing owner profile> -- <compiled directory>` passed.
 - Package version 0.1.1, application `GSVSUMSTVC.TVClient`, transport filename
   `UMSTVClient.wgt`, SHA-256
-  `970E0FC1B304FC94BD0354534CA1706407088C3926C579AB431DA7E7B7626FB0`.
+  `F91B841CABF82936E9DA5FFF2E8278EEF6651EAFBFC506A61D7407FC89129C94`.
 - Checked required manifest/config/JS/icon/signature entries. Packaged `app.js`
   and `startup.js` bytes match source. Private wake overlay exists and packaged
   icon bytes match the private original. Actual label, MAC, router URL and
@@ -94,3 +94,17 @@ Actual sleep/shutdown wake support remains the owner's hardware prerequisite.
 `git diff --check` passes. Source/delivery checkpoint and the consolidated Hub
 entry are recorded with the final repository commits. No public binary release
 or merge is included. Physical tests above remain the next action.
+
+Final installed app source: `61ba1dc8572e51b8b5597181f3fed8c2b2a7c832`.
+An additional regression guards hiding during router-description retrieval:
+the pending response is discarded before sending the wake POST. The final
+30-contract suite and offline browser scenario passed, then the SDK build,
+signing, source-byte check and in-place TV install/launch passed again. This
+supersedes the interim 0.1.1 candidate whose hash began `970E0FC1`.
+
+Self-hosted run [39788185008](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/39788185008)
+for that final source is queued while the approved runner is offline. No Linux
+pass is claimed. Consolidated Hub update is pushed at
+`255ee010c54ec53083d02ac605447f1a1e061bfd`, preserving the independently added
+LAN Waker project. The UMS row still appears exactly once. This is a README-only
+catalogue update, not a Hub Android rebuild or observed viewer refresh.

@@ -9,15 +9,16 @@ at three and at least 30 seconds apart; five-second connection retries stop
 when ready or hidden. No idle keepalives, Linux relay, router credentials or
 power-policy changes. Phones remain the manual WoL backup.
 
-Workstation: 29 Node contracts, online/offline/empty browser scenarios, read-only
+Workstation: 30 Node contracts, online/offline/empty browser scenarios, read-only
 live UMS rendering, official SDK build and package checks pass. Linux runner is
 offline, so compatible CI remains pending. Native sleep/shutdown-to-wake and
 TV-local state acceptance remain owner checks, not claimed from installation.
 See [wake/reconnect evidence](tasks/UMSC-M4-002-wake-reconnect.md).
 
 The UMS fork and **UMS TV Client** share this repository. Continue on
-`feature/umsc-m3-001-folder-thumbnails`; source/tooling checkpoint is
-`d1c86e08af87db126ca79127d25b462208185ca3` before this documentation update.
+`feature/umsc-m3-001-folder-thumbnails`; installed app source checkpoint is
+`61ba1dc8572e51b8b5597181f3fed8c2b2a7c832`. The older Java verification
+checkpoint remains separately recorded below.
 
 The owner confirmed the installed TV app opens, looks good and populates the
 library after UMS starts. Initial disconnection was observed while UMS was not

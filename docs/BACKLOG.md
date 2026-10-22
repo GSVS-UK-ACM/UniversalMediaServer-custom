@@ -104,7 +104,7 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
   service restart or automatic TV boot launch. Installation needs owner approval.
 - Evidence: `docs/tasks/UMSC-M4-002-wake-reconnect.md`.
 - Delivery: 0.1.1 is signed, installed and remotely launched with approval.
-  29 workstation Node contracts, all three browser startup scenarios, live UMS
+  30 workstation Node contracts, all three browser startup scenarios, live UMS
   browser rendering and official SDK build pass. Linux runner is offline;
   native shutdown/sleep wake, reconnect and preserved-state checks remain pending.
 
