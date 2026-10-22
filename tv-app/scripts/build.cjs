@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const Startup = require('../app/startup.js');
 const root = path.resolve(__dirname, '..');
 const out = path.join(root, 'dist');
 // Only overwrite this app's rebuildable output. Never touch live UMS files.
@@ -13,7 +14,7 @@ if (config.descriptionUrl) {
   const url = new URL(config.descriptionUrl);
   if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error('Invalid private connection URL');
 }
-const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder };
+const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder, wake: Startup.wakeConfig(config.wake) };
 fs.writeFileSync(path.join(out, 'connection.json'), JSON.stringify(runtimeConfig));
 if (config.displayName) {
   const escaped = String(config.displayName).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c]));

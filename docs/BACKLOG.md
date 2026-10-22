@@ -90,6 +90,24 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
   library after starting UMS. Native playback/audio/seek, persisted progress
   and physical remote acceptance remain pending. See `docs/releases/UMSC-M4-001-tv.md`.
 
+### UMSC-M4-002: Wake the media PC and reconnect automatically
+
+- Status: VERIFYING
+- Goal: Check UMS on app launch/resume, ask the always-on router to wake the
+  configured PC only when unreachable, and populate the library without an app
+  restart. Keep the low-uptime system and phone wake fallback intact.
+- Acceptance: Bounded/spaced wake retries, serial connection probes, no wake
+  when already online, no polling after ready, cancellation when hidden,
+  friendly waiting UI, bounded empty-library retries, private identities kept
+  outside Git, and real-device wake/reconnect checks.
+- Boundary: No new Linux relay, power-policy change, router credentials,
+  service restart or automatic TV boot launch. Installation needs owner approval.
+- Evidence: `docs/tasks/UMSC-M4-002-wake-reconnect.md`.
+- Delivery: 0.1.1 is signed, installed and remotely launched with approval.
+  29 workstation Node contracts, all three browser startup scenarios, live UMS
+  browser rendering and official SDK build pass. Linux runner is offline;
+  native shutdown/sleep wake, reconnect and preserved-state checks remain pending.
+
 ## M5: Library conventions and app polish
 
 Work is deferred until the owner finishes the remaining DVD rips. These are

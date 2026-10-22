@@ -51,3 +51,9 @@ Optional workstation browser checks use `node scripts/browser-check.cjs` from
 `tv-app/`, with `TV_CHROMIUM_PATH` for a locally installed Chrome binary.
 `TV_DESCRIPTION_URL` switches that check to read-only live UMS rendering.
 Its CORS bridge exists only in the test browser, never on the UMS server.
+
+Startup recovery contracts are in `tv-app/test/startup.test.cjs`. Browser fixture
+startup modes use `TV_STARTUP_SCENARIO=online`, `offline` or `empty` with the
+same browser-check command. They verify wake/reconnect sequencing without real
+power changes. Real Samsung router access, sleep/shutdown wake and retained
+TV-local state require owner-supervised device checks after approved install.

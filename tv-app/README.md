@@ -35,6 +35,41 @@ Choose a collection and select **Use this collection as Home** to make the app
 open there next time. Home loads previews for at most six direct collections.
 Search uses UMS's existing subtree search; it does not scan or alter media.
 
+## Automatic startup and optional router wake
+
+The app checks UMS first. An unreachable configured server shows **Getting your
+films ready…**, then retries every five seconds after each completed probe.
+If a private wake overlay exists for that server, it asks the always-on FRITZ!Box
+to send Wake-on-LAN. Wake requests are at least 30 seconds apart and limited to
+three per foreground connection session. Once the library loads there are no
+background polls or wake keepalives. Hiding/exiting the app cancels recovery;
+returning to it checks UMS again. Opening the app, not TV power-on itself, is the
+trigger unless the TV resumes this app automatically.
+
+Example additions to ignored `connection.local.json` (use your own values):
+
+```json
+{"wake":{"descriptionUrl":"http://fritz.box:49000/tr64desc.xml","macAddress":"02:00:00:00:00:01"}}
+```
+
+This calls only the discovered same-router Hosts action
+`X_AVM-DE_WakeOnLANByMACAddress`. It never enables auto-wake, edits router/PC
+settings, keeps a Linux helper awake or supplies router credentials. If router
+authentication is required, do not put an administrator password in the app.
+Use the phone wake app as a fallback; automatic UMS reconnection still works.
+The PC must already support waking from the power state you use. An accepted
+router action is not proof that an asleep or shut-down PC actually woke.
+
+A reachable, temporarily empty library gets six bounded checks, then displays
+its real empty state. Authentication/configuration errors are shown rather
+than treated as a sleeping PC. A changed manual server URL cannot wake the
+private default PC. Private router/MAC values stay outside Git and public builds.
+
+Workstation browser fixture modes are `TV_STARTUP_SCENARIO=online`, `offline`
+and `empty` with `node scripts/browser-check.cjs`. They use synthetic endpoints,
+not real power changes. See `docs/tasks/UMSC-M4-002-wake-reconnect.md` for the
+physical TV and wake-cycle acceptance boundary.
+
 ## Samsung Developer Mode and signing
 
 1. On the TV, open Apps and its settings. Enter `12345` using the remote's

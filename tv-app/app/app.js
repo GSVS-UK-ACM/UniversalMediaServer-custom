@@ -2,7 +2,7 @@
   'use strict';
   var C = window.KidsCore, $ = function (id) { return document.getElementById(id); };
   var server, current = { id: '0', title: 'Your library' }, history = [], cache = {}, viewToken = 0, activeItem = null, lastSave = 0, hudTimer;
-  var stored = {}, connection = '', homeFolder = { id: '0', title: 'Your library' }, defaultHome, lastPosition = 0, lastDuration = 0;
+  var stored = {}, connection = '', homeFolder = { id: '0', title: 'Your library' }, defaultHome, wakeSettings, lastPosition = 0, lastDuration = 0;
   try { stored = JSON.parse(localStorage.getItem('kids-tv-progress') || '{}'); connection = localStorage.getItem('kids-tv-server') || ''; } catch (e) {}
   function persist() {
     try {
@@ -15,11 +15,14 @@
   function status(message) { $('status').textContent = message || ''; }
   function request(url, options) {
     return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest(); xhr.open(options.method || 'GET', url); xhr.timeout = 20000;
+      var xhr = new XMLHttpRequest(); xhr.open(options.method || 'GET', url); xhr.timeout = options.timeout || 20000;
       Object.keys(options.headers || {}).forEach(function (key) { xhr.setRequestHeader(key, options.headers[key]); });
-      xhr.onload = function () { if ((xhr.status >= 200 && xhr.status < 300) || (url === 'connection.json' && xhr.status === 0 && xhr.responseText)) resolve(xhr.responseText); else reject(new Error('UMS returned HTTP ' + xhr.status)); };
-      xhr.onerror = function () { reject(new Error('Cannot reach UMS. Check the PC is awake and on the same network.')); };
-      xhr.ontimeout = function () { reject(new Error('UMS took too long to reply. Please retry.')); };
+      xhr.onload = function () {
+        if ((xhr.status >= 200 && xhr.status < 300) || (url === 'connection.json' && xhr.status === 0 && xhr.responseText)) resolve(xhr.responseText);
+        else { var error = new Error('UMS returned HTTP ' + xhr.status); error.retryable = xhr.status === 0 || xhr.status >= 500; error.serverReachable = xhr.status > 0; reject(error); }
+      };
+      xhr.onerror = function () { var error = new Error('Cannot reach UMS. Check the PC is awake and on the same network.'); error.retryable = true; reject(error); };
+      xhr.ontimeout = function () { var error = new Error('UMS took too long to reply. Please retry.'); error.retryable = true; reject(error); };
       xhr.send(options.body || null);
     });
   }
@@ -27,17 +30,58 @@
   function node(tag, className, value) { var el = document.createElement(tag); if (className) el.className = className; if (value) el.textContent = value; return el; }
   function clearContent() { while ($('content').firstChild) $('content').removeChild($('content').firstChild); }
   function button(label, action, className) { var el = node('button', className, label); el.addEventListener('click', action); return el; }
-  function showSetup() { $('setup').classList.remove('hidden'); $('server-url').value = connection; $('server-url').focus(); }
-  function hideSetup() { $('setup').classList.add('hidden'); $('settings').focus(); }
-  async function connect(url) {
-    $('connect').disabled = true; $('connection-error').textContent = ''; status('Connecting…');
+  function showSetup() { startup.stop(); $('setup').classList.remove('hidden'); $('server-url').value = connection; $('server-url').focus(); }
+  function hideSetup() { $('setup').classList.add('hidden'); $('settings').focus(); if (!server && connection) connect(connection); }
+  function waitingMessage(value) {
+    var el = $('startup-message');
+    if (!el) {
+      clearContent(); var hero = node('section', 'hero'); hero.appendChild(node('h1', '', 'Getting your films ready…'));
+      el = node('p'); el.id = 'startup-message'; hero.appendChild(el); $('content').appendChild(hero);
+    }
+    el.textContent = value; status(value);
+  }
+  var startup = window.KidsStartup.recovery({
+    load: async function (url) {
+      // Each probe owns its client. A stale connection must never replace the
+      // active renderer URLs, home folder or cache after a settings change.
+      var candidate = C.client(function (endpoint, options) { options.timeout = options.method ? 20000 : 5000; return request(endpoint, options); }, window.DOMParser);
+      var info;
+      try { info = await candidate.connect(url); }
+      catch (err) { if (err.retryable === undefined) err.retryable = false; throw err; }
+      var home = defaultHome || { id: '0', title: 'Your library' };
+      try { home = JSON.parse(localStorage.getItem('kids-tv-home:' + info.description) || JSON.stringify(home)); } catch (e) {}
+      var items;
+      try { items = await candidate.browse(home.id); }
+      catch (err) {
+        err.serverReachable = true;
+        if (!/701|No Such Object/i.test(err.message) || home.id === '0') { if (err.retryable === undefined) err.retryable = false; throw err; }
+        home = { id: '0', title: 'Your library' }; items = await candidate.browse('0');
+      }
+      return { api: candidate, server: info, home: home, items: items, empty: items.length === 0 };
+    },
+    wake: function (url) {
+      // A different manually selected server must not wake the private default PC.
+      if (wakeSettings && url === wakeSettings.server) return window.KidsStartup.wakeRouter(request, window.DOMParser, wakeSettings.config);
+    },
+    state: function (value) {
+      $('search').disabled = value.phase !== 'ready';
+      if (value.phase === 'ready' || value.phase === 'error') return;
+      waitingMessage(value.phase === 'loading' ? 'The library is starting. We will refresh it for you.' : value.wakeError ? 'Still waiting for the media PC. A grown-up can also wake it using the phone app.' : 'Waiting for the media PC. Your films will appear automatically.');
+    },
+    ready: function (value) {
+      api = value.api; server = value.server; connection = server.description; homeFolder = value.home; cache = {}; history = [];
+      cache[homeFolder.id] = Promise.resolve(value.items);
+      try { localStorage.setItem('kids-tv-server', connection); } catch (e) {}
+      $('server-name').textContent = server.name; $('setup').classList.add('hidden'); openFolder(homeFolder, false);
+    },
+    error: function (err) { $('connection-error').textContent = err.message; status('Connection settings need checking'); showSetup(); }
+  });
+  function connect(url) {
     try {
-      server = await api.connect(url); connection = server.description; cache = {}; history = [];
-      try { localStorage.setItem('kids-tv-server', connection); homeFolder = JSON.parse(localStorage.getItem('kids-tv-home:' + connection) || JSON.stringify(defaultHome || { id: '0', title: 'Your library' })); } catch (e) {}
-      $('server-name').textContent = server.name; $('setup').classList.add('hidden');
-      await openFolder(homeFolder, false);
-    } catch (err) { $('connection-error').textContent = err.message; status('Connection needed'); showSetup(); }
-    finally { $('connect').disabled = false; }
+      url = C.httpUrl(url); connection = url; viewToken++; server = null;
+      $('connection-error').textContent = ''; $('setup').classList.add('hidden'); cache = {};
+      if (!document.hidden) startup.start(url); else startup.stop();
+    } catch (err) { $('connection-error').textContent = err.message; showSetup(); }
   }
   function browse(id) { if (!cache[id]) cache[id] = api.browse(id).catch(function (e) { delete cache[id]; throw e; }); return cache[id]; }
   function key(item) { return C.progressKey(connection, item); }
@@ -85,11 +129,14 @@
       // At most six direct collections, sequentially. This is browse-on-demand,
       // not a recursive media scan or metadata extraction job.
       for (var i = 0; i < Math.min(folders.length, 6); i++) {
-        var child = folders[i], preview = await browse(child.id); if (token !== viewToken) return;
+        var child = folders[i], preview;
+        try { preview = await browse(child.id); }
+        catch (err) { if (token === viewToken) status('A collection preview is unavailable. You can still open other collections.'); break; }
+        if (token !== viewToken) return;
         var entries = preview.filter(function (item) { return !item.folder; }).slice(0, 16);
         if (entries.length) (function (f) { shelf(C.cleanTitle(f.title), entries, function () { openFolder(f, true); }); }(child));
       }
-    } catch (err) { if (token === viewToken) { status(err.message); $('home').focus(); } }
+    } catch (err) { if (token === viewToken) { if (!document.hidden && !activeItem && err.retryable === true) connect(connection); else { status(err.message); $('home').focus(); } } }
   }
   function select(item) { if (item.folder) openFolder(item, true); else play(item); }
   function showHud() { $('player-hud').classList.remove('hidden'); clearTimeout(hudTimer); hudTimer = setTimeout(function () { if (activeItem && !$('player-message').textContent) $('player-hud').classList.add('hidden'); }, 6500); }
@@ -129,7 +176,7 @@
   function stop(completed) {
     if (activeItem && !completed) saveProgress(lastPosition, lastDuration, false);
     player.stop(); activeItem = null; clearTimeout(hudTimer); $('playback').classList.add('hidden');
-    document.body.classList.remove('playing'); $('shell').classList.remove('hidden'); openFolder(current, false);
+    document.body.classList.remove('playing'); $('shell').classList.remove('hidden'); if (!document.hidden) openFolder(current, false);
   }
   function back() {
     viewToken++;
@@ -163,7 +210,7 @@
       status(items.length + ' results'); var first = $('content').querySelector('button'); (first || $('search')).focus();
     } catch (err) { status('Search unavailable: ' + err.message + ' You can still browse collections.'); $('search').focus(); }
   }
-  $('home').onclick = function () { history = []; cache = {}; openFolder(homeFolder, false); };
+  $('home').onclick = function () { if (startup.isWaiting() || !server) return; history = []; cache = {}; openFolder(homeFolder, false); };
   $('settings').onclick = showSetup; $('connect').onclick = function () { connect($('server-url').value.trim()); };
   $('cancel-setup').onclick = hideSetup; $('search').onclick = function () { $('search-panel').classList.remove('hidden'); $('query').focus(); };
   $('do-search').onclick = search; $('cancel-search').onclick = back;
@@ -185,10 +232,15 @@
     }
     if (code >= 37 && code <= 40) { event.preventDefault(); moveFocus({ 37: 'left', 38: 'up', 39: 'right', 40: 'down' }[code]); }
   });
-  document.addEventListener('visibilitychange', function () { if (document.hidden && activeItem) stop(); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { startup.stop(); viewToken++; if (activeItem) stop(); }
+    else if (connection && $('setup').classList.contains('hidden')) connect(connection);
+  });
+  window.addEventListener('pagehide', function () { startup.stop(); });
   if (window.tizen && window.tizen.tvinputdevice) ['MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop', 'MediaFastForward', 'MediaRewind'].forEach(function (name) { try { window.tizen.tvinputdevice.registerKey(name); } catch (e) {} });
   request('connection.json', {}).then(function (text) {
     var config = JSON.parse(text); defaultHome = config.homeFolder;
+    if (config.wake && config.descriptionUrl) wakeSettings = { server: C.httpUrl(config.descriptionUrl), config: config.wake };
     if (config.displayName) { document.title = config.displayName; $('brand-name').textContent = config.displayName; }
     if (connection || config.descriptionUrl) connect(connection || config.descriptionUrl); else showSetup();
   }).catch(function () { if (connection) connect(connection); else showSetup(); });

@@ -1,10 +1,10 @@
 {
   "name": "ums-tv-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "test": "node --test test/*.test.cjs",
-    "check": "node --check app/core.js && node --check app/player.js && node --check app/app.js && node --check scripts/build.cjs",
+    "check": "node --check app/core.js && node --check app/startup.js && node --check app/player.js && node --check app/app.js && node --check scripts/build.cjs",
     "build": "node scripts/build.cjs"
   },
   "devDependencies": {

@@ -2,6 +2,19 @@
 
 ## Current checkpoint: TV app 21 October, Windows service 22 October 2026
 
+Latest change: UMSC-M4-002, TV app **0.1.1**, is signed and installed after owner
+approval. It probes UMS first, uses the always-on FRITZ!Box to wake the intended
+PC only when unreachable, then refreshes automatically. Wake retries are capped
+at three and at least 30 seconds apart; five-second connection retries stop
+when ready or hidden. No idle keepalives, Linux relay, router credentials or
+power-policy changes. Phones remain the manual WoL backup.
+
+Workstation: 29 Node contracts, online/offline/empty browser scenarios, read-only
+live UMS rendering, official SDK build and package checks pass. Linux runner is
+offline, so compatible CI remains pending. Native sleep/shutdown-to-wake and
+TV-local state acceptance remain owner checks, not claimed from installation.
+See [wake/reconnect evidence](tasks/UMSC-M4-002-wake-reconnect.md).
+
 The UMS fork and **UMS TV Client** share this repository. Continue on
 `feature/umsc-m3-001-folder-thumbnails`; source/tooling checkpoint is
 `d1c86e08af87db126ca79127d25b462208185ca3` before this documentation update.
@@ -22,7 +35,9 @@ service startup. That migration is installed and running under LocalService in
 session zero with delayed automatic startup. Settings and library are unchanged;
 both UMS login shortcuts are recoverably disabled. Manage it through Windows
 Services and the existing web settings, not a second desktop UMS process.
-Cold-boot/login-screen acceptance still needs the owner. See the
+Owner subsequently reported independent pickup, but the TV app needed reopening;
+M4-002 addresses that app reconnect gap. The complete shutdown-to-TV wake test
+still needs the owner. See the
 [service task/recovery record](tasks/UMSC-M1-003-windows-service.md).
 
 ## Delivery and outstanding work
