@@ -109,3 +109,9 @@ test('wake rejects foreign control URLs, SOAP faults and malformed responses', a
     await assert.rejects(S.wakeRouter(async () => ++calls === 1 ? description : reply, DOMParser, router));
   }
 });
+test('hiding during router discovery prevents a deferred wake POST', async () => {
+  let finish, active = true, calls = 0;
+  const pending = S.wakeRouter(async () => { calls++; return new Promise(resolve => { finish = resolve; }); }, DOMParser, router, () => active);
+  active = false; finish(description); await pending;
+  assert.equal(calls, 1, 'router discovery may finish, but no wake POST is allowed');
+});

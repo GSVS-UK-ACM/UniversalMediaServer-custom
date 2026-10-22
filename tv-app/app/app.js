@@ -59,9 +59,9 @@
       }
       return { api: candidate, server: info, home: home, items: items, empty: items.length === 0 };
     },
-    wake: function (url) {
+    wake: function (url, isCurrent) {
       // A different manually selected server must not wake the private default PC.
-      if (wakeSettings && url === wakeSettings.server) return window.KidsStartup.wakeRouter(request, window.DOMParser, wakeSettings.config);
+      if (wakeSettings && url === wakeSettings.server) return window.KidsStartup.wakeRouter(request, window.DOMParser, wakeSettings.config, isCurrent);
     },
     state: function (value) {
       $('search').disabled = value.phase !== 'ready';

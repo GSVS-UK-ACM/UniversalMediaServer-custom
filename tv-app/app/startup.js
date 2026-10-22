@@ -22,9 +22,9 @@
   }
 
   /** Ask the always-on FRITZ!Box to wake only the configured PC. Never change router settings. */
-  async function wakeRouter(request, Parser, config) {
+  async function wakeRouter(request, Parser, config, isCurrent) {
     config = wakeConfig(config);
-    if (!config) return;
+    if (!config || (isCurrent && !isCurrent())) return;
     var xml = C.parseXml(await request(config.descriptionUrl, { timeout: 4000 }), Parser);
     var services = Array.prototype.slice.call(xml.getElementsByTagNameNS('*', 'service'));
     function text(node, name) { var el = node.getElementsByTagNameNS('*', name)[0]; return el ? el.textContent : ''; }
@@ -34,6 +34,9 @@
     if (!controlPath) throw new Error('Wake service has no control endpoint');
     var control = C.httpUrl(controlPath, config.descriptionUrl);
     if (new URL(control).origin !== new URL(config.descriptionUrl).origin) throw new Error('Wake endpoint must stay on the configured router');
+    // Description retrieval can finish after the TV hides the app. Do not send
+    // a deferred magic-packet request after that foreground session has ended.
+    if (isCurrent && !isCurrent()) return;
     var body = '<?xml version="1.0"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><u:' + WAKE + ' xmlns:u="' + HOSTS + '"><NewMACAddress>' + config.macAddress + '</NewMACAddress></u:' + WAKE + '></s:Body></s:Envelope>';
     var response = C.parseXml(await request(control, { method: 'POST', timeout: 4000, headers: { 'Content-Type': 'text/xml; charset=utf-8', SOAPAction: '"' + HOSTS + '#' + WAKE + '"' }, body: body }), Parser);
     if (response.getElementsByTagNameNS('*', 'Fault').length || !response.getElementsByTagNameNS('*', WAKE + 'Response').length) throw new Error('The router did not accept the wake request');
@@ -58,7 +61,7 @@
     function wake(token) {
       if (!options.wake || wakeBusy || wakeCount >= 3 || now() - lastWake < wakeDelay) return;
       wakeCount++; lastWake = now(); wakeBusy = true;
-      Promise.resolve().then(function () { if (current(token)) return options.wake(target); }).then(function () {
+      Promise.resolve().then(function () { if (current(token)) return options.wake(target, function () { return current(token); }); }).then(function () {
         if (current(token)) { wakeBusy = false; wakeError = false; }
       }, function () { if (current(token)) { wakeBusy = false; wakeError = true; } });
     }
