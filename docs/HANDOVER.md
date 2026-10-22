@@ -21,17 +21,23 @@ The adult role displays as **Adults** independently of its physical folder.
 Owner deferred the locked physical adult-root rename and declined a service
 restart. No titles were relocated; child-suitability/artwork audit remains open.
 
-51 Node contracts and current online browser integration pass; offline/empty
-recovery and live read-only checks are also being rerun for the final candidate.
+51 Node contracts and final online/offline/empty browser integration pass,
+including a live read-only kids catalogue/render check.
 Official SDK build/signing produced 0.2.0 without any target/serial argument.
 No TV install/uninstall, service restart, server upgrade or binary publication.
-Linux CI/source/package evidence is recorded in the task report as it completes.
+Linux custom Java and app checks pass at `d2d59a7d1993c9664ba10449c25ed7ebb0a222bb`.
+The full suite retains the known Jetty timeout failure: 538 tests, one failure,
+zero errors, eight skips. Cleanup passes, so this is not all-green CI. Signed
+package/source-byte evidence and the exact run are in the task report.
 Installed TV remains 0.1.1; numeric input, performance, real playback/progress,
 wake and artwork acceptance remain physical-device checks.
 
-Next: finish final checks/feature CI, then request TV installation approval.
+Next: request TV installation approval, then perform the pending device checks.
 Keep ongoing DVD staging offline; do not start the final bulk migration or
 adult-content curation as part of this UI/name-schema implementation.
+
+The Hub README row is prepared locally for the 0.2.0 candidate, not pushed.
+No Hub Android viewer rebuild or observed refresh is claimed.
 
 ## Written context consolidation, 22 October 2026
 

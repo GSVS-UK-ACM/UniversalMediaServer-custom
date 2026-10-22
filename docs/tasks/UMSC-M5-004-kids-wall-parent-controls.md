@@ -123,6 +123,57 @@ Official references checked for the hardware acceptance plan:
 and [Web Cryptography support](https://developer.samsung.com/smarttv/develop/faq/security.html).
 These support implementation choices, not a claim of actual-device testing.
 
+## Final verification and delivery, 22 October 2026
+
+- Feature source commit `d2d59a7d1993c9664ba10449c25ed7ebb0a222bb` is PUSHED,
+  not merged. Follow-up evidence-only commits do not change this package source.
+- Final workstation online, offline and empty startup browser fixtures all pass
+  the full family flow. Read-only live kids catalogue/render also passes after
+  the naming-authority and inherited-artwork fixes. No real media was played by
+  the live check. Private screenshots remain ignored.
+- [Self-hosted run 39837794262](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/39837794262),
+  job `120030566573`, executed on `gsvs-ums-custom`, labels
+  `self-hosted,Linux,X64,ums-custom-ci`, at that exact source commit.
+  Custom Java regressions and Node 22 app syntax/51 contracts/build pass.
+- Full Linux command `mvn --batch-mode verify -P testing
+  -DdisableXmlReport=true -DreuseForks=false` reports 538 tests, one failure,
+  zero errors, eight skips. Sole failure is the already tracked
+  `JettyStreamClientImplTest.testJettyClientConnectTimeout:144`, expecting
+  `SocketTimeoutException` but receiving `SocketException` (M1-002). No server
+  Java source or assertion was changed here. Overall run is FAILURE, not green.
+  Always-run persistent-workspace cleanup passes; workflow whitespace step is
+  skipped after failure. Local `git diff --check` passes separately.
+- Official Tizen CLI 2.5.25 build/sign completed with the existing private
+  owner profile, NO Target/Serial argument. App ID `GSVSUMSTVC.TVClient`,
+  version 0.2.0, transport `UMSTVClient.wgt`, SHA-256
+  `AF13F91FC3A0A1D0AE4D999731E84C8994477CA8D15D943D3657554BD0530425`.
+  All eight packaged runtime JS/HTML/CSS files match source bytes; author and
+  distributor signatures exist. Private overlays have 773 exact names and
+  770 legacy aliases. Private index workstation path is not exported. Previous
+  and candidate signed packages are retained privately. No TV install occurred.
+- Projects Hub: exactly one canonical row remains in the Workshop/source table.
+  README-only candidate description is prepared locally, NOT pushed/published.
+  Existing activity metrics were not refreshed or claimed newly checked. No
+  Android build or viewer refresh.
+
+## Remaining acceptance and known limits
+
+STOP for owner installation approval. Native numeric/virtual keypad input,
+secure-storage support, frame rate at chosen density, art, codecs/audio/seek,
+complete real queue transitions, persisted code/rotation/resume and physical
+wake/reconnect still need the TV. Installation alone will not complete them.
+
+Current child catalogue cap is 400 folders / 10,000 videos / depth 12. The
+current 773-video production tree fits. Before a thousand-disc bulk migration,
+measure/raise the budget or improve catalogue loading under M5-001 rather than
+silently dropping entries or assuming the current TV performance scales.
+Curated collections without verified broadcast season/episode metadata retain
+their source/collection filename order; no broadcast chronology was invented.
+
+Final DVD completeness/content/age/artwork/duplicate audit and bulk migration
+are still separate. The owner deferred physical adult-root rename and title
+relocation. The role label Adults works without claiming the rename succeeded.
+
 ## Delivery checkpoint
 
 Owner authorised committing/pushing this feature branch for its private Linux
