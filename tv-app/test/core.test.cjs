@@ -70,3 +70,31 @@ test('packaged TV policy permits its local connection settings and targets Tizen
   assert.match(policy, /connect-src 'self' http: https:/);
   assert.equal(doc.getElementsByTagNameNS('*', 'application')[0].getAttribute('required_version'), '5.5');
 });
+
+test('explicit resource filename beats a conflicting online movie lookup and suppresses its wrong art/plot', () => {
+  const xml = movie.replace('Film &amp; friends', 'Unrelated online film (2010)').replace('/movie.mp4', '/get/42/-film-1968-Example-Family-Film-720p-BluRay-.mp4');
+  const result = C.parseResult(response(xml), base, DOMParser).items[0], info = C.mediaName(result.title);
+  assert.equal(info.title, 'Example Family Film'); assert.equal(info.kind, 'film'); assert.equal(info.year, '1968');
+  assert.equal(result.artwork, ''); assert.equal(result.description, ''); assert.equal(result.series, '');
+});
+
+test('private exact-name index restores separators and punctuation from sanitised resource slugs', () => {
+  const name = '(tv show) Example - S02E03 - A Friend\'s Day (480p DVD Rip).mp4';
+  const url = 'http://192.0.2.1/get/1/-tv-show-Example-S02E03-A-Friend-s-Day-480p-DVD-Rip-.mp4_transcoded_to.ts';
+  const names = { [C.resourceKey(C.resourceFilename(url))]: name };
+  assert.equal(C.storageName(url, names), name); assert.equal(C.mediaName(C.storageName(url)).kind, 'tv show');
+  assert.equal(C.storageName('http://192.0.2.1/get/movie.mp4'), '');
+});
+
+test('file modification date is not treated as a film release year', () => {
+  const xml = movie.replace('<dc:title>', '<dc:date>2026-10-22</dc:date><dc:title>');
+  assert.equal(C.parseResult(response(xml), base, DOMParser).items[0].year, undefined);
+});
+
+test('a private exact-name overlay cannot relabel a different manually selected server', async () => {
+  const url = '/get/42/-film-1968-Example-720p-.mp4';
+  const names = { [C.resourceKey(url.split('/').pop())]: '(film) (1968) Private Overlay Title (720p).mp4' };
+  const client = C.client(async (u, options) => options.method ? response(movie.replace('/movie.mp4', url)) : device, DOMParser);
+  client.setNames(names, base); await client.connect('http://192.0.2.2:5001/dev/test/desc');
+  assert.equal(C.cleanTitle((await client.browse('0'))[0].title), 'Example');
+});

@@ -36,7 +36,29 @@
     return { name: text(doc, 'friendlyName') || 'UMS', control: control, description: httpUrl(url) };
   }
   function isVideoResource(protocol) { return /^http-get:\*:(video\/|application\/vnd\.apple\.mpegurl|application\/x-mpegurl)/i.test(protocol); }
-  function parseResult(xml, base, Parser) {
+  function resourceFilename(url) {
+    try { return decodeURIComponent(new URL(url).pathname.split('/').pop()).replace(/_transcoded_to\.[a-z0-9]+$/i, ''); } catch (e) { return ''; }
+  }
+  function resourceKey(value) { return value.replace(/[^a-z0-9]/gi, '').toLowerCase(); }
+  /** UMS sanitises resource filenames into URL slugs. Explicit type/year labels
+   * still survive there, even when an unrelated online film lookup wins dc:title.
+   * An optional private index restores exact punctuation; newly added schema
+   * files work without rebuilding that index using the conservative slug parser.
+   */
+  function storageName(url, names) {
+    var filename = resourceFilename(url), indexed = names && names[resourceKey(filename)];
+    if (indexed) return indexed;
+    if (/^\((film|tv show|extra content|trailers)\)/i.test(filename)) return filename;
+    var match = filename.match(/^-?(film|tv-show|extra-content|trailers)-(.+?)\.(mkv|mp4|avi|m4v|ts|mpg|mpeg|webm|wmv)$/i);
+    if (!match) return '';
+    var kind = match[1].replace(/-/g, ' '), rest = match[2].replace(/-+$/, ''), year = '', quality = '';
+    var date = rest.match(/^((?:19|20)\d{2})-/); if (date) { year = date[1]; rest = rest.slice(date[0].length); }
+    var qualityAt = rest.search(/-(?:(?:\d{3,4}p|PAL|NTSC|BluRay|WEBRip|HDTV)(?:-|$)|DVD-(?:Remux|Rip)|WEB-DL)/i);
+    if (qualityAt >= 0) { quality = rest.slice(qualityAt + 1).replace(/-/g, ' '); rest = rest.slice(0, qualityAt); }
+    return '(' + kind + ') ' + (year ? '(' + year + ') ' : '') + rest.replace(/-/g, ' ') + (quality ? ' (' + quality + ')' : '') + '.' + match[3];
+  }
+  function titleIdentity(title) { var info = mediaName(title); return resourceKey(info.title) + '|' + info.year; }
+  function parseResult(xml, base, Parser, names) {
     var soap = parseXml(xml, Parser), fault = elements(soap, 'Fault')[0];
     if (fault) throw new Error(text(fault, 'errorDescription') || text(fault, 'faultstring') || 'UMS rejected the request');
     var result = parseXml(text(soap, 'Result') || '<DIDL-Lite/>', Parser);
@@ -48,7 +70,11 @@
       var video = resources.filter(function (r) { return r.url && isVideoResource(r.protocol); })[0];
       var art = elements(node, 'albumArtURI').map(function (n) { return sameServerUrl(n.textContent, base); }).filter(Boolean)[0];
       if (!art) art = (resources.filter(function (r) { return /:image\//.test(r.protocol); })[0] || {}).url;
-      return { id: node.getAttribute('id'), parentId: node.getAttribute('parentID'), title: text(node, 'title'), folder: node.localName === 'container', className: text(node, 'class'), artwork: art || '', url: video ? video.url : '', duration: video ? video.duration : '' };
+      // UMS dc:date can be the FILE MODIFICATION date, not a release year.
+      // Keep release years from the explicit storage/title contract instead.
+      var serverTitle = text(node, 'title'), explicit = video ? storageName(video.url, names) : '', info = mediaName(explicit);
+      var conflict = explicit && titleIdentity(explicit) !== titleIdentity(serverTitle);
+      return { id: node.getAttribute('id'), parentId: node.getAttribute('parentID'), title: explicit || serverTitle, serverTitle: serverTitle, folder: node.localName === 'container', className: text(node, 'class'), description: conflict ? '' : text(node, 'longDescription') || text(node, 'description'), series: explicit ? info.series : text(node, 'seriesTitle'), season: explicit ? info.season : text(node, 'episodeSeason'), episode: explicit ? info.episode : text(node, 'episodeNumber'), artwork: conflict ? '' : art || '', url: video ? video.url : '', duration: video ? video.duration : '' };
     }).filter(function (item) { return item.id !== null && !/^#.*#$/.test(item.title) && (item.folder || item.url); });
     return { items: items, returned: Number(text(soap, 'NumberReturned')), total: Number(text(soap, 'TotalMatches')) };
   }
@@ -57,10 +83,10 @@
   }
   function searchCriteria(query) { return 'upnp:class derivedfrom "object.item.videoItem" and dc:title contains "' + String(query).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'; }
   function client(request, Parser) {
-    var server;
+    var server, names, namesServer;
     async function action(name, args) {
       var xml = await request(server.control, { method: 'POST', headers: { 'Content-Type': 'text/xml; charset=utf-8', SOAPAction: '"' + SERVICE + '#' + name + '"' }, body: envelope(name, args) });
-      return parseResult(xml, server.control, Parser);
+      return parseResult(xml, server.control, Parser, server.description === namesServer ? names : null);
     }
     async function pages(name, args) {
       var all = [], offset = 0;
@@ -74,12 +100,31 @@
       throw new Error('This folder exceeds the 20,000-item safety limit. Open a smaller category.');
     }
     return {
+      setNames: function (index, descriptionUrl) { names = index; namesServer = descriptionUrl; },
       connect: async function (url) { server = description(await request(httpUrl(url), {}), url, Parser); return server; },
       browse: function (id) { return pages('Browse', { ObjectID: id, BrowseFlag: 'BrowseDirectChildren', Filter: '*', SortCriteria: '' }); },
       search: function (id, query) { return pages('Search', { ContainerID: id, SearchCriteria: searchCriteria(query), Filter: '*', SortCriteria: '' }); }
     };
   }
-  function cleanTitle(title) { return String(title).replace(/\.(mkv|mp4|avi|m4v|ts)$/i, '').replace(/[._]/g, ' ').replace(/\s+/g, ' ').trim(); }
+  /** Storage labels are data, not UI. Unknown years/editions stay unknown. */
+  function mediaName(value) {
+    var title = String(value || '').replace(/\.(mkv|mp4|avi|m4v|ts|mpg|mpeg|webm|vob|wmv)$/i, '');
+    var kind = '', year = '', quality = '', match;
+    match = title.match(/^\((film|tv show|trailers|extra content)\)\s*/i);
+    if (match) { kind = match[1].toLowerCase(); title = title.slice(match[0].length); }
+    match = title.match(/^\((\d{4})\)\s*/);
+    if (match) { year = match[1]; title = title.slice(match[0].length); }
+    // Only strip an evidenced quality suffix. Parentheses such as Part 2 and
+    // edition labels are meaningful and must not disappear with release noise.
+    match = title.match(/\s*[\[(]((?:(?:PAL|NTSC)\s+)?DVD\s+(?:Remux|Rip)|[^\[\]()]*\b(?:\d{3,4}p|BluRay|Blu-Ray|WEB-DL|WEBRip|DVDRip|BRRip)\b[^\[\]()]*)[\])]\s*$/i);
+    if (match) { quality = match[1]; title = title.slice(0, match.index); }
+    match = title.match(/\s*[\[(]((?:19|20)\d{2})[\])]\s*$/);
+    if (match) { if (!year) year = match[1]; title = title.slice(0, match.index); }
+    title = title.replace(/[._]/g, ' ').replace(/\s+/g, ' ').trim();
+    var episode = title.match(/^(.*?)\s*(?:-\s*)?S(\d{1,2})\s*E(\d{1,3})(?:\s*[- ]\s*)?(.*)$/i);
+    return { title: title, year: year, quality: quality, kind: kind || (episode ? 'tv show' : ''), series: episode ? episode[1].replace(/\s*-\s*$/, '').trim() : '', season: episode ? Number(episode[2]) : null, episode: episode ? Number(episode[3]) : null };
+  }
+  function cleanTitle(title) { return mediaName(title).title; }
   function progressKey(server, item) {
     // Media URLs contain a renderer UUID and IDs can be versioned. Use the
     // server description identity + parent + title, never the renderer URL.
@@ -91,5 +136,5 @@
     duration = Number.isFinite(duration) ? Math.max(0, duration) : 0;
     return { position: position, duration: duration, watched: duration > 0 && position / duration >= 0.95 };
   }
-  return { SERVICE: SERVICE, escapeXml: escapeXml, parseXml: parseXml, description: description, parseResult: parseResult, envelope: envelope, searchCriteria: searchCriteria, client: client, cleanTitle: cleanTitle, progress: progress, progressKey: progressKey, httpUrl: httpUrl };
+  return { SERVICE: SERVICE, escapeXml: escapeXml, parseXml: parseXml, description: description, parseResult: parseResult, envelope: envelope, searchCriteria: searchCriteria, client: client, cleanTitle: cleanTitle, mediaName: mediaName, resourceFilename: resourceFilename, resourceKey: resourceKey, titleIdentity: titleIdentity, storageName: storageName, progress: progress, progressKey: progressKey, httpUrl: httpUrl };
 }));

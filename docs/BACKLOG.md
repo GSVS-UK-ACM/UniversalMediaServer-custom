@@ -110,12 +110,16 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 
 ## M5: Library conventions and app polish
 
-Work is deferred until the owner finishes the remaining DVD rips. These are
-plans, not an agreed filesystem layout or permission to move existing media.
+Owner approved the family UI and existing non-rip filename-schema pass on
+22 October while DVD intake continues, implemented under M5-004. Final rip
+migration/curation remains deferred. This is not permission to migrate shares.
+Separately authorised offline DVD staging has agreed filename prefixes and
+journalled sorting. See the M5-003 consolidation record. Production layout,
+bulk transfer and replacement still need a preview and owner approval.
 
 ### UMSC-M5-001: Agree library layout and addition rules
 
-- Status: PLANNED
+- Status: IN_PROGRESS
 - Goal: Define a stable film/series layout and naming, artwork, metadata and
   collection conventions that make new additions predictable and child-friendly.
 - Next action: With permission, inspect the completed library read-only and
@@ -123,16 +127,60 @@ plans, not an agreed filesystem layout or permission to move existing media.
 - Acceptance: Owner agrees the layout, repeatable intake/validation rules and
   tagging/grouping contract. Any migration has a preview, recovery plan and
   separate approval. Preserve playback and existing media throughout.
-- Boundary: No automatic recursive scan, rename or move is approved yet.
+- Boundary: Owner approved filename-only schema changes to existing non-rip
+  titles, with protected moves/recovery journals. No title relocation or rip
+  bulk transfer. Physical adult-root rename is pending a Windows lock; owner
+  declined a service restart. The app uses the adult role without that rename.
+- Compatibility: Preserve the agreed storage type prefixes. Current app title
+  cleanup does not hide them; agree visible title/grouping metadata explicitly.
 
 ### UMSC-M5-002: Polish the TV library experience
 
-- Status: PLANNED
+- Status: VERIFYING
 - Depends on: UMSC-M5-001 and the remaining UMSC-M4-001 device checks.
 - Goal: Refine the streaming-service-style shelves, grouped content, search,
   labels, artwork and visible remote focus around the agreed library contract.
 - Acceptance: Agreed layout drives predictable grouping and new additions;
   navigation/search/playback/progress are tested on the actual TV, with bounded
   browsing and no regression to the existing VLC/DLNA layout.
-- Next action: Agree a small visual/navigation design after the library rules,
-  then implement and verify it. Do not redesign or deploy during the rip phase.
+- Next action: Candidate implementation/evidence is in M5-004. Finish checks,
+  pause for owner TV-install approval, then verify on the real device. Final
+  rip migration, artwork and suitability audit still remain separate work.
+
+- Owner design inputs, 22 October: kids' view has NO SEARCH, only arrows,
+  Enter and Back. A secret six-digit sequence on the app home screen switches
+  to a hidden adult view, with no visible entry or directional unlock gesture.
+  Adult content must not be assumed child-safe from file type or animation.
+- Open: owner will describe/show the reference UI, possibly with drawings.
+  Verify physical/virtual numeric input on the TV; agree partial-entry reset,
+  exit/relaunch/default-view policy, per-TV/profile routing and progress scope.
+  These are not implemented. Do not select or commit an actual secret code.
+- Protection boundary: owner accepts lightweight hidden entry. UI hiding alone
+  is not server-wide access control and does not restrict other DLNA clients.
+  No enforced parental-control claim without separately implementing/testing it.
+- Superseding design: default 7x5 parent-adjustable wall, dwell info/direct play;
+  personal 5-10 digit code after forced replacement of bootstrap `12345`.
+  TV series rotate their ordered full-cycle starting episode per selection.
+  Bonus collections shuffle once. Returning from a queue preserves wall position.
+
+### UMSC-M5-003: Consolidate server, TV app and DVD intake context
+
+- Status: DONE
+- Goal: Resume both workstreams from written evidence without relying on chat
+  memory. Preserve the actual installed/source/acceptance distinctions.
+- Delivery: Local documentation only, not committed, pushed or deployed.
+- Evidence: `docs/tasks/UMSC-M5-003-context-handover.md` and private staging
+  `UMS-LIBRARY-HANDOVER.md`, outside Git.
+- Next action: Continue authorised offline intake; capture the owner's UI
+  explanation, then use M5-001/002 for production layout and interface work.
+
+### UMSC-M5-004: Implement kids wall, parental controls and schema integration
+
+- Status: VERIFYING
+- Goal: Deliver the owner-agreed simple kids interface and retain adult shelves,
+  with a forced personal-code setup, Reset Home and filename-derived labels.
+- Authority: Commit/push the feature branch for CI. STOP before TV installation.
+  No merge, binary release, title relocation, service restart or rip migration.
+- Evidence: `docs/tasks/UMSC-M5-004-kids-wall-parent-controls.md`.
+- Next action: Complete final candidate verification/CI and ask the owner before
+  installing in place. Keep previous author certificate and recovery package.

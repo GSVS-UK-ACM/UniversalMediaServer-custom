@@ -49,3 +49,36 @@ body.playing { background: transparent; }
 #player-buttons { display: flex; } #player-buttons button { margin-right: 22px; }
 .track { height: 7px; background: #526074; margin: 25px 0; border-radius: 5px; overflow: hidden; }
 #play-progress { width: 0; height: 100%; background: #7de6d0; }
+
+/* The focus frame never moves. Overscan tiles slide underneath it and are
+   recycled after each transition, keeping TV DOM/image work bounded. */
+.kids-mode nav, .kids-mode #server-name { display: none; }
+.kids-mode header { height: 100px; padding: 16px 55px; }
+.kids-mode #content { display: none; }
+.kids-mode footer { height: 62px; padding: 18px 55px; font-size: 18px; }
+#kids-view { height: calc(100vh - 162px); padding: 8px 45px 0; }
+#wall-viewport { height: calc(100% - 65px); width: 100%; overflow: hidden; position: relative; border-radius: 12px; }
+#wall-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; will-change: transform; }
+.wall-tile { position: absolute; padding: 6px; }
+.wall-art { width: 100%; height: 100%; position: relative; overflow: hidden; background: #1a293b; border-radius: 8px; }
+.wall-art img { position: absolute; width: 100%; height: 100%; object-fit: contain; top: 0; left: 0; }
+.wall-fallback { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; padding: 12px; text-align: center; font-size: 21px; color: #d5e9e5; }
+#wall-focus { position: absolute; z-index: 3; background: transparent; border: 5px solid #7de6d0; border-radius: 12px; padding: 0; outline: none; box-shadow: 0 0 22px #000c; }
+#wall-focus:focus { outline: none; background: transparent; }
+#wall-caption { height: 65px; padding: 15px 25px; font-size: 25px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+#tile-details { position: absolute; z-index: 4; left: 59%; top: 24%; width: 37%; max-height: 72%; overflow: hidden; padding: 24px; border: 2px solid #7de6d0; border-radius: 14px; background: #0d1729f5; pointer-events: none; }
+#tile-details h2 { font-size: 30px; }
+#tile-details p { font-size: 22px; line-height: 1.4; color: #d4e0ed; }
+.parent-panel { width: 1400px; }
+.parent-panel h1 { font-size: 48px; }
+.parent-panel h2 { margin-top: 25px; }
+.parent-actions { display: flex; }
+.parent-actions button { font-size: 23px; }
+.density-controls { display: flex; align-items: center; }
+.density-controls label { display: inline; margin: 15px; }
+.density-controls input { width: 150px; margin: 15px; }
+#parent-error, #pin-error { min-height: 32px; color: #ffcf9e; }
+#pin-panel .panel { padding: 35px 55px; }
+#pin-panel h1 { font-size: 45px; }
+#pin-panel .panel label { margin: 12px 0 7px; }
+#pin-panel .panel input { padding: 13px; margin-bottom: 8px; }

@@ -1,5 +1,61 @@
 # Handover
 
+## Current checkpoint: family wall candidate, 22 October 2026
+
+Owner approved implementation and a feature-branch CI push before DVD intake
+finishes, superseding the earlier rip-phase deferral below. **Do not install on
+the TV until the owner approves that step.** See
+[UMSC-M5-004](tasks/UMSC-M5-004-kids-wall-parent-controls.md).
+
+Candidate app 0.2.0 implements the fixed-centre mixed artwork wall, parent-only
+odd grid sizing (default 7x5), dwell information, direct playback, ordered TV
+queues with a rotating start and shuffled bonus queues. Fresh launch/resume
+locks to kids. No kids search/settings. Bootstrap `12345` requires a personal
+5-10 digit code entered twice; parent settings allow code change and Reset Home.
+This supersedes the earlier six-digit-only idea, not server-wide access control.
+
+Explicit filename type/year/source now beats conflicting UMS online metadata.
+Wrong lookup artwork/plots are suppressed, including inherited collection art.
+Private exact-name and unambiguous old-progress aliases stay outside Git.
+The adult role displays as **Adults** independently of its physical folder.
+Owner deferred the locked physical adult-root rename and declined a service
+restart. No titles were relocated; child-suitability/artwork audit remains open.
+
+51 Node contracts and current online browser integration pass; offline/empty
+recovery and live read-only checks are also being rerun for the final candidate.
+Official SDK build/signing produced 0.2.0 without any target/serial argument.
+No TV install/uninstall, service restart, server upgrade or binary publication.
+Linux CI/source/package evidence is recorded in the task report as it completes.
+Installed TV remains 0.1.1; numeric input, performance, real playback/progress,
+wake and artwork acceptance remain physical-device checks.
+
+Next: finish final checks/feature CI, then request TV installation approval.
+Keep ongoing DVD staging offline; do not start the final bulk migration or
+adult-content curation as part of this UI/name-schema implementation.
+
+## Written context consolidation, 22 October 2026
+
+The owner now wants server, TV app and offline DVD intake work continued in one
+chat using durable records. Start with the portable
+[consolidation record](tasks/UMSC-M5-003-context-handover.md). The private
+`UMS-LIBRARY-HANDOVER.md` beside the DVD staging status links actual local paths,
+batch evidence, retry notes and the supplied earlier-chat archive. Private
+paths/logs remain outside Git. This checkpoint changes documentation only;
+it grants no live deployment, service restart or production media migration.
+
+Offline staging naming/sorting is owner-authorised and separately journalled.
+It does not authorise production migration. The storage prefixes `(film)`,
+`(tv show)`, `(trailers)` and `(extra content)` are agreed. Current app
+`cleanTitle` does NOT hide these prefixes yet. Preserve them on disk and handle
+clean visible titles explicitly in M5-001/002.
+
+New UI intent: kids use arrows, Enter and Back only, with NO SEARCH. A secret
+six-digit sequence entered on the app home screen swaps to a hidden adult
+view. This is lightweight separation, not server-wide access control. Exact
+code, numeric remote support, reset/exit/relaunch policy and per-TV defaults
+are not settled or tested. Await the owner's reference/explanation/drawings
+before designing the rest. See M5-002. No interface implementation is claimed.
+
 ## Current checkpoint: TV app 21 October, Windows service 22 October 2026
 
 Latest change: UMSC-M4-002, TV app **0.1.1**, is signed and installed after owner
@@ -28,8 +84,9 @@ acceptance still need explicit checks. Do not infer them from browsing success.
 The owner is finishing roughly 100 more DVD rips. Leave the working setup alone.
 Next product work is **UMSC-M5-001**, agreeing a library layout and repeatable
 addition/tagging/grouping rules, followed by **UMSC-M5-002**, app polish based on
-that agreed contract. Both are PLANNED in [BACKLOG.md](BACKLOG.md). No media
-reorganisation, migration, scan or deployment is authorised by this checkpoint.
+that agreed contract. Both are PLANNED in [BACKLOG.md](BACKLOG.md). This earlier
+checkpoint did not authorise production reorganisation, migration or deployment.
+The later offline staging authority is recorded above, not a production rollout.
 
 Owner subsequently authorised UMSC-M1-003, moving the existing build to Windows
 service startup. That migration is installed and running under LocalService in
@@ -78,6 +135,10 @@ the real library read-only with permission, and propose the naming/layout and
 intake rules before changing files or binding app behaviour to a layout.
 Retain category shelves, search and remote-friendly focus as product goals.
 Finish the pending native playback checks before calling the TV task DONE.
+
+Superseding UI clarification: search is not a kids-view goal. Preserve the
+owner's arrows/Enter/Back-only requirement and agree the new layout before
+implementing it. Search may remain an adult-view capability, pending design.
 
 Detailed evidence: [folder artwork](tasks/UMSC-M3-001-folder-thumbnails.md),
 [server branding](tasks/UMSC-M3-002-samsung-artwork.md),

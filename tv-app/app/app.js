@@ -3,6 +3,8 @@
   var C = window.KidsCore, $ = function (id) { return document.getElementById(id); };
   var server, current = { id: '0', title: 'Your library' }, history = [], cache = {}, viewToken = 0, activeItem = null, lastSave = 0, hudTimer;
   var stored = {}, connection = '', homeFolder = { id: '0', title: 'Your library' }, defaultHome, wakeSettings, lastPosition = 0, lastDuration = 0;
+  var familyUI, playQueue = [];
+  var sourceNames = {}, titleAliases = [], namesServer = '';
   try { stored = JSON.parse(localStorage.getItem('kids-tv-progress') || '{}'); connection = localStorage.getItem('kids-tv-server') || ''; } catch (e) {}
   function persist() {
     try {
@@ -30,7 +32,10 @@
   function node(tag, className, value) { var el = document.createElement(tag); if (className) el.className = className; if (value) el.textContent = value; return el; }
   function clearContent() { while ($('content').firstChild) $('content').removeChild($('content').firstChild); }
   function button(label, action, className) { var el = node('button', className, label); el.addEventListener('click', action); return el; }
-  function showSetup() { startup.stop(); $('setup').classList.remove('hidden'); $('server-url').value = connection; $('server-url').focus(); }
+  function showSetup() {
+    if (familyUI && familyUI.isKids()) { status('A parent can check the connection.'); return; }
+    startup.stop(); $('setup').classList.remove('hidden'); $('server-url').value = connection; $('server-url').focus();
+  }
   function hideSetup() { $('setup').classList.add('hidden'); $('settings').focus(); if (!server && connection) connect(connection); }
   function waitingMessage(value) {
     var el = $('startup-message');
@@ -45,11 +50,14 @@
       // Each probe owns its client. A stale connection must never replace the
       // active renderer URLs, home folder or cache after a settings change.
       var candidate = C.client(function (endpoint, options) { options.timeout = options.method ? 20000 : 5000; return request(endpoint, options); }, window.DOMParser);
+      candidate.setNames(sourceNames, namesServer);
       var info;
       try { info = await candidate.connect(url); }
       catch (err) { if (err.retryable === undefined) err.retryable = false; throw err; }
-      var home = defaultHome || { id: '0', title: 'Your library' };
-      try { home = JSON.parse(localStorage.getItem('kids-tv-home:' + info.description) || JSON.stringify(home)); } catch (e) {}
+      // Health probes never follow an old adult Home before the gate opens.
+      // The family UI resolves its explicit role path after connecting.
+      var home = familyUI ? { id: '0', title: 'Your library' } : defaultHome || { id: '0', title: 'Your library' };
+      if (!familyUI) try { home = JSON.parse(localStorage.getItem('kids-tv-home:' + info.description) || JSON.stringify(home)); } catch (e) {}
       var items;
       try { items = await candidate.browse(home.id); }
       catch (err) {
@@ -72,7 +80,8 @@
       api = value.api; server = value.server; connection = server.description; homeFolder = value.home; cache = {}; history = [];
       cache[homeFolder.id] = Promise.resolve(value.items);
       try { localStorage.setItem('kids-tv-server', connection); } catch (e) {}
-      $('server-name').textContent = server.name; $('setup').classList.add('hidden'); openFolder(homeFolder, false);
+      $('server-name').textContent = server.name; $('setup').classList.add('hidden');
+      if (familyUI) familyUI.ready(connection); else openFolder(homeFolder, false);
     },
     error: function (err) { $('connection-error').textContent = err.message; status('Connection settings need checking'); showSetup(); }
   });
@@ -85,6 +94,20 @@
   }
   function browse(id) { if (!cache[id]) cache[id] = api.browse(id).catch(function (e) { delete cache[id]; throw e; }); return cache[id]; }
   function key(item) { return C.progressKey(connection, item); }
+  function migrateProgress(items, audience) {
+    if (connection !== namesServer) return;
+    var changed = false;
+    Object.keys(stored).forEach(function (oldKey) {
+      var record = stored[oldKey]; if (!record || record.server !== connection || !record.item) return;
+      var aliases = titleAliases.filter(function (alias) { return alias.oldTitle === record.item.title && String(alias.oldParentId).split('#')[0] === String(record.item.parentId).split('#')[0]; });
+      var matches = items.filter(function (item) { return !item.folder && aliases.some(function (alias) { return alias.newTitle === item.title; }); });
+      if (matches.length !== 1) return; // Never guess between cuts/duplicate editions.
+      var item = matches[0], newKey = key(item);
+      if (!stored[newKey] || stored[newKey].updated <= record.updated) stored[newKey] = Object.assign({}, record, { item: item, audience: audience });
+      if (newKey !== oldKey) delete stored[oldKey]; changed = true;
+    });
+    if (changed) persist();
+  }
   function tile(item, onSelect) {
     var el = button('', onSelect || function () { select(item); }, 'tile'), art = node('div', 'tile-art');
     var fallback = node('span', 'fallback', item.folder ? 'COLLECTION' : 'PLAY'); art.appendChild(fallback);
@@ -113,14 +136,15 @@
     hero.appendChild(node('h1', '', C.cleanTitle(folder.title))); hero.appendChild(node('p', '', 'Pick something good. Settle in together.'));
     if (folder.id !== homeFolder.id) hero.appendChild(button('Use this collection as Home', function () {
       homeFolder = current;
-      try { localStorage.setItem('kids-tv-home:' + connection, JSON.stringify(homeFolder)); } catch (e) {}
+      try { localStorage.setItem('kids-tv-parent-home:' + connection, JSON.stringify(homeFolder)); } catch (e) { status('The TV could not save Home.'); return; }
       history = []; status('Home collection saved');
     }));
     $('content').appendChild(hero);
     try {
       var items = await browse(folder.id); if (token !== viewToken) return;
+      migrateProgress(items, 'adults');
       var videos = items.filter(function (i) { return !i.folder; }), folders = items.filter(function (i) { return i.folder; });
-      var continueItems = Object.keys(stored).map(function (k) { return stored[k]; }).filter(function (s) { return s.server === connection && s.position > 10 && !s.watched; }).sort(function (a, b) { return b.updated - a.updated; }).slice(0, 12).map(function (s) { return s.item; });
+      var continueItems = Object.keys(stored).map(function (k) { return stored[k]; }).filter(function (s) { return s.server === connection && s.audience === 'adults' && s.position > 10 && !s.watched; }).sort(function (a, b) { return b.updated - a.updated; }).slice(0, 12).map(function (s) { return s.item; });
       if (folder.id === homeFolder.id) shelf('Continue watching', continueItems);
       shelf('Ready to watch', videos); shelf('Collections', folders);
       if (!items.length) $('content').appendChild(node('p', 'empty', 'Nothing here yet. Try another collection.'));
@@ -143,7 +167,7 @@
   function saveProgress(position, duration, ended) {
     if (!activeItem) return;
     var value = C.progress(position, duration); if (ended) value.watched = true;
-    value.item = activeItem; value.server = connection; value.updated = Date.now(); stored[key(activeItem)] = value; persist();
+    value.item = activeItem; value.server = connection; value.audience = familyUI && familyUI.isKids() ? 'kids' : 'adults'; value.updated = Date.now(); stored[key(activeItem)] = value; persist();
   }
   var player = window.createKidsPlayer(window.webapis && window.webapis.avplay, $('browser-player'), {
     time: function (position, duration) {
@@ -153,9 +177,15 @@
     },
     message: function (value) { $('player-message').textContent = value; if (value) showHud(); },
     error: function (message) { $('player-message').textContent = message; showHud(); $('stop').focus(); },
-    ended: function () { if (activeItem) { saveProgress(lastDuration || lastPosition, lastDuration, true); stop(true); } }
+    ended: function () {
+      if (!activeItem) return;
+      saveProgress(lastDuration || lastPosition, lastDuration, true);
+      if (playQueue.length > 1) { playQueue.shift(); play(playQueue[0], true); }
+      else { playQueue = []; stop(true); }
+    }
   });
-  async function play(item) {
+  async function play(item, queued) {
+    if (!queued) playQueue = [];
     var token = ++viewToken;
     status('Opening film…');
     try {
@@ -171,24 +201,27 @@
       $('shell').classList.add('hidden'); document.body.classList.add('playing'); $('playback').classList.remove('hidden');
       $('browser-player').style.display = window.webapis && window.webapis.avplay ? 'none' : 'block';
       showHud(); $('pause').focus(); player.open(item.url, resume); status('');
-    } catch (err) { status(err.message); }
+    } catch (err) { playQueue = []; if (activeItem) stop(); status(err.message); }
   }
   function stop(completed) {
+    playQueue = [];
     if (activeItem && !completed) saveProgress(lastPosition, lastDuration, false);
     player.stop(); activeItem = null; clearTimeout(hudTimer); $('playback').classList.add('hidden');
-    document.body.classList.remove('playing'); $('shell').classList.remove('hidden'); if (!document.hidden) openFolder(current, false);
+    document.body.classList.remove('playing'); $('shell').classList.remove('hidden');
+    if (!document.hidden && !(familyUI && familyUI.restore())) openFolder(current, false);
   }
   function back() {
     viewToken++;
     if (activeItem) stop();
+    else if (familyUI && familyUI.back()) return;
     else if (!$('setup').classList.contains('hidden')) hideSetup();
     else if (!$('search-panel').classList.contains('hidden')) { $('search-panel').classList.add('hidden'); $('search').focus(); }
-    else if (history.length) openFolder(history.pop(), false);
+    else if (!(familyUI && familyUI.isKids()) && history.length) openFolder(history.pop(), false);
     else if (window.tizen && window.confirm('Exit ' + document.title + '?')) window.tizen.application.getCurrentApplication().exit();
   }
   function moveFocus(direction) {
     var focused = document.activeElement, rect = focused.getBoundingClientRect(), x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
-    var area = activeItem ? $('playback') : !$('setup').classList.contains('hidden') ? $('setup') : !$('search-panel').classList.contains('hidden') ? $('search-panel') : $('shell');
+    var area = activeItem ? $('playback') : familyUI && familyUI.overlay() ? familyUI.overlay() : !$('setup').classList.contains('hidden') ? $('setup') : !$('search-panel').classList.contains('hidden') ? $('search-panel') : $('shell');
     var best, score = Infinity;
     Array.prototype.forEach.call(area.querySelectorAll('button,input'), function (el) {
       if (el === focused || el.disabled || !el.getClientRects().length) return;
@@ -211,16 +244,25 @@
     } catch (err) { status('Search unavailable: ' + err.message + ' You can still browse collections.'); $('search').focus(); }
   }
   $('home').onclick = function () { if (startup.isWaiting() || !server) return; history = []; cache = {}; openFolder(homeFolder, false); };
-  $('settings').onclick = showSetup; $('connect').onclick = function () { connect($('server-url').value.trim()); };
+  $('settings').onclick = function () { familyUI.settings(); }; $('connect').onclick = function () { connect($('server-url').value.trim()); };
   $('cancel-setup').onclick = hideSetup; $('search').onclick = function () { $('search-panel').classList.remove('hidden'); $('query').focus(); };
   $('do-search').onclick = search; $('cancel-search').onclick = back;
   $('pause').onclick = function () { player.toggle(); showHud(); }; $('rewind').onclick = function () { player.seek(-30); showHud(); };
   $('forward').onclick = function () { player.seek(30); showHud(); }; $('stop').onclick = stop;
   document.addEventListener('keydown', function (event) {
     var code = event.keyCode;
+    if (familyUI && familyUI.key(event)) return;
     if (code === 10009 || code === 27 || (code === 8 && document.activeElement.tagName !== 'INPUT')) { event.preventDefault(); back(); return; }
     if (document.activeElement.tagName === 'INPUT') {
-      if (code === 13 || code === 65376) { event.preventDefault(); if (document.activeElement.id === 'query') search(); else connect($('server-url').value.trim()); }
+      if (code === 13 || code === 65376) {
+        event.preventDefault();
+        if (document.activeElement.id === 'query') search();
+        else if (document.activeElement.id === 'server-url') connect($('server-url').value.trim());
+        else if (document.activeElement.id === 'old-code') $('new-code').focus();
+        else if (document.activeElement.id === 'new-code') $('confirm-code').focus();
+        else if (document.activeElement.id === 'confirm-code') $('save-code').focus();
+        else moveFocus('right');
+      }
       else if (code === 40) { event.preventDefault(); moveFocus('down'); }
       return;
     }
@@ -233,13 +275,20 @@
     if (code >= 37 && code <= 40) { event.preventDefault(); moveFocus({ 37: 'left', 38: 'up', 39: 'right', 40: 'down' }[code]); }
   });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { startup.stop(); viewToken++; if (activeItem) stop(); }
+    if (document.hidden) { startup.stop(); viewToken++; if (activeItem) stop(); if (familyUI) familyUI.lock(); }
     else if (connection && $('setup').classList.contains('hidden')) connect(connection);
   });
-  window.addEventListener('pagehide', function () { startup.stop(); });
-  if (window.tizen && window.tizen.tvinputdevice) ['MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop', 'MediaFastForward', 'MediaRewind'].forEach(function (name) { try { window.tizen.tvinputdevice.registerKey(name); } catch (e) {} });
+  window.addEventListener('pagehide', function () { startup.stop(); if (familyUI) familyUI.lock(); });
+  familyUI = window.createFamilyUI({
+    status: status, browse: browse, migrate: function (items) { migrateProgress(items, 'kids'); }, connected: function () { return !!server && !startup.isWaiting(); }, playing: function () { return !!activeItem; },
+    setup: showSetup, play: play,
+    queue: function (items) { playQueue = items.slice(); play(playQueue[0], true); },
+    parentHome: function (folder) { homeFolder = folder; history = []; openFolder(homeFolder, false); }
+  });
+  if (window.tizen && window.tizen.tvinputdevice) ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop', 'MediaFastForward', 'MediaRewind'].forEach(function (name) { try { window.tizen.tvinputdevice.registerKey(name); } catch (e) {} });
   request('connection.json', {}).then(function (text) {
-    var config = JSON.parse(text); defaultHome = config.homeFolder;
+    var config = JSON.parse(text); defaultHome = config.homeFolder; familyUI.start(config);
+    sourceNames = config.sourceNames || {}; titleAliases = config.titleAliases || []; namesServer = config.descriptionUrl ? C.httpUrl(config.descriptionUrl) : '';
     if (config.wake && config.descriptionUrl) wakeSettings = { server: C.httpUrl(config.descriptionUrl), config: config.wake };
     if (config.displayName) { document.title = config.displayName; $('brand-name').textContent = config.displayName; }
     if (connection || config.descriptionUrl) connect(connection || config.descriptionUrl); else showSetup();

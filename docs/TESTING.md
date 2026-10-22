@@ -52,6 +52,14 @@ Optional workstation browser checks use `node scripts/browser-check.cjs` from
 `TV_DESCRIPTION_URL` switches that check to read-only live UMS rendering.
 Its CORS bridge exists only in the test browser, never on the UMS server.
 
+Family UI fixtures use that same entry point and require no private files.
+They cover fixed-centre/reversible movement, dwell, direct play, full TV queues
+with rotating starts, forced initial code replacement, code-change/storage-full
+behaviour, parent search/Reset Home/density and kids lock after hide/relaunch.
+Pure family and name-planner contracts run under `npm test`. Naming authority
+tests inject conflicting online titles and ensure file labels win without the
+wrong poster/plot or a file modification date becoming a release year.
+
 Startup recovery contracts are in `tv-app/test/startup.test.cjs`. Browser fixture
 startup modes use `TV_STARTUP_SCENARIO=online`, `offline` or `empty` with the
 same browser-check command. They verify wake/reconnect sequencing without real

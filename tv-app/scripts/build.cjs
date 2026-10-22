@@ -14,7 +14,10 @@ if (config.descriptionUrl) {
   const url = new URL(config.descriptionUrl);
   if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error('Invalid private connection URL');
 }
-const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder, wake: Startup.wakeConfig(config.wake) };
+// Like private launcher artwork, generated filename/legacy-progress overlays
+// stay outside Git. Only the data, never its workstation path, enters the app.
+const privateNames = config.privateNamesFile ? JSON.parse(fs.readFileSync(path.resolve(root, config.privateNamesFile), 'utf8')) : {};
+const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder, libraryPaths: config.libraryPaths || {}, sourceNames: privateNames.sourceNames || config.sourceNames || {}, titleAliases: privateNames.titleAliases || config.titleAliases || [], wake: Startup.wakeConfig(config.wake) };
 fs.writeFileSync(path.join(out, 'connection.json'), JSON.stringify(runtimeConfig));
 if (config.displayName) {
   const escaped = String(config.displayName).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c]));

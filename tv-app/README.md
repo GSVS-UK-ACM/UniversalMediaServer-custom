@@ -5,6 +5,57 @@ shelves and category browsing rather than relying on the TV's DLNA folder icons.
 The Samsung native AVPlay player opens UMS media URLs. The PC still handles
 transcoding when its renderer profile requires it.
 
+## Family interface (0.2.0 candidate, not yet installed)
+
+Fresh launches and foreground returns start in kids' mode. Its only visible
+controls are arrows, OK and Back. The artwork wall moves under a fixed central
+selection. Default 7x5 dimensions are odd and adjustable in parental settings.
+The whole catalogue wraps, with one mixed arrangement per wall session, not a
+new shuffle on each arrow. Dwell for one second reveals info; OK plays directly.
+TV collections play ordered full cycles, starting one episode later per click.
+Bonus collections shuffle once. Finishing/Back restores the same wall position.
+
+On kids home enter `12345` for initial parental setup. Choose your own 5-10
+digit code twice before adult access is granted. The starter code is then
+disabled. Parental settings can change the code, set tile density, return to
+kids, and **Reset Home to adult library**. Personal codes are salted PBKDF2
+records in TV-local storage, never plaintext in the package or source. Do not
+uninstall/reset app storage to update: it removes code, home and viewing state.
+Hidden entry is lightweight UI separation, not a UMS/DLNA access-control system.
+
+Private connection configuration selects role paths, independent of labels:
+
+```json
+{"libraryPaths":{"kids":["Shared library","kids"],"adults":["Shared library","adults"]}}
+```
+
+The adult UI always labels its root **Adults**, even if a physical rename is
+deferred. Catalogue traversal is serial and bounded to the selected kids root
+(400 folders, 10,000 videos, depth 12); no sibling adult traversal or PC scan.
+Initial rip-review/adverts/exclusion folders are excluded. This new explicit
+catalogue is separate from the adult UI's bounded direct-folder previews.
+
+Storage prefixes `(film)`, `(tv show)`, `(trailers)` and `(extra content)` supply
+type information but are hidden from labels. Evidenced years/quality are parsed,
+not guessed. UMS resource filenames take priority over conflicting scraped movie
+titles; mismatched plots/posters are suppressed rather than shown to children.
+Folder images inherited from a misidentified child are not trusted as a fallback.
+Missing artwork displays a readable title, pending the separate artwork audit.
+
+Optional `privateNamesFile` in ignored connection configuration selects generated
+exact filename/progress-alias data outside Git. `library-names.cjs` makes a dry
+name/companion plan; `rename-library-files.ps1` defaults to preflight and needs
+`-Apply` for protected filename-only NTFS changes. `library-overlay.cjs` combines
+the frozen plan with PRE-rename DIDL evidence. Never commit the resulting media
+inventory. Ambiguous old-progress mappings are retained, not guessed or erased.
+No renamed file bytes, tracks or subtitle contents are rewritten by these tools.
+
+Test with `node scripts/browser-check.cjs`; fixtures cover queues, gate setup,
+storage-full failure, code change, Reset Home, density, resume aliases and lock
+on hide/relaunch. `TV_STARTUP_SCENARIO=online|offline|empty` selects recovery
+fixtures. `TV_DESCRIPTION_URL` is read-only live catalogue/render validation,
+not playback or physical Samsung acceptance. See the M5-004 task report.
+
 ## First build
 
 Requires Node 22 or newer for development. The packaged app has no Node runtime
@@ -31,7 +82,7 @@ Optional private `displayName` and `iconFile` settings customise the installed
 app name and PNG launcher artwork. `iconFile` is a build-time filesystem path,
 not exported in the runtime connection JSON. Keep family names and private
 artwork in ignored local configuration, not public source or release notes.
-Choose a collection and select **Use this collection as Home** to make the app
+On the parents' side, choose a collection and select **Use this collection as Home** to make the app
 open there next time. Home loads previews for at most six direct collections.
 Search uses UMS's existing subtree search; it does not scan or alter media.
 
@@ -102,7 +153,8 @@ containing spaces or shell metacharacters as its transport filename.
 
 ## Controls and limits
 
-- D-pad moves focus. OK opens a category or plays a video. Back returns.
+- Kids: D-pad moves the wall, OK plays the centred title/collection, Back returns.
+- Parents: D-pad moves focus. OK opens a category or plays a video. Back returns.
 - During playback: OK toggles pause, Left/Right seek 30 seconds, Back stops.
 - Native stream limitations still apply to seeking and media compatibility.
 - Resume and watched markers are private to this TV. They are not account or

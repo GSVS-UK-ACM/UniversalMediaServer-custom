@@ -6,18 +6,41 @@
   <title>UMS TV Client</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="kids-mode">
   <div id="shell">
     <header>
       <div class="brand"><img id="brand-icon" src="icon.png" alt=""><span id="brand-name">UMS TV</span></div>
       <nav aria-label="Main navigation">
-        <button id="home">Home</button><button id="search">Search</button><button id="settings">Connection</button>
+        <button id="home">Home</button><button id="search">Search</button><button id="settings">Settings</button>
       </nav>
       <span id="server-name">Your own little cinema</span>
     </header>
     <main id="content"></main>
+    <section id="kids-view" aria-label="Kids artwork wall">
+      <div id="wall-viewport"><div id="wall-layer"></div><button id="wall-focus" aria-label="Choose something to watch"></button>
+        <aside id="tile-details" class="hidden" aria-live="polite"><h2 id="detail-title"></h2><p id="detail-meta"></p><p id="detail-description"></p></aside>
+      </div>
+      <div id="wall-caption"></div>
+    </section>
     <footer><span>Arrows to explore</span><span>OK to open</span><span>Back to return</span><span id="status" role="status"></span></footer>
   </div>
+  <section id="parent-panel" class="overlay hidden" aria-label="Parental settings">
+    <div class="panel parent-panel"><h1>Parental settings</h1>
+      <p>These controls stay on this TV. The kids' screen has no settings or search.</p>
+      <div class="parent-actions"><button id="reset-home">Reset Home to adult library</button><button id="change-code">Change parental code</button><button id="parent-connection">Connection settings</button></div>
+      <h2>Kids' tile size</h2><p>Use odd numbers so the selected tile stays in the centre.</p>
+      <div class="density-controls"><label for="density-columns">Columns</label><input id="density-columns" type="number" min="3" max="11" step="2" value="7"><label for="density-rows">Rows</label><input id="density-rows" type="number" min="3" max="7" step="2" value="5"><button id="save-density">Save tile size</button></div>
+      <p id="parent-error" role="status"></p><button id="back-to-kids" class="primary">Return to kids</button><button id="parent-close">Back to adult library</button>
+    </div>
+  </section>
+  <section id="pin-panel" class="overlay hidden" aria-label="Parental code setup">
+    <div class="panel"><h1 id="pin-heading">Choose your parental code</h1><p>Choose 5 to 10 digits. Enter the same code twice. Keep your own code private.</p>
+      <div id="old-code-row" class="hidden"><label for="old-code">Current code</label><input id="old-code" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="10" autocomplete="off"></div>
+      <label for="new-code">New code</label><input id="new-code" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="10" autocomplete="off">
+      <label for="confirm-code">Confirm new code</label><input id="confirm-code" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="10" autocomplete="off">
+      <p id="pin-error" role="alert"></p><button id="save-code" class="primary">Save code</button><button id="cancel-code">Cancel</button>
+    </div>
+  </section>
   <section id="setup" class="overlay hidden" aria-label="Server connection">
     <div class="panel"><div class="eyebrow">AT HOME. ALL YOUR FAVOURITES.</div><h1>Let’s find your server.</h1>
       <p>The PC setup normally fills this in. You can also paste the UMS device-description URL.</p>
@@ -39,6 +62,6 @@
     </div>
   </section>
   <script src="$WEBAPIS/webapis/webapis.js"></script>
-  <script src="core.js"></script><script src="startup.js"></script><script src="player.js"></script><script src="app.js"></script>
+  <script src="core.js"></script><script src="family.js"></script><script src="family-ui.js"></script><script src="startup.js"></script><script src="player.js"></script><script src="app.js"></script>
 </body>
 </html>
