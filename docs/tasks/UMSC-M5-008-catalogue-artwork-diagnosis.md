@@ -1,6 +1,7 @@
 # UMSC-M5-008: Post-merge catalogue and artwork diagnosis
 
-IN_PROGRESS, owner authorised implementation, testing and in-place TV update.
+VERIFYING owner visual acceptance. Implementation tested, PACKAGED and DEPLOYED.
+Owner authorised implementation, testing and in-place TV update.
 Owner separately authorised committing/pushing only these fixes for Linux CI.
 Baseline
 `fe6c27782ebe07f98830c0ff4bc75e1c25ec40bc`, existing dirty feature branch
@@ -94,4 +95,48 @@ fix: absent year is unknown, not contradictory, while genuine title/edition
 conflicts remain blocked. Add readable collection display labels independently
 of filesystem slugs. Keep family inheritance under M5-006. Any refresh design
 must preserve cancellation, kid/adult boundaries and foreground-only traffic.
-TV installation requires applicable approval for the new candidate.
+TV installation was separately approved and is now recorded below.
+
+## Final 0.2.3 verification and delivery
+
+Source `d264c8b6d1c9a09a37f978595f6b53f3aafc0af9`, pushed on the existing
+feature branch. The earlier `ebdc824eac9633e93e479cc4756205ebc320c852`
+candidate was not installed after its live preview exposed the cached-poster
+problem. No merge or public package release.
+
+Workstation final commands: `npm run check`, `node --test
+--test-reporter=dot test/*.test.cjs` (61 pass), `npm run build`;
+`node scripts/browser-check.cjs` under Chrome with online, offline and empty
+scenarios (all pass). The live read-only browser render also passed. New
+fixtures prove recovered image loading, readable labels, stable queue keys and
+reviewed stale-image rejection. Existing PIN, progress, queue and audience
+contracts still pass. Private comparison against signed 0.2.2 retains all
+1,245 video identities and every collection ID/child list. It restores 869
+artwork links; 24 reviewed stale links remain rejected. Image HTTP samples
+return 200/image content. This does not certify every poster as owner-approved.
+
+[Linux run 39976243901](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/39976243901),
+job `120491467265`, runner `gsvs-ums-custom`, labels self-hosted/Linux/X64/
+ums-custom-ci. App check/test/build, focused custom Java and final cleanup pass.
+Full Java suite: 538 tests, one failure, zero errors, eight skipped. Only
+`JettyStreamClientImplTest.testJettyClientConnectTimeout` fails with the recorded
+M1-002 SocketException/SocketTimeoutException baseline. Not all-green CI. App-only
+deployment proceeds on passing relevant checks and unchanged server sources.
+Earlier candidate run `39974913875` has the same baseline and successful cleanup.
+
+Official Samsung CLI signed with the existing profile and installed/launched
+in place on 23 October 2026; both SDK exit codes zero. Version 0.2.3, same app ID
+`GSVSUMSTVC.TVClient`, SHA-256
+`61ACD8043B7688F7B66B75B1176932D6500E7C68445C18DC33A98368A6500077`.
+All eight runtime files match tested source; exactly app.js/core.js/family.js
+changed from 0.2.2. Author certificate chain, icon, private names, aliases,
+connection and wake settings match 0.2.2. Only the reviewed artwork-rejection
+list is added. No recovery nonce, uninstall, PIN collection/storage reset,
+media edits, UMS restart or server binary change. Prior signed package retained;
+rollback/downgrade behaviour has not been tested and must not require a wipe.
+
+Hub single canonical row updated locally, not published. Unrelated pre-existing
+working-tree changes remain untouched. Owner checks actual pictures, labels,
+playback and retained state next. Missing/wrong film posters and the remaining
+12 image-less series collections still need artwork review or planned M5-006
+family inheritance. Do not present 869 child image links as 869 wall tiles.
