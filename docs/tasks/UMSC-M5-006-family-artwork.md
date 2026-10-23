@@ -1,10 +1,10 @@
 # UMSC-M5-006: Owner-selected family artwork with folder inheritance
 
-- Status: IN_PROGRESS
+- Status: VERIFYING owner acceptance
 - Agreed: 23 October 2026.
 - Depends on: M5-001 library layout and content audit; M5-004 family catalogue.
-- Delivery: Local 0.3.0 implementation and first-pass sidecar seeding. Verification
-  and approved Linux/TV delivery are in progress, not yet deployed.
+- Delivery: 0.3.0 implemented, tested, PUSHED, PACKAGED and privately DEPLOYED.
+  Official SDK install/launch passed. Owner native-TV acceptance remains.
 - Authority: Owner now explicitly requests implementation, sensible first-pass
   images for all families and later visual correction. Separately approved
   pushing this feature for Linux checks and updating the TV in place. No merge,
@@ -54,7 +54,43 @@ Commands: `npm run check`, `node --test --test-reporter=dot test/*.test.cjs`,
 `npm run build`; `node scripts/browser-check.cjs` with the documented scenario,
 recovery and live renderer environment variables. `git diff --check` passes.
 Private `Family-Artwork/verify.cjs` records live coverage and old/new identities.
-Linux checks and package verification are next. No deployed 0.3.0 claim yet.
+Linux and package checks completed as recorded below.
+
+## Delivery evidence
+
+Tested runtime source `bfea788954c2c96880cc8aa1fc2a81e4d5f8ed12`, pushed on the
+existing feature branch. [Linux run 40015738405](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/40015738405),
+job `120627212607`, runner `gsvs-ums-custom` with self-hosted/Linux/X64/
+ums-custom-ci labels. App check, all 70 tests and build pass. Focused custom
+server tests and final cleanup pass. Full Java: 538 tests, one failure, zero
+errors, eight skipped. Only the known M1-002 JettyStreamClientImplTest timeout
+exception mismatch remains. The overall workflow is not all green.
+
+Official Samsung SDK signed, installed in place and launched 0.3.0 on
+23 October 2026, install and launch exit codes both zero. Same app ID
+`GSVSUMSTVC.TVClient` and author certificate chain. Retained package
+`UMSTVClient.wgt`, SHA-256
+`B45DBC07CA8EACF19123234743658CBC1209E568D7364B6C810E67BDC7203121`.
+All eight runtime files match tested source. Six changed from 0.2.3: app.js,
+core.js, family.js, family-ui.js, index.html and style.css. Startup/player code
+and launcher icon are unchanged. Entire private runtime configuration matches
+0.2.3, including names, progress aliases, wake settings and 24 rejected-art keys.
+No parental recovery request, uninstall, storage wipe, media rename or server
+restart. No merge or public binary release.
+
+Private `Family-Artwork` journals hold package/deployment/CI evidence, coverage,
+HTTP results and provisional-image provenance. Live share now has 1,415 files:
+the same 1,245 videos plus 170 companions, including 77 newly seeded JPEGs and
+the preserved PNG. Original migration reports remain historical, not rewritten.
+To undo a seeded image, match its exact path and SHA to the private journal,
+then remove only that sidecar. Do not remove an owner's later replacement or
+the preserved image. No automated undo was run. Prior signed 0.2.3 retained;
+downgrade not tested and must not be forced by uninstalling or clearing storage.
+
+Next: owner checks the actual wall, parental artwork/refresh navigation and
+retained PIN/progress. Automated/native-SDK evidence is not that acceptance.
+Refine provisional images through the photo hitlist and deeper overrides.
+Existing Hub row updated locally for 0.3.0, not published; no metrics or APK work.
 
 The original plan below is historical where superseded by this checkpoint.
 
