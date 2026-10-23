@@ -58,10 +58,11 @@
       }
     };
   }
-  function label(item) {
+  function metadata(item) {
     var info = C.mediaName(item.title), kind = item.kind || info.kind;
-    return [info.title, info.year || item.year, kind === 'tv show' ? 'Series' : kind === 'extra content' ? 'Bonus content' : kind === 'film' ? 'Film' : item.folder ? 'Collection' : 'Video'].filter(Boolean).join(' - ');
+    return [info.year || item.year, kind === 'tv show' ? 'Series' : kind === 'extra content' ? 'Bonus content' : kind === 'film' ? 'Film' : item.folder ? 'Collection' : 'Video'].filter(Boolean).join(' - ');
   }
+  function label(item) { return C.cleanTitle(item.title) + ' - ' + metadata(item); }
   function episodeOrder(a, b) {
     var x = C.mediaName(a.title), y = C.mediaName(b.title);
     if (a.season !== '' && a.season != null && b.season !== '' && b.season != null && a.episode && b.episode) return Number(a.season) - Number(b.season) || parseInt(a.episode, 10) - parseInt(b.episode, 10) || x.title.localeCompare(y.title);
@@ -146,6 +147,21 @@
     if (!codeRecord(record)) throw new Error('Saved parental code is invalid. Do not reset TV storage; contact the app administrator.');
     return validCode(code) && code.length === record.length && (await codeDigest(code, record.salt, crypto)) === record.digest;
   }
+  /** A private, owner-authorised signed build can request one code-only reset.
+   * Consume each nonce before deleting the credential. If storage fails, stay
+   * locked and use a new recovery request, never erase unrelated TV state.
+   */
+  function recoverCode(storage, nonce) {
+    if (!nonce) return false;
+    if (!/^[a-f0-9]{32}$/.test(nonce)) throw new Error('Invalid parental recovery request.');
+    var marker = 'kids-tv-parent-recovery:' + nonce;
+    if (storage.getItem(marker) === 'consumed') return false;
+    storage.setItem(marker, 'consumed');
+    if (storage.getItem(marker) !== 'consumed') throw new Error('Parental recovery could not be saved.');
+    storage.removeItem('kids-tv-parent-code');
+    if (storage.getItem('kids-tv-parent-code') !== null) throw new Error('Parental code could not be reset.');
+    return true;
+  }
   /** No visible entry UI on kids home. Navigation, pauses and visibility clear
    * the buffer; repeated attempts receive a bounded local cooldown.
    */
@@ -157,7 +173,7 @@
       digit: async function (digit) {
         var time = now();
         if (!/^\d$/.test(digit) || busy || time < lockedUntil) return false;
-        if (time - last > 4000) buffer = '';
+        if (time - last > 15000) buffer = '';
         last = time; buffer += digit;
         if (buffer.length < length) return false;
         var attempt = buffer; buffer = ''; busy = true;
@@ -170,5 +186,5 @@
       }
     };
   }
-  return { density: density, wall: wall, spread: spread, shuffled: shuffled, label: label, queue: queue, catalogue: catalogue, ignored: ignored, validCode: validCode, codeRecord: codeRecord, newCode: newCode, checkCode: checkCode, gate: gate };
+  return { density: density, wall: wall, spread: spread, shuffled: shuffled, metadata: metadata, label: label, queue: queue, catalogue: catalogue, ignored: ignored, validCode: validCode, codeRecord: codeRecord, newCode: newCode, checkCode: checkCode, recoverCode: recoverCode, gate: gate };
 }));

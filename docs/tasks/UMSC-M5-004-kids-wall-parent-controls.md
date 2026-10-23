@@ -158,7 +158,8 @@ These support implementation choices, not a claim of actual-device testing.
 
 ## Remaining acceptance and known limits
 
-STOP for owner installation approval. Native numeric/virtual keypad input,
+Installation was subsequently approved and completed on 23 October, as recorded
+below. Native numeric/virtual keypad input,
 secure-storage support, frame rate at chosen density, art, codecs/audio/seek,
 complete real queue transitions, persisted code/rotation/resume and physical
 wake/reconnect still need the TV. Installation alone will not complete them.
@@ -181,3 +182,47 @@ CI. No merge or binary release. Linux run identity/results and final signed
 package/source-byte evidence will be added after completion. Installed TV still
 runs 0.1.1. STOP here for installation approval after checks, update in place
 with the existing author certificate, and preserve the previous signed package.
+
+## In-place TV deployment, 23 October 2026
+
+Owner turned the TV on and confirmed it should be reachable, superseding the
+22 October installation hold. Owner also authorised UMS startup if needed.
+Read-only SCM inspection found the existing UniversalMediaServer service
+Running with automatic startup. Its configured device description returned
+HTTP 200. No service restart, configuration change or server upgrade was needed.
+The deferred adult-root rename remains deferred; no media changes or DVD import.
+
+SDK connection identified the intended Samsung UE50TU7100KXXU. Rehashed saved
+`UMSTVClient.wgt` before deployment: version 0.2.0, app ID
+`GSVSUMSTVC.TVClient`, SHA-256
+`AF13F91FC3A0A1D0AE4D999731E84C8994477CA8D15D943D3657554BD0530425`.
+`git diff d2d59a7d1993c9664ba10449c25ed7ebb0a222bb HEAD -- tv-app`
+was empty before these documentation-only edits. No rebuild or resign.
+
+Commands, with the private serial substituted at execution:
+
+```powershell
+sdb connect <TV_SERIAL>
+sdb devices
+tizen install -n UMSTVClient.wgt -s <TV_SERIAL> -- <CHECKOUT>/tv-app/dist/.buildResult
+tizen run -p GSVSUMSTVC.TVClient -s <TV_SERIAL>
+```
+
+Official SDK install exited 0 and reported installation completed successfully.
+Run exited 0 and reported launched PID 3825, debug 0. This is an in-place update,
+not an uninstall/reinstall; no app storage was reset. Actual preservation of old
+progress still requires owner testing. Prior and current signed recovery
+packages remain private. Do not uninstall to recover or assume an older package
+can downgrade without a separate SDK/device check.
+
+Deployment evidence is recorded separately from the historical pre-install
+package-verification JSON. No new app/server source changes, so the recorded
+workstation and Linux checks were not rerun. Local `git diff --check` is the
+documentation check. M5-004 remains VERIFYING until physical acceptance.
+
+GSVS continuity records and the single canonical Hub row are updated locally,
+not pushed. Existing metrics were not refreshed; no Android rebuild, merge,
+public binary release or observed Hub viewer refresh. Next action is owner
+testing of the actual wall, arrows/OK/Back, numeric setup, native playback,
+audio/seek, queue completion and persisted code/progress/rotation. SDK launch
+does not establish these or a real sleep/shutdown wake cycle.

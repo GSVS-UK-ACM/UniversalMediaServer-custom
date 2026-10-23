@@ -106,8 +106,38 @@ test('invisible digit buffer resets on pause/navigation and cools down after fiv
   const gate = F.gate(5, async code => { attempts++; return code === '12345'; }, () => time);
   for (const d of '12') await gate.digit(d); gate.reset();
   for (const d of '345') assert.equal(await gate.digit(d), false);
-  time += 5000; for (const d of '1234') await gate.digit(d); assert.equal(await gate.digit('5'), true);
+  time += 16000; for (const d of '1234') await gate.digit(d); assert.equal(await gate.digit('5'), true);
   for (let i = 0; i < 25; i++) await gate.digit('0');
   const before = attempts; for (const d of '12345') assert.equal(await gate.digit(d), false); assert.equal(attempts, before);
   time += 31000; for (const d of '1234') await gate.digit(d); assert.equal(await gate.digit('5'), true);
+});
+
+test('tile metadata retains evidenced year/type without inventing a missing year', () => {
+  assert.equal(F.metadata({ title: '(film) (2002) Example (PAL DVD Remux)' }), '2002 - Film');
+  assert.equal(F.metadata({ title: 'Example', kind: 'tv show' }), 'Series');
+  assert.equal(F.metadata({ title: 'Example', kind: 'extra content', year: '2003' }), '2003 - Bonus content');
+});
+
+test('physical-remote entry tolerates deliberate pauses while navigation and long idle reset it', async () => {
+  let time = 100;
+  const gate = F.gate(5, async value => value === '93518', () => time);
+  for (const d of '9351') { await gate.digit(d); time += 5000; }
+  assert.equal(await gate.digit('8'), true);
+  await gate.digit('9'); time += 16000;
+  for (const d of '3518') assert.equal(await gate.digit(d), false);
+  gate.reset(); for (const d of '9351') await gate.digit(d); assert.equal(await gate.digit('8'), true);
+});
+
+test('owner recovery resets only the code once and preserves a later new code on reload', () => {
+  const values = new Map([['kids-tv-parent-code', 'old record'], ['kids-tv-progress', 'progress'], ['kids-tv-density', 'density']]);
+  const storage = { getItem: key => values.has(key) ? values.get(key) : null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) };
+  const nonce = 'a'.repeat(32);
+  assert.equal(F.recoverCode(storage, ''), false); assert.equal(F.recoverCode(storage, nonce), true);
+  assert.equal(storage.getItem('kids-tv-parent-code'), null);
+  assert.equal(storage.getItem('kids-tv-progress'), 'progress'); assert.equal(storage.getItem('kids-tv-density'), 'density');
+  storage.setItem('kids-tv-parent-code', 'new record'); assert.equal(F.recoverCode(storage, nonce), false);
+  assert.equal(storage.getItem('kids-tv-parent-code'), 'new record');
+  assert.throws(() => F.recoverCode(storage, 'invalid'), /Invalid/);
+  assert.throws(() => F.recoverCode({ ...storage, setItem() { throw Error('full'); } }, 'b'.repeat(32)), /full/);
+  assert.equal(storage.getItem('kids-tv-parent-code'), 'new record');
 });

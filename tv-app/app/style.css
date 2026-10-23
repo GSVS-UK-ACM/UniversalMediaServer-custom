@@ -1,6 +1,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; width: 100%; height: 100%; color: #f3f5fa; font: 28px Arial, sans-serif; background: #090e19; }
-body { overflow: hidden; }
+html, body { overflow: hidden; }
+#shell { height: 100%; overflow: hidden; }
 button, input { font: inherit; }
 button { border: 2px solid transparent; border-radius: 12px; background: #202939; color: white; padding: 16px 26px; cursor: pointer; }
 button:focus, input:focus { outline: 4px solid #7de6d0; outline-offset: 5px; background-color: #2c3e50; }
@@ -34,8 +35,12 @@ h2 { font-size: 32px; margin: 0; }
 .empty { padding: 45px 0; color: #a8b4c5; }
 footer { height: 70px; padding: 20px 70px; border-top: 1px solid #242c3a; color: #8b9cb1; font-size: 20px; display: flex; }
 footer span { margin-right: 36px; } #status { margin-left: auto; color: #7de6d0; }
-.overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 20; background: #060b15f5; display: flex; align-items: center; justify-content: center; }
-.panel { width: 1160px; padding: 60px; background: #141e2d; border: 1px solid #3a4c60; border-radius: 24px; }
+.overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 20; background: #060b15; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.panel { width: 1160px; max-height: calc(100vh - 80px); overflow-y: auto; overscroll-behavior: contain; padding: 60px; background: #141e2d; border: 1px solid #3a4c60; border-radius: 24px; }
+/* Hide underlying native scroll surfaces too. Some TV engines composite
+   scrollbars above a translucent modal backdrop. */
+body.modal-open #shell { visibility: hidden; }
+body.modal-open #content, body.modal-open .shelf { overflow: hidden; }
 .panel label { display: block; margin: 28px 0 14px; color: #b8c6d7; }
 .panel input { width: 100%; padding: 22px; background: #080e18; color: white; border: 1px solid #526074; border-radius: 10px; margin-bottom: 26px; }
 .panel button { margin-right: 20px; }
@@ -60,7 +65,11 @@ body.playing { background: transparent; }
 #wall-viewport { height: calc(100% - 65px); width: 100%; overflow: hidden; position: relative; border-radius: 12px; }
 #wall-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; will-change: transform; }
 .wall-tile { position: absolute; padding: 6px; }
-.wall-art { width: 100%; height: 100%; position: relative; overflow: hidden; background: #1a293b; border-radius: 8px; }
+.wall-art { width: 100%; height: calc(100% - 62px); position: relative; overflow: hidden; background: #1a293b; border-radius: 8px 8px 0 0; }
+.wall-tile-caption { height: 62px; padding: 6px 10px; background: #111e30; border-radius: 0 0 8px 8px; }
+.wall-tile-title, .wall-tile-meta { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.wall-tile-title { font-size: 22px; line-height: 28px; }
+.wall-tile-meta { color: #b8d6d1; font-size: 18px; line-height: 22px; }
 .wall-art img { position: absolute; width: 100%; height: 100%; object-fit: contain; top: 0; left: 0; }
 .wall-fallback { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; padding: 12px; text-align: center; font-size: 21px; color: #d5e9e5; }
 #wall-focus { position: absolute; z-index: 3; background: transparent; border: 5px solid #7de6d0; border-radius: 12px; padding: 0; outline: none; box-shadow: 0 0 22px #000c; }
@@ -75,8 +84,7 @@ body.playing { background: transparent; }
 .parent-actions { display: flex; }
 .parent-actions button { font-size: 23px; }
 .density-controls { display: flex; align-items: center; }
-.density-controls label { display: inline; margin: 15px; }
-.density-controls input { width: 150px; margin: 15px; }
+.density-controls button { min-width: 230px; margin-top: 20px; margin-bottom: 10px; }
 #parent-error, #pin-error { min-height: 32px; color: #ffcf9e; }
 #pin-panel .panel { padding: 35px 55px; }
 #pin-panel h1 { font-size: 45px; }

@@ -2,6 +2,13 @@
 
 Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 
+Current physical-TV follow-up: **UMSC-M5-005**, VERIFYING. See
+`docs/tasks/UMSC-M5-005-tv-feedback.md`. Owner confirms 0.2.0 parental bootstrap,
+personal-code confirmation and saving, working dwell and playback starting.
+Labels, remote settings and failed saved-code re-entry are fixed locally.
+Owner approved 0.2.1 CI push and in-place update with code-only recovery after
+checks. Actual device acceptance remains pending; preserve progress.
+
 ## M1: Build and verification infrastructure
 
 ### UMSC-M1-001: Provision the GSVS Linux runner
@@ -179,8 +186,12 @@ bulk transfer and replacement still need a preview and owner approval.
 - Status: VERIFYING
 - Goal: Deliver the owner-agreed simple kids interface and retain adult shelves,
   with a forced personal-code setup, Reset Home and filename-derived labels.
-- Authority: Commit/push the feature branch for CI. STOP before TV installation.
-  No merge, binary release, title relocation, service restart or rip migration.
+- Authority: Commit/push the feature branch for CI. Owner subsequently approved
+  TV installation on 23 October and UMS startup if needed. No merge, binary
+  release, title relocation or rip migration.
 - Evidence: `docs/tasks/UMSC-M5-004-kids-wall-parent-controls.md`.
-- Next action: Complete final candidate verification/CI and ask the owner before
-  installing in place. Keep previous author certificate and recovery package.
+- Delivery: Verified signed 0.2.0 installed in place and SDK launch succeeded
+  on 23 October. Existing UMS service was running and HTTP 200; no restart,
+  uninstall or media change. Local evidence only, not pushed.
+- Next action: Owner verifies actual TV input, wall performance, playback and
+  persisted state. Keep previous author certificate and recovery package.

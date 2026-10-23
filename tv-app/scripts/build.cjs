@@ -18,6 +18,12 @@ if (config.descriptionUrl) {
 // stay outside Git. Only the data, never its workstation path, enters the app.
 const privateNames = config.privateNamesFile ? JSON.parse(fs.readFileSync(path.resolve(root, config.privateNamesFile), 'utf8')) : {};
 const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder, libraryPaths: config.libraryPaths || {}, sourceNames: privateNames.sourceNames || config.sourceNames || {}, titleAliases: privateNames.titleAliases || config.titleAliases || [], wake: Startup.wakeConfig(config.wake) };
+// Administrative code recovery is explicit private build configuration, not a
+// public fallback PIN. A consumed token never resets a later replacement code.
+if (config.parentalRecoveryNonce) {
+  if (!/^[a-f0-9]{32}$/.test(config.parentalRecoveryNonce)) throw new Error('Invalid private parental recovery nonce');
+  runtimeConfig.parentalRecoveryNonce = config.parentalRecoveryNonce;
+}
 fs.writeFileSync(path.join(out, 'connection.json'), JSON.stringify(runtimeConfig));
 if (config.displayName) {
   const escaped = String(config.displayName).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c]));

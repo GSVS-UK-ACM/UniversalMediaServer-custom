@@ -1,5 +1,39 @@
 # Handover
 
+## Active follow-up: first TV feedback, 23 October 2026
+
+See [M5-005](tasks/UMSC-M5-005-tv-feedback.md). Owner confirms 0.2.0 wall,
+working dwell info, parental setup and real playback starting. Saved-code
+re-entry failed; density inputs/Save and scrollbar bleed need fixes. 0.2.1
+adds visible tile year/type, 5x3 fresh default, remote button sizing/Save,
+modal isolation, a slow-code-check/OK guard and owner-requested code-only
+recovery. No player/dwell rewrite, media changes or UMS restart.
+
+Owner approved pushing these fixes for the existing self-hosted checks and an
+in-place update after verification. Local checks are in progress. Installed TV
+still 0.2.0 until the later deployment checkpoint explicitly says otherwise.
+Do not collect the personal code or wipe viewing state. Keep DVD staging off UMS.
+
+## Latest delivery: TV 0.2.0 installed, 23 October 2026
+
+Owner approved the TV update after turning it on, then authorised UMS startup
+if needed. The existing Windows service was already Running and its configured
+device description returned HTTP 200. No restart, server upgrade, root rename
+or media changes were needed. Offline DVD staging remains off UMS.
+
+The verified signed 0.2.0 package was installed in place with the same app ID,
+then launched successfully through the official SDK. No uninstall or storage
+reset. Source remains `d2d59a7d1993c9664ba10449c25ed7ebb0a222bb`; package hash
+and deployment commands are in [M5-004](tasks/UMSC-M5-004-kids-wall-parent-controls.md).
+This supersedes the installation hold and installed-0.1.1 statements below.
+
+Next: owner checks the actual wall, arrows/OK/Back, numeric setup, playback,
+audio/seek and persisted state. SDK launch is not physical-device acceptance;
+M5-004 remains VERIFYING. Bootstrap `12345` must prompt a new personal 5-10 digit
+code twice on the TV. Do not collect the personal code in chat or source.
+Recovery packages remain private. This delivery evidence and the updated Hub
+row are local only, not pushed; no merge, public release or Hub viewer rebuild.
+
 ## Current checkpoint: family wall candidate, 22 October 2026
 
 Owner approved implementation and a feature-branch CI push before DVD intake

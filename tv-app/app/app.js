@@ -249,6 +249,19 @@
   $('do-search').onclick = search; $('cancel-search').onclick = back;
   $('pause').onclick = function () { player.toggle(); showHud(); }; $('rewind').onclick = function () { player.seek(-30); showHud(); };
   $('forward').onclick = function () { player.seek(30); showHud(); }; $('stop').onclick = stop;
+  // Each modal owns focus and scrolling. Observe visibility changes centrally
+  // so setup/search/code/settings cannot leave a stale backdrop on close.
+  var overlayIds = ['parent-panel', 'pin-panel', 'setup', 'search-panel'];
+  function syncOverlay() {
+    var open = overlayIds.some(function (id) { return !$(id).classList.contains('hidden'); });
+    document.body.classList.toggle('modal-open', open);
+    // A close handler cannot focus the hidden shell until the backdrop state
+    // has been removed. Restore focus after that state transition, not before.
+    if (!open && !document.activeElement.getClientRects().length) (familyUI && familyUI.isKids() ? $('wall-focus') : $('settings')).focus();
+  }
+  var overlayObserver = new MutationObserver(syncOverlay);
+  overlayIds.forEach(function (id) { overlayObserver.observe($(id), { attributes: true, attributeFilter: ['class'] }); });
+  syncOverlay();
   document.addEventListener('keydown', function (event) {
     var code = event.keyCode;
     if (familyUI && familyUI.key(event)) return;

@@ -60,6 +60,14 @@ Pure family and name-planner contracts run under `npm test`. Naming authority
 tests inject conflicting online titles and ensure file labels win without the
 wrong poster/plot or a file modification date becoming a release year.
 
+0.2.1 fixtures also assert tile year/type with or without artwork, a 5x3 fresh
+default, saved density preservation, arrows-only adjustment/Save/Back, modal
+scroll isolation and OK during deliberately slow PBKDF2 verification.
+`TV_CODE_RECOVERY=1` runs the same full browser flow with a synthetic corrupt
+old credential and one-shot private recovery. Subsequent reload/code re-entry
+must preserve the replacement code and existing progress. Never use a real PIN
+or recovery nonce in test fixtures or CI configuration.
+
 Startup recovery contracts are in `tv-app/test/startup.test.cjs`. Browser fixture
 startup modes use `TV_STARTUP_SCENARIO=online`, `offline` or `empty` with the
 same browser-check command. They verify wake/reconnect sequencing without real

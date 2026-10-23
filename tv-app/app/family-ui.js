@@ -5,8 +5,8 @@
     var C = window.KidsCore, F = window.KidsFamily, $ = function (id) { return document.getElementById(id); };
     var parents = false, config = {}, connection = '', model, catalogue = [], roots = {}, generation = 0;
     var dwellTimer, motionTimer, pendingDirection = '', moving = false, codeGate, record, recordError = '', pinPurpose = 'setup', inputGeneration = 0;
-    var dimensions = { columns: 7, rows: 5 }, storage = window.localStorage;
-    try { dimensions = JSON.parse(storage.getItem('kids-tv-density') || JSON.stringify(dimensions)); dimensions = F.density(dimensions.columns, dimensions.rows); } catch (e) { dimensions = { columns: 7, rows: 5 }; }
+    var dimensions = { columns: 5, rows: 3 }, draftDimensions, authenticating = false, storage = window.localStorage;
+    try { dimensions = JSON.parse(storage.getItem('kids-tv-density') || JSON.stringify(dimensions)); dimensions = F.density(dimensions.columns, dimensions.rows); } catch (e) { dimensions = { columns: 5, rows: 3 }; }
     // A corrupt saved credential is NOT equivalent to first launch. Never
     // silently restore the public bootstrap code over existing parental state.
     try {
@@ -16,9 +16,11 @@
     function message(value) { hooks.status(value); }
     function hideDetails() { clearTimeout(dwellTimer); $('tile-details').classList.add('hidden'); }
     function refreshGate() {
-      codeGate = F.gate(record ? record.length : 5, function (value) {
+      codeGate = F.gate(record ? record.length : 5, async function (value) {
         if (recordError) throw new Error(recordError);
-        return F.checkCode(value, record, window.crypto);
+        authenticating = true; message('Checking parental code…');
+        try { var ok = await F.checkCode(value, record, window.crypto); message(ok ? '' : 'Code not recognised. Press an arrow, then try again.'); return ok; }
+        finally { authenticating = false; }
       });
     }
     refreshGate();
@@ -54,7 +56,10 @@
           img.onerror = function () { if (img.parentNode) img.parentNode.removeChild(img); };
           img.src = cell.item.artwork; art.appendChild(img);
         }
-        tile.appendChild(art); layer.appendChild(tile);
+        var caption = element('div', 'wall-tile-caption');
+        caption.appendChild(element('span', 'wall-tile-title', C.cleanTitle(cell.item.title)));
+        caption.appendChild(element('span', 'wall-tile-meta', F.metadata(cell.item)));
+        tile.appendChild(art); tile.appendChild(caption); layer.appendChild(tile);
       });
       var focus = $('wall-focus');
       focus.style.width = (100 / dimensions.columns) + '%'; focus.style.height = (100 / dimensions.rows) + '%';
@@ -145,8 +150,54 @@
     }
     function settings() {
       if (!parents) return;
-      $('density-columns').value = dimensions.columns; $('density-rows').value = dimensions.rows;
+      draftDimensions = { columns: dimensions.columns, rows: dimensions.rows }; densityLabels();
       $('parent-error').textContent = ''; $('parent-panel').classList.remove('hidden'); $('reset-home').focus();
+    }
+    function densityLabels() {
+      ['columns', 'rows'].forEach(function (axis) {
+        var control = $('density-' + axis), name = axis === 'columns' ? 'Columns' : 'Rows';
+        control.textContent = name + ': ' + draftDimensions[axis];
+        control.setAttribute('aria-label', name + ': ' + draftDimensions[axis] + '. Left or right to adjust.');
+      });
+    }
+    function adjustDensity(axis, change, wrap) {
+      var maximum = axis === 'columns' ? 11 : 7, value = draftDimensions[axis] + change;
+      draftDimensions[axis] = wrap && value > maximum ? 3 : Math.max(3, Math.min(maximum, value));
+      densityLabels(); $('parent-error').textContent = 'Not saved yet. Press Down to reach Save tile size.';
+    }
+    /** Number inputs enter Samsung's text-edit mode and swallow arrows. These
+     * buttons keep adjustment and every exit on an explicit remote focus path.
+     * Only the panel scrolls; scrollIntoView can also scroll the page/library.
+     */
+    function settingsKey(event) {
+      if ($('parent-panel').classList.contains('hidden')) return false;
+      var code = event.keyCode, focused = document.activeElement.id;
+      if (code === 13 || code === 65376) {
+        event.preventDefault(); if (document.activeElement.tagName === 'BUTTON') document.activeElement.click(); return true;
+      }
+      if (code < 37 || code > 40) return false;
+      event.preventDefault();
+      if ((focused === 'density-columns' || focused === 'density-rows') && (code === 37 || code === 39)) {
+        adjustDensity(focused.slice(8), code === 37 ? -2 : 2); return true;
+      }
+      var paths = {
+        'reset-home': { 39: 'change-code', 40: 'density-columns' },
+        'change-code': { 37: 'reset-home', 39: 'parent-connection', 40: 'density-columns' },
+        'parent-connection': { 37: 'change-code', 40: 'density-rows' },
+        'density-columns': { 38: 'reset-home', 40: 'density-rows' },
+        'density-rows': { 38: 'density-columns', 40: 'save-density' },
+        'save-density': { 38: 'density-rows', 40: 'back-to-kids' },
+        'back-to-kids': { 38: 'save-density', 39: 'parent-close' },
+        'parent-close': { 37: 'back-to-kids', 38: 'save-density' }
+      };
+      var target = $((paths[focused] || {})[code] || focused || 'reset-home');
+      if (target) {
+        target.focus();
+        var panel = $('parent-panel').querySelector('.panel'), bounds = panel.getBoundingClientRect(), rect = target.getBoundingClientRect();
+        if (rect.top < bounds.top + 16) panel.scrollTop += rect.top - bounds.top - 16;
+        if (rect.bottom > bounds.bottom - 16) panel.scrollTop += rect.bottom - bounds.bottom + 16;
+      }
+      return true;
     }
     function returnKids(reload) {
       generation++; inputGeneration++; parents = false; codeGate.reset(); hideDetails(); cancelMotion();
@@ -193,6 +244,8 @@
     $('cancel-code').onclick = overlayBack;
     $('change-code').onclick = function () { $('parent-panel').classList.add('hidden'); pinForm('change'); };
     $('parent-close').onclick = overlayBack;
+    $('density-columns').onclick = function () { adjustDensity('columns', 2, true); };
+    $('density-rows').onclick = function () { adjustDensity('rows', 2, true); };
     $('parent-connection').onclick = function () { $('parent-panel').classList.add('hidden'); hooks.setup(); };
     $('back-to-kids').onclick = function () { returnKids(true); };
     $('reset-home').onclick = function () {
@@ -202,7 +255,7 @@
     };
     $('save-density').onclick = function () {
       try {
-        var next = F.density($('density-columns').value, $('density-rows').value);
+        var next = F.density(draftDimensions.columns, draftDimensions.rows);
         storage.setItem('kids-tv-density', JSON.stringify(next)); dimensions = next;
         if (model) model = F.wall(model.order, dimensions.columns, dimensions.rows, true);
         $('parent-error').textContent = 'Tile size saved. Return to kids to try it.';
@@ -211,7 +264,15 @@
     classes();
     return {
       isKids: function () { return !parents; },
-      start: function (value) { config = value || {}; },
+      start: function (value) {
+        config = value || {};
+        try {
+          if (F.recoverCode(storage, config.parentalRecoveryNonce)) {
+            record = null; recordError = ''; inputGeneration++; refreshGate();
+            message('Parental code reset. Enter 12345 to choose a new code.');
+          }
+        } catch (error) { recordError = error.message; message(recordError); }
+      },
       ready: function (url) { connection = url; if (parents) openParents(); else loadKids(); },
       settings: settings,
       overlay: function () { return !$('pin-panel').classList.contains('hidden') ? $('pin-panel') : !$('parent-panel').classList.contains('hidden') ? $('parent-panel') : null; },
@@ -219,7 +280,11 @@
       restore: function () { if (!parents) { render(); return true; } return false; },
       lock: function () { returnKids(false); },
       key: function (event) {
+        if (settingsKey(event)) return true;
         var code = event.keyCode, numeric = /^[0-9]$/.test(event.key || '') || code >= 48 && code <= 57 || code >= 96 && code <= 105;
+        // On a slower TV PBKDF2 is still pending when a user presses OK after
+        // the final digit. Do not cancel that result and start the centred film.
+        if (authenticating && (code === 13 || code === 65376)) { event.preventDefault(); return true; }
         if (numeric && !parents && !hooks.playing() && $('pin-panel').classList.contains('hidden')) { digit(event); return true; }
         codeGate.reset();
         if (!parents && !hooks.playing() && $('pin-panel').classList.contains('hidden')) inputGeneration++;

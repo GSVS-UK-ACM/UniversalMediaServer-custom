@@ -5,11 +5,13 @@ shelves and category browsing rather than relying on the TV's DLNA folder icons.
 The Samsung native AVPlay player opens UMS media URLs. The PC still handles
 transcoding when its renderer profile requires it.
 
-## Family interface (0.2.0 candidate, not yet installed)
+## Family interface (0.2.1 fixes, device acceptance pending)
 
 Fresh launches and foreground returns start in kids' mode. Its only visible
 controls are arrows, OK and Back. The artwork wall moves under a fixed central
-selection. Default 7x5 dimensions are odd and adjustable in parental settings.
+selection. Default 5x3 dimensions are odd and adjustable in parental settings.
+Valid saved sizes survive updates. Tile captions always show title, evidenced
+year (when known) and content type, independently of artwork.
 The whole catalogue wraps, with one mixed arrangement per wall session, not a
 new shuffle on each arrow. Dwell for one second reveals info; OK plays directly.
 TV collections play ordered full cycles, starting one episode later per click.
@@ -22,6 +24,21 @@ kids, and **Reset Home to adult library**. Personal codes are salted PBKDF2
 records in TV-local storage, never plaintext in the package or source. Do not
 uninstall/reset app storage to update: it removes code, home and viewing state.
 Hidden entry is lightweight UI separation, not a UMS/DLNA access-control system.
+
+In parental settings focus Columns or Rows and use Left/Right to adjust by two.
+Up/Down moves through both controls to Save tile size, then Return to kids.
+No number input or on-screen keyboard is needed. Modals hide the underlying
+scroll surfaces and keep navigation inside the panel. Code entry allows up to
+15 seconds between digits. OK during an in-flight code check waits for that
+check instead of cancelling it and starting the centred film.
+
+Owner-authorised recovery can set a fresh 32-character lowercase hex
+`parentalRecoveryNonce` in ignored private connection configuration. A signed
+private build consumes that request once per TV and removes ONLY its parental
+credential. Progress, Home, grid size and queue starts are not cleared. The
+same request cannot erase a replacement code on relaunch. Storage errors stay
+locked; do not reuse a failed request or uninstall. No recovery request is
+included by default. Remove it from private configuration after delivery.
 
 Private connection configuration selects role paths, independent of labels:
 
