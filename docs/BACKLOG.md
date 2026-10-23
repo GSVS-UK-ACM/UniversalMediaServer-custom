@@ -5,9 +5,10 @@ Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 Current physical-TV follow-up: **UMSC-M5-005**, VERIFYING. See
 `docs/tasks/UMSC-M5-005-tv-feedback.md`. Owner confirms 0.2.0 parental bootstrap,
 personal-code confirmation and saving, working dwell and playback starting.
-Labels, remote settings and failed saved-code re-entry are fixed locally.
-Owner approved 0.2.1 CI push and in-place update with code-only recovery after
-checks. Actual device acceptance remains pending; preserve progress.
+Labels, remote settings and slow-verification/OK race are fixed in 0.2.1,
+installed in place and SDK-launched with approval. Code-only recovery included.
+54 contracts/browser flows pass; Linux app/custom Java/cleanup pass, full suite
+retains known M1-002 only. Device acceptance pending; preserve progress.
 
 ## M1: Build and verification infrastructure
 

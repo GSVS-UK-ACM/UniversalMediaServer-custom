@@ -1,5 +1,27 @@
 # Handover
 
+## Latest delivery: TV 0.2.1 installed, 23 October 2026
+
+Owner-approved in-place update and SDK launch succeeded, source
+`4ead7ea2f2786d7b8f370fad016b2deb41a967cd`. See
+[M5-005](tasks/UMSC-M5-005-tv-feedback.md) for package/run identities and checks.
+Default 5x3, visible year/type, remote-only size buttons/Save and modal isolation
+are implemented. Valid saved sizes survive. OK during slow code verification
+no longer cancels login and starts a film. Private package requests the approved
+one-time code-only recovery, not a total wipe. No UMS restart or media changes.
+
+54 contracts and online/offline/empty/recovery browser flows pass; live read-only
+render passes. Linux custom Java/app/cleanup pass; full suite retains only known
+M1-002 (538 tests, one failure, eight skips). Not all-green CI.
+
+Next: owner enters 12345, sets a fresh code twice, returns to kids and verifies
+re-entry, then remote-only Save and labels. Do not collect the personal code.
+0.2.0 dwell/playback starting are owner-confirmed; 0.2.1 code/input/visual/state,
+audio/seek/queues and wake still need explicit acceptance. Remove private build
+recovery request after delivery and retain signed recovery packages. Hub row
+local-only, no Android rebuild/publication. Keep DVD staging offline. This
+supersedes older pending-install checkpoints below.
+
 ## Active follow-up: first TV feedback, 23 October 2026
 
 See [M5-005](tasks/UMSC-M5-005-tv-feedback.md). Owner confirms 0.2.0 wall,

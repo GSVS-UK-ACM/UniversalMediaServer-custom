@@ -1,6 +1,6 @@
 # UMSC-M5-005: First physical TV feedback
 
-- Status: IN_PROGRESS
+- Status: VERIFYING
 - Owner: Codex, 23 October 2026.
 - Baseline: `210bc7f2de53780cdc706c98d80956e728c4a58b` plus preserved local
   M5-004 deployment documentation. Installed runtime is 0.2.0 at `d2d59a7d1`.
@@ -76,3 +76,69 @@ unambiguous old progress; bootstrap/change/re-entry; slow verification + OK;
 modal scroll/focus; preserved valid density and invalid-density fallback.
 Offline/empty/recovery variants and Linux CI are being completed. No new TV
 package installed at this checkpoint. Final evidence will be appended below.
+
+## Final candidate evidence, 23 October 2026
+
+- Source `4ead7ea2f2786d7b8f370fad016b2deb41a967cd` is committed and PUSHED
+  with owner approval, not merged or publicly released.
+- Final syntax, 54 unit contracts and build pass. `TV_CHROMIUM_PATH` selects
+  workstation Chrome. `node scripts/browser-check.cjs` passes for
+  `TV_STARTUP_SCENARIO=online`, `offline`, `empty` and online with
+  `TV_CODE_RECOVERY=1`. Recovery starts with a synthetic corrupt credential,
+  preserves existing progress and does not erase the new code on reload.
+- `TV_DESCRIPTION_URL` read-only live catalogue/render check passes. The
+  private screenshot was inspected at 1920x1080: 5x3 wall, readable per-tile
+  title/year/type with and without artwork, centred frame. No live media played
+  by this check. Owner playback confirmation relates to installed 0.2.0.
+- Existing official SDK build/sign, without Target/Serial, produced private
+  `UMSTVClient.wgt` version 0.2.1, app ID `GSVSUMSTVC.TVClient`, SHA-256
+  `D939C92ECAB8BAC039204E64C7470166F62A66FA55B97D8719BE52F71C10AC65`.
+  All eight runtime JS/HTML/CSS files match current source bytes; both signatures
+  exist. 773 exact names and 770 progress aliases remain; private index path is
+  absent. The owner-requested one-time code recovery is included privately.
+  Installed 0.2.0 and candidate 0.2.1 signed packages are retained privately.
+- [Linux run 39878299561](https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/actions/runs/39878299561),
+  job `120169255007`, uses `gsvs-ums-custom` with
+  `self-hosted,Linux,X64,ums-custom-ci`, at the source commit above. Custom Java
+  regressions and app syntax/tests/build pass. Full suite and cleanup results
+  will be appended after completion, not inferred from successful app checks.
+
+Package is not installed at this evidence checkpoint. Owner has authorised
+in-place deployment after checks. Preserve progress/Home/density/queue keys,
+never uninstall. After first launch remove the recovery request from local
+build configuration; the signed package's consumed nonce remains a no-op on
+later launches. Ask owner to enter bootstrap 12345, choose a fresh code twice,
+return to kids and re-enter parents before declaring code recovery accepted.
+
+## Completed verification and deployment checkpoint
+
+Linux run above completed in 4m23s. Custom Java and Node 22 app syntax/54
+contracts/build pass. Full command `mvn --batch-mode verify -P testing
+-DdisableXmlReport=true -DreuseForks=false` reports 538 tests, one failure,
+zero errors and eight skips. Sole failure remains
+`JettyStreamClientImplTest.testJettyClientConnectTimeout:144`, expecting
+`SocketTimeoutException` but receiving `SocketException`, tracked as M1-002.
+Cleanup passes. Workflow whitespace step is skipped after the failure; local
+`git diff --check` passes. Overall CI is FAILURE, not all-green. No server Java
+source or assertions changed.
+
+Owner-approved in-place deployment completed 23 October. Rehashed package
+matches `D939C92ECAB8BAC039204E64C7470166F62A66FA55B97D8719BE52F71C10AC65`.
+Author certificate chains match the prior installed 0.2.0 recovery package.
+Official CLI install and run both exit 0: successful install and launched PID
+642, debug 0. Same app ID/author, no uninstall or total storage reset, no UMS
+restart/upgrade, no media changes or DVD import. Private packages and separate
+deployment evidence remain outside Git.
+
+The signed package requests one-time credential-only recovery. Its actual
+reset, new-code re-entry, remote sizing/Save and visual acceptance await the
+owner. No secret was collected or TV storage dumped. Remove the private
+recovery request from future local build configuration after delivery. Do not
+rebuild/resign and mistake different output for the installed hash.
+
+Installed runtime source is `4ead7ea2f2786d7b8f370fad016b2deb41a967cd`.
+Follow-up documentation does not change that package. No merge/public release.
+Single canonical Hub row is updated locally, not pushed; metrics unchanged,
+no Android rebuild or viewer acceptance. M5-005 remains VERIFYING until physical
+checks pass. Final DVD/artwork/content/duplicate/root/migration audits remain
+separate work.
