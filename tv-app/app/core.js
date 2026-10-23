@@ -76,6 +76,12 @@
         return { url: sameServerUrl(res.textContent, base), protocol: res.getAttribute('protocolInfo') || '', duration: res.getAttribute('duration') || '' };
       });
       var video = resources.filter(function (r) { return r.url && isVideoResource(r.protocol); })[0];
+      // Only explicitly named, server-served sidecars enter the artwork path.
+      // Ordinary photos never become films or playable queue entries. Prefer a
+      // TV-friendly JPEG rendition, not an inherited albumArtURI or thumbnail.
+      var covers = resources.filter(function (r) { return r.url && /^http-get:\*:image\/(jpeg|png):/i.test(r.protocol) && !/\/thumbnail\//i.test(r.url) && /(?:^|_)family-cover\.(png|jpe?g)$/i.test(resourceFilename(r.url)); });
+      covers.sort(function (a, b) { function rank(r) { return /JPEG_MED/i.test(r.protocol) ? 0 : /image\/jpeg/i.test(r.protocol) ? 1 : 2; } return rank(a) - rank(b); });
+      var cover = !video && /^object\.item\.imageItem(?:\.|$)/.test(text(node, 'class')) && /^family-cover(?:\.(png|jpe?g))?$/i.test(text(node, 'title')) ? covers[0] : null;
       var art = elements(node, 'albumArtURI').map(function (n) { return sameServerUrl(n.textContent, base); }).filter(Boolean)[0];
       if (!art) art = (resources.filter(function (r) { return /:image\//.test(r.protocol); })[0] || {}).url;
       // UMS dc:date can be the FILE MODIFICATION date, not a release year.
@@ -86,8 +92,8 @@
       // is repaired, without dropping the playable item or changing its name.
       var rejected = explicit && Array.isArray(rejectedArtwork) && rejectedArtwork.indexOf(resourceKey(explicit)) !== -1;
       var conflict = explicit && (titleConflict(explicit, serverTitle) || rejected);
-      return { id: node.getAttribute('id'), parentId: node.getAttribute('parentID'), title: explicit || serverTitle, serverTitle: serverTitle, folder: node.localName === 'container', className: text(node, 'class'), description: conflict ? '' : text(node, 'longDescription') || text(node, 'description'), series: explicit ? info.series : text(node, 'seriesTitle'), season: explicit ? info.season : text(node, 'episodeSeason'), episode: explicit ? info.episode : text(node, 'episodeNumber'), artwork: conflict ? '' : art || '', url: video ? video.url : '', duration: video ? video.duration : '' };
-    }).filter(function (item) { return item.id !== null && !/^#.*#$/.test(item.title) && (item.folder || item.url); });
+      return { id: node.getAttribute('id'), parentId: node.getAttribute('parentID'), title: explicit || serverTitle, serverTitle: serverTitle, folder: node.localName === 'container', className: text(node, 'class'), artworkOnly: !!cover, description: conflict ? '' : text(node, 'longDescription') || text(node, 'description'), series: explicit ? info.series : text(node, 'seriesTitle'), season: explicit ? info.season : text(node, 'episodeSeason'), episode: explicit ? info.episode : text(node, 'episodeNumber'), artwork: cover ? cover.url : conflict ? '' : art || '', url: video ? video.url : '', duration: video ? video.duration : '' };
+    }).filter(function (item) { return item.id !== null && !/^#.*#$/.test(item.title) && (item.folder || item.url || item.artworkOnly); });
     return { items: items, returned: Number(text(soap, 'NumberReturned')), total: Number(text(soap, 'TotalMatches')) };
   }
   function envelope(action, args) {

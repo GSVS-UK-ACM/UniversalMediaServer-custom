@@ -90,3 +90,7 @@ body.playing { background: transparent; }
 #pin-panel h1 { font-size: 45px; }
 #pin-panel .panel label { margin: 12px 0 7px; }
 #pin-panel .panel input { padding: 13px; margin-bottom: 8px; }
+#family-artwork { margin-top: 18px; }
+.artwork-row { display: flex; align-items: center; margin: 18px 0; padding: 12px; background: #0c1522; border-radius: 12px; }
+.artwork-row img { width: 170px; height: 100px; object-fit: contain; margin-right: 22px; }
+.artwork-row span { font-size: 23px; }

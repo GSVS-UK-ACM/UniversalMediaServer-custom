@@ -59,6 +59,38 @@ titles; mismatched plots/posters are suppressed rather than shown to children.
 Folder images inherited from a misidentified child are not trusted as a fallback.
 Missing artwork displays a readable title, pending the separate artwork audit.
 
+### Chosen family artwork (0.3.0)
+
+Place exactly one `family-cover.jpg`, `family-cover.jpeg` or `family-cover.png`
+in a family folder on the PC. Its films, series, bonus collections and queued
+clips inherit that picture. A deeper folder's cover overrides the parent only
+below that folder. Replacing a master keeps deeper overrides; removing a deeper
+cover restores inheritance. Files are the portable source of truth, not a
+TV-local URL database. Back up a chosen file before replacing it.
+
+Under parental settings open **Family artwork**, then **Refresh pictures from
+UMS** to preview coverage. This clears only browse/image caches, not the code,
+Home, watched state or episode starts. Returning to kids preserves the existing
+wall order and selected title when present. Images must already be visible in
+UMS; its ordinary supported folder rescan may be needed after adding files.
+No UMS restart or new web server is required. Kids cannot access these controls.
+
+Only same-server explicit sidecar image resources are accepted. Covers never
+enter playback, search results or episode queues. Invalid/ambiguous overrides
+show diagnostics and a readable fallback, never an unrelated scraped poster.
+Existing title-conflict protection still applies to automatic images/plots.
+Art selection does not rename files, alter metadata or imply age suitability.
+An existing collection spanning several branches retains its queue identity;
+its tile uses the first available explicit child choice in browse order, while
+each child's deeper image remains independent.
+
+For a provisional first pass, `node scripts/seed-family-artwork.cjs --root
+ROLE-DIRECTORY` previews missing covers. Add `--ffmpeg FFMPEG --report
+PRIVATE-JSON --apply` to create them from actual footage. Existing cover files
+are preserved. Source/time/hash evidence is private, outside Git. These are
+scene suggestions, not owner-approved posters; the simple visibility check
+cannot recognise characters or guarantee an ideal frame. Review images later.
+
 Optional `privateNamesFile` in ignored connection configuration selects generated
 exact filename/progress-alias data outside Git. `library-names.cjs` makes a dry
 name/companion plan; `rename-library-files.ps1` defaults to preflight and needs

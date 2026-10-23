@@ -30,7 +30,15 @@
       <div class="parent-actions"><button id="reset-home">Reset Home to adult library</button><button id="change-code">Change parental code</button><button id="parent-connection">Connection settings</button></div>
       <h2>Kids' tile size</h2><p>Left / Right adjusts a size. Up / Down moves between controls. OK saves.</p>
       <div class="density-controls"><button id="density-columns">Columns: 5</button><button id="density-rows">Rows: 3</button><button id="save-density">Save tile size</button></div>
+      <button id="family-artwork">Family artwork</button>
       <p id="parent-error" role="status"></p><button id="back-to-kids" class="primary">Return to kids</button><button id="parent-close">Back to adult library</button>
+    </div>
+  </section>
+  <section id="artwork-panel" class="overlay hidden" aria-label="Family artwork">
+    <div class="panel parent-panel"><h1>Family artwork</h1>
+      <p>On the PC, put one family-cover.jpg or family-cover.png in a family folder. Films, series and extras below it share that picture. Put another in a deeper folder for an override. Remove that file to inherit again.</p>
+      <button id="refresh-artwork">Refresh pictures from UMS</button><button id="close-artwork">Back to parental settings</button>
+      <p id="artwork-status" role="status"></p><div id="artwork-list"></div>
     </div>
   </section>
   <section id="pin-panel" class="overlay hidden" aria-label="Parental code setup">

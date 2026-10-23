@@ -4,6 +4,7 @@
   var server, current = { id: '0', title: 'Your library' }, history = [], cache = {}, viewToken = 0, activeItem = null, lastSave = 0, hudTimer;
   var stored = {}, connection = '', homeFolder = { id: '0', title: 'Your library' }, defaultHome, wakeSettings, lastPosition = 0, lastDuration = 0;
   var familyUI, playQueue = [];
+  var chosenArtwork = Object.create(null);
   var sourceNames = {}, titleAliases = [], rejectedArtwork = [], namesServer = '';
   try { stored = JSON.parse(localStorage.getItem('kids-tv-progress') || '{}'); connection = localStorage.getItem('kids-tv-server') || ''; } catch (e) {}
   function persist() {
@@ -77,7 +78,7 @@
       waitingMessage(value.phase === 'loading' ? 'The library is starting. We will refresh it for you.' : value.wakeError ? 'Still waiting for the media PC. A grown-up can also wake it using the phone app.' : 'Waiting for the media PC. Your films will appear automatically.');
     },
     ready: function (value) {
-      api = value.api; server = value.server; connection = server.description; homeFolder = value.home; cache = {}; history = [];
+      api = value.api; server = value.server; connection = server.description; homeFolder = value.home; cache = {}; history = []; chosenArtwork = Object.create(null);
       cache[homeFolder.id] = Promise.resolve(value.items);
       try { localStorage.setItem('kids-tv-server', connection); } catch (e) {}
       $('server-name').textContent = server.name; $('setup').classList.add('hidden');
@@ -109,6 +110,7 @@
     if (changed) persist();
   }
   function tile(item, onSelect) {
+    if (Object.prototype.hasOwnProperty.call(chosenArtwork, item.id)) item = Object.assign({}, item, { artwork: chosenArtwork[item.id] });
     var el = button('', onSelect || function () { select(item); }, 'tile'), art = node('div', 'tile-art');
     var fallback = node('span', 'fallback', item.folder ? 'COLLECTION' : 'PLAY'); art.appendChild(fallback);
     if (item.artwork) {
@@ -143,7 +145,7 @@
     try {
       var items = await browse(folder.id); if (token !== viewToken) return;
       migrateProgress(items, 'adults');
-      var videos = items.filter(function (i) { return !i.folder; }), folders = items.filter(function (i) { return i.folder; });
+      var videos = items.filter(function (i) { return !i.folder && !i.artworkOnly; }), folders = items.filter(function (i) { return i.folder; });
       var continueItems = Object.keys(stored).map(function (k) { return stored[k]; }).filter(function (s) { return s.server === connection && s.audience === 'adults' && s.position > 10 && !s.watched; }).sort(function (a, b) { return b.updated - a.updated; }).slice(0, 12).map(function (s) { return s.item; });
       if (folder.id === homeFolder.id) shelf('Continue watching', continueItems);
       shelf('Ready to watch', videos); shelf('Collections', folders);
@@ -157,12 +159,12 @@
         try { preview = await browse(child.id); }
         catch (err) { if (token === viewToken) status('A collection preview is unavailable. You can still open other collections.'); break; }
         if (token !== viewToken) return;
-        var entries = preview.filter(function (item) { return !item.folder; }).slice(0, 16);
+        var entries = preview.filter(function (item) { return !item.folder && !item.artworkOnly; }).slice(0, 16);
         if (entries.length) (function (f) { shelf(C.collectionTitle(f.title), entries, function () { openFolder(f, true); }); }(child));
       }
     } catch (err) { if (token === viewToken) { if (!document.hidden && !activeItem && err.retryable === true) connect(connection); else { status(err.message); $('home').focus(); } } }
   }
-  function select(item) { if (item.folder) openFolder(item, true); else play(item); }
+  function select(item) { if (item.artworkOnly) return; if (item.folder) openFolder(item, true); else play(item); }
   function showHud() { $('player-hud').classList.remove('hidden'); clearTimeout(hudTimer); hudTimer = setTimeout(function () { if (activeItem && !$('player-message').textContent) $('player-hud').classList.add('hidden'); }, 6500); }
   function saveProgress(position, duration, ended) {
     if (!activeItem) return;
@@ -185,6 +187,7 @@
     }
   });
   async function play(item, queued) {
+    if (!item || item.artworkOnly) return;
     if (!queued) playQueue = [];
     var token = ++viewToken;
     status('Opening film…');
@@ -251,7 +254,7 @@
   $('forward').onclick = function () { player.seek(30); showHud(); }; $('stop').onclick = stop;
   // Each modal owns focus and scrolling. Observe visibility changes centrally
   // so setup/search/code/settings cannot leave a stale backdrop on close.
-  var overlayIds = ['parent-panel', 'pin-panel', 'setup', 'search-panel'];
+  var overlayIds = ['parent-panel', 'pin-panel', 'artwork-panel', 'setup', 'search-panel'];
   function syncOverlay() {
     var open = overlayIds.some(function (id) { return !$(id).classList.contains('hidden'); });
     document.body.classList.toggle('modal-open', open);
@@ -293,7 +296,8 @@
   });
   window.addEventListener('pagehide', function () { startup.stop(); if (familyUI) familyUI.lock(); });
   familyUI = window.createFamilyUI({
-    status: status, browse: browse, migrate: function (items) { migrateProgress(items, 'kids'); }, connected: function () { return !!server && !startup.isWaiting(); }, playing: function () { return !!activeItem; },
+    status: status, browse: browse, refresh: function () { cache = {}; }, migrate: function (items) { migrateProgress(items, 'kids'); }, connected: function () { return !!server && !startup.isWaiting(); }, playing: function () { return !!activeItem; },
+    artwork: function (items) { chosenArtwork = Object.create(null); items.forEach(function (item) { if (item.artworkSource || item.sourceId) chosenArtwork[item.id] = item.artwork; }); },
     setup: showSetup, play: play,
     queue: function (items) { playQueue = items.slice(); play(playQueue[0], true); },
     parentHome: function (folder) { homeFolder = folder; history = []; openFolder(homeFolder, false); }

@@ -1,6 +1,6 @@
 {
   "name": "ums-tv-client",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "test": "node --test test/*.test.cjs",

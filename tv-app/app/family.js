@@ -46,6 +46,7 @@
       dimensions: size,
       position: function () { return position; },
       selected: function () { return order.length ? order[mod(position, order.length)] : null; },
+      select: function (id) { var index = order.findIndex(function (item) { return item.id === id; }); if (index >= 0) position = index; },
       move: function (direction) { position += { left: -1, right: 1, up: -size.columns, down: size.columns }[direction] || 0; position = order.length ? mod(position, order.length) : 0; },
       cells: function (margin) {
         var cells = [];
@@ -82,7 +83,7 @@
    */
   async function catalogue(browse, root, options) {
     options = options || {};
-    var pending = [{ folder: root, ancestors: [] }], seen = {}, files = [], visited = 0;
+    var pending = [{ folder: root, ancestors: [], chosen: null }], seen = {}, files = [], visited = 0;
     while (pending.length) {
       if (options.isCurrent && !options.isCurrent()) throw new Error('Catalogue cancelled');
       var task = pending.shift();
@@ -91,10 +92,26 @@
       if (++visited > (options.maxFolders || 400) || task.ancestors.length > 12) throw new Error('Kids library exceeds the safe catalogue limit. Choose a smaller root.');
       var children = await browse(task.folder.id);
       if (options.isCurrent && !options.isCurrent()) throw new Error('Catalogue cancelled');
+      var covers = children.filter(function (item) { return item.artworkOnly; }), chosen = task.chosen;
+      if (covers.length) {
+        // A broken/ambiguous explicit override shadows its parent. Never turn
+        // a failed owner's choice back into an unrelated scraped movie poster.
+        chosen = { url: '', folderId: task.folder.id, issue: covers.length > 1 ? 'Multiple family-cover files. Keep exactly one.' : '' };
+        if (covers.length === 1) {
+          var imageUrl = covers[0].artwork;
+          if (options.artworkRevision) { var fresh = new URL(imageUrl); fresh.searchParams.set('familyRefresh', String(options.artworkRevision)); imageUrl = fresh.href; }
+          var valid = !options.validateArtwork || await options.validateArtwork(imageUrl);
+          if (options.isCurrent && !options.isCurrent()) throw new Error('Catalogue cancelled');
+          chosen.url = valid ? imageUrl : '';
+          if (!valid) chosen.issue = 'Family image could not be loaded.';
+        }
+      }
+      if (options.folderArtwork) options.folderArtwork({ id: task.folder.id, title: task.folder.title, path: task.ancestors.concat([task.folder]).map(function (f) { return f.title; }), artwork: chosen ? chosen.url : '', explicit: covers.length > 0, issue: chosen ? chosen.issue : '', sourceId: chosen ? chosen.folderId : '' });
       children.forEach(function (item) {
         if (ignored(item)) return;
-        if (item.folder) pending.push({ folder: item, ancestors: task.ancestors.concat([task.folder]) });
-        else files.push({ item: item, folder: task.folder, ancestors: task.ancestors });
+        if (item.artworkOnly) return;
+        if (item.folder) pending.push({ folder: item, ancestors: task.ancestors.concat([task.folder]), chosen: chosen });
+        else files.push({ item: chosen ? Object.assign({}, item, { artwork: chosen.url, artworkSource: chosen.folderId, artworkIssue: chosen.issue }) : item, folder: task.folder, ancestors: task.ancestors });
       });
       if (files.length > (options.maxItems || 10000)) throw new Error('Kids library exceeds the safe title limit.');
       if (options.progress) options.progress(visited, files.length);
@@ -117,11 +134,11 @@
         // collection. Only use child artwork that survived filename checks.
         // Keep the old raw group key so a label-only update cannot restart a
         // family's rotating episode queue or split an existing collection.
-        groups[groupKey] = { id: 'collection:' + groupKey, title: C.collectionTitle(title), kind: kind, series: series || title, artwork: row.item.artwork || '', description: '', year: info.year || row.item.year || '', items: [], folder: true };
+        groups[groupKey] = { id: 'collection:' + groupKey, title: C.collectionTitle(title), kind: kind, series: series || title, artwork: row.item.artwork || '', artworkSource: row.item.artworkSource || '', description: '', year: info.year || row.item.year || '', items: [], folder: true };
         entries.push(groups[groupKey]);
       }
       groups[groupKey].items.push(row.item);
-      if (!groups[groupKey].artwork && row.item.artwork) groups[groupKey].artwork = row.item.artwork;
+      if ((!groups[groupKey].artwork || !groups[groupKey].artworkSource && row.item.artworkSource) && row.item.artwork) { groups[groupKey].artwork = row.item.artwork; groups[groupKey].artworkSource = row.item.artworkSource || ''; }
     });
     return entries;
   }

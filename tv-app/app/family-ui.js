@@ -6,6 +6,7 @@
     var parents = false, config = {}, connection = '', model, catalogue = [], roots = {}, generation = 0;
     var dwellTimer, motionTimer, pendingDirection = '', moving = false, codeGate, record, recordError = '', pinPurpose = 'setup', inputGeneration = 0;
     var dimensions = { columns: 5, rows: 3 }, draftDimensions, authenticating = false, storage = window.localStorage;
+    var artworkRevision = Date.now();
     try { dimensions = JSON.parse(storage.getItem('kids-tv-density') || JSON.stringify(dimensions)); dimensions = F.density(dimensions.columns, dimensions.rows); } catch (e) { dimensions = { columns: 5, rows: 3 }; }
     // A corrupt saved credential is NOT equivalent to first launch. Never
     // silently restore the public bootstrap code over existing parental state.
@@ -24,6 +25,20 @@
       });
     }
     refreshGate();
+    // Decode each explicit image once per refresh. A bounded failure shows a
+    // diagnostic/text fallback, not a scraper image or an endless load spinner.
+    function artworkValidator() {
+      var pending = Object.create(null);
+      return function (url) {
+        if (!pending[url]) pending[url] = new Promise(function (resolve) {
+          var image = new Image(), timer = setTimeout(function () { done(false); }, 5000);
+          function done(ok) { clearTimeout(timer); image.onload = image.onerror = null; resolve(ok); }
+          image.onload = function () { done(image.naturalWidth > 0 && image.naturalHeight > 0); };
+          image.onerror = function () { done(false); }; image.src = url;
+        });
+        return pending[url];
+      };
+    }
     function classes() {
       document.body.classList.toggle('kids-mode', !parents);
       $('kids-view').classList.toggle('hidden', parents);
@@ -99,10 +114,16 @@
         var root = await resolvePath((config.libraryPaths || {}).kids);
         if (token !== generation || parents || document.hidden) return;
         roots.kids = root;
-        var entries = await F.catalogue(hooks.browse, root, { isCurrent: function () { return token === generation && !parents && !document.hidden; } });
+        var entries = await F.catalogue(hooks.browse, root, { artworkRevision: artworkRevision, validateArtwork: artworkValidator(), isCurrent: function () { return token === generation && !parents && !document.hidden; } });
         if (token !== generation || parents || document.hidden) return;
         if (hooks.migrate) hooks.migrate(entries.reduce(function (all, item) { return all.concat(item.items || [item]); }, []));
-        catalogue = entries; model = F.wall(catalogue, dimensions.columns, dimensions.rows); render();
+        catalogue = entries;
+        // Artwork-only refreshes must not reshuffle the wall or move the
+        // selection. Queue/progress identities stay independent of images.
+        var selected = model && model.selected(), remaining = entries.slice(), order = [];
+        if (model) model.order.forEach(function (old) { var index = remaining.findIndex(function (item) { return item.id === old.id; }); if (index >= 0) order.push(remaining.splice(index, 1)[0]); });
+        model = F.wall(order.concat(remaining), dimensions.columns, dimensions.rows, !!order.length);
+        if (selected) model.select(selected.id); render();
         message(entries.length ? '' : 'No films are ready here yet. A parent can check the library.');
       } catch (error) { if (token === generation && !parents && !document.hidden) { message(error.message); $('wall-focus').focus(); } }
     }
@@ -117,6 +138,13 @@
         // Role labels are independent of physical folder names. An owner may
         // defer a locked-folder rename without losing the adult UI boundary.
         roots.adults = Object.assign({}, roots.adults, { title: 'Adults' });
+        var folderArt = [], adultEntries = await F.catalogue(hooks.browse, roots.adults, {
+          artworkRevision: artworkRevision, validateArtwork: artworkValidator(),
+          isCurrent: function () { return token === generation && parents && !document.hidden; },
+          folderArtwork: function (row) { if (row.sourceId) folderArt.push(row); }
+        });
+        if (token !== generation || !parents || document.hidden) return;
+        if (hooks.artwork) hooks.artwork(folderArt.concat(adultEntries.reduce(function (all, item) { return all.concat(item.items || [item]); }, [])));
         if (!parents || document.hidden) return;
         var home = roots.adults;
         try { home = JSON.parse(storage.getItem('kids-tv-parent-home:' + connection) || JSON.stringify(home)); } catch (e) {}
@@ -153,6 +181,37 @@
       draftDimensions = { columns: dimensions.columns, rows: dimensions.rows }; densityLabels();
       $('parent-error').textContent = ''; $('parent-panel').classList.remove('hidden'); $('reset-home').focus();
     }
+    async function inspectArtwork(refresh) {
+      if (!parents || !hooks.connected()) return;
+      var token = ++generation;
+      $('parent-panel').classList.add('hidden'); $('artwork-panel').classList.remove('hidden');
+      $('refresh-artwork').focus(); $('artwork-status').textContent = 'Checking family pictures…';
+      $('refresh-artwork').disabled = true;
+      if (refresh && hooks.refresh) { artworkRevision = Date.now(); hooks.refresh(); }
+      var rows = [], validate = artworkValidator();
+      try {
+        for (var role of ['kids', 'adults']) {
+          var root = await resolvePath((config.libraryPaths || {})[role]);
+          if (token !== generation || !parents || document.hidden) return;
+          var scanned = await F.catalogue(hooks.browse, root, {
+            artworkRevision: artworkRevision, validateArtwork: validate,
+            isCurrent: function () { return token === generation && parents && !document.hidden; },
+            folderArtwork: function (row) { if (row.path.length === 2 || row.explicit) rows.push(Object.assign({}, row, { role: role })); }
+          });
+          if (role === 'adults' && token === generation && hooks.artwork) hooks.artwork(rows.filter(function (row) { return row.role === 'adults'; }).concat(scanned.reduce(function (all, item) { return all.concat(item.items || [item]); }, [])));
+        }
+        if (token !== generation || !parents || document.hidden) return;
+        var list = $('artwork-list'); while (list.firstChild) list.removeChild(list.firstChild);
+        rows.forEach(function (row) {
+          var card = element('button', 'artwork-row'); card.type = 'button';
+          if (row.artwork) { var image = new Image(); image.alt = ''; image.src = row.artwork; card.appendChild(image); }
+          card.appendChild(element('span', '', row.role + ' / ' + row.path.slice(1).map(C.collectionTitle).join(' / ') + ': ' + (row.issue || (row.artwork ? row.explicit ? 'Chosen folder image' : 'Inherited image' : 'No family image yet'))));
+          list.appendChild(card);
+        });
+        $('artwork-status').textContent = rows.filter(function (row) { return !!row.artwork; }).length + ' of ' + rows.length + ' folders have a family picture. Return to kids to see refreshed tiles.';
+      } catch (error) { if (token === generation && parents) $('artwork-status').textContent = error.message; }
+      finally { $('refresh-artwork').disabled = false; }
+    }
     function densityLabels() {
       ['columns', 'rows'].forEach(function (axis) {
         var control = $('density-' + axis), name = axis === 'columns' ? 'Columns' : 'Rows';
@@ -186,7 +245,8 @@
         'parent-connection': { 37: 'change-code', 40: 'density-rows' },
         'density-columns': { 38: 'reset-home', 40: 'density-rows' },
         'density-rows': { 38: 'density-columns', 40: 'save-density' },
-        'save-density': { 38: 'density-rows', 40: 'back-to-kids' },
+        'save-density': { 38: 'density-rows', 39: 'family-artwork', 40: 'back-to-kids' },
+        'family-artwork': { 38: 'save-density', 37: 'save-density', 40: 'back-to-kids' },
         'back-to-kids': { 38: 'save-density', 39: 'parent-close' },
         'parent-close': { 37: 'back-to-kids', 38: 'save-density' }
       };
@@ -201,7 +261,7 @@
     }
     function returnKids(reload) {
       generation++; inputGeneration++; parents = false; codeGate.reset(); hideDetails(); cancelMotion();
-      ['parent-panel', 'pin-panel', 'setup', 'search-panel'].forEach(function (id) { $(id).classList.add('hidden'); });
+      ['parent-panel', 'pin-panel', 'artwork-panel', 'setup', 'search-panel'].forEach(function (id) { $(id).classList.add('hidden'); });
       ['old-code', 'new-code', 'confirm-code'].forEach(function (id) { $(id).value = ''; });
       classes(); if (model) render();
       if (reload && hooks.connected() && !document.hidden) loadKids();
@@ -217,6 +277,7 @@
       if (result.items.length) hooks.queue(result.items);
     }
     function overlayBack() {
+      if (!$('artwork-panel').classList.contains('hidden')) { generation++; $('artwork-panel').classList.add('hidden'); settings(); return true; }
       if (!$('pin-panel').classList.contains('hidden')) {
         inputGeneration++; $('pin-panel').classList.add('hidden');
         ['old-code', 'new-code', 'confirm-code'].forEach(function (id) { $(id).value = ''; });
@@ -240,6 +301,9 @@
       return true;
     }
     $('wall-focus').onclick = playSelected;
+    $('family-artwork').onclick = function () { inspectArtwork(false); };
+    $('refresh-artwork').onclick = function () { inspectArtwork(true); };
+    $('close-artwork').onclick = overlayBack;
     $('save-code').onclick = saveCode;
     $('cancel-code').onclick = overlayBack;
     $('change-code').onclick = function () { $('parent-panel').classList.add('hidden'); pinForm('change'); };
@@ -273,9 +337,9 @@
           }
         } catch (error) { recordError = error.message; message(recordError); }
       },
-      ready: function (url) { connection = url; if (parents) openParents(); else loadKids(); },
+      ready: function (url) { if (url !== connection) model = null; connection = url; if (parents) openParents(); else loadKids(); },
       settings: settings,
-      overlay: function () { return !$('pin-panel').classList.contains('hidden') ? $('pin-panel') : !$('parent-panel').classList.contains('hidden') ? $('parent-panel') : null; },
+      overlay: function () { return !$('pin-panel').classList.contains('hidden') ? $('pin-panel') : !$('artwork-panel').classList.contains('hidden') ? $('artwork-panel') : !$('parent-panel').classList.contains('hidden') ? $('parent-panel') : null; },
       back: overlayBack,
       restore: function () { if (!parents) { render(); return true; } return false; },
       lock: function () { returnKids(false); },

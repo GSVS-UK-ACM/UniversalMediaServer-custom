@@ -11,6 +11,7 @@ const recoveryNonce = process.env.TV_CODE_RECOVERY === '1' ? 'e'.repeat(32) : ''
 let server, browser, page, descriptionCalls = 0, rootCalls = 0, wakeCalls = 0;
 function container(id, title) { return '<container id="' + id + '"><dc:title>' + C.escapeXml(title) + '</dc:title><upnp:albumArtURI>/art.png</upnp:albumArtURI></container>'; }
 function film(id, title, parent = 'films') { return '<item id="' + id + '" parentID="' + parent + '"><dc:title>' + C.escapeXml(title) + '</dc:title><upnp:albumArtURI>/art.png</upnp:albumArtURI><res protocolInfo="http-get:*:video/mp4:*">/movie-' + id + '.mp4</res></item>'; }
+function familyCover(version) { return '<item id="familyimage" parentID="namedfamily"><dc:title>family-cover</dc:title><upnp:class>object.item.imageItem.photo</upnp:class><res protocolInfo="http-get:*:image/jpeg:*">/media/family-cover.jpg?version=' + version + '</res></item>'; }
 const fixtures = {
   0: [container('share', 'Shared library')],
   share: [container('kids', 'kids'), container('adult', 'adults')],
@@ -21,7 +22,7 @@ const fixtures = {
   }).concat([film('staleposter', 'Stale Poster Film').replace('/movie-staleposter.mp4', '/media/-film-2002-Stale-Poster-Film.mp4')]),
   series: Array.from({ length: 6 }, (_, i) => film('episode' + (i + 1), '(tv show) Example - S01E0' + (i + 1) + ' - Episode ' + (i + 1), 'series')),
   extras: Array.from({ length: 3 }, (_, i) => film('bonus' + i, '(extra content) Parent Film - Clip ' + i, 'extras')),
-  namedfamily: [container('namedextras', 'extras')],
+  namedfamily: [familyCover(1), container('namedextras', 'extras')],
   namedextras: [film('namedclip', 'The Test Film Clip 1', 'namedextras').replace('/movie-namedclip.mp4', '/media/-extra-content-2002-The-Test-Film-Clip-1.mp4')],
   adult: [container('adultcollection', 'Adult collection')],
   adultcollection: [film('adultfilm', '(film) (2000) Adult test film', 'adultcollection')]
@@ -46,7 +47,7 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
   }).listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
   browser = await chromium.launch({ headless: true, executablePath: process.env.TV_CHROMIUM_PATH || undefined });
-  page = await browser.newPage({ viewport: { width: 1920, height: 1080 } }); const errors = [], browseIds = [];
+  page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, ...(process.env.TV_USER_AGENT ? { userAgent: process.env.TV_USER_AGENT } : {}) }); const errors = [], browseIds = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(({ url, mock, recoveryNonce }) => {
     localStorage.setItem('kids-tv-server', url);
@@ -75,7 +76,7 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
     const req = route.request(), headers = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'content-type,soapaction' };
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
     if (live) { const response = await route.fetch(); return route.fulfill({ response, headers: { ...response.headers(), ...headers } }); }
-    if (req.url().endsWith('/art.png')) return route.fulfill({ body: fs.readFileSync(path.join(root, 'icon.png')), contentType: 'image/png', headers });
+    if (req.url().endsWith('/art.png') || new URL(req.url()).pathname === '/media/family-cover.jpg') return route.fulfill({ body: fs.readFileSync(path.join(root, 'icon.png')), contentType: 'image/png', headers });
     if (req.method() === 'GET') {
       descriptionCalls++;
       if (scenario === 'offline' && descriptionCalls < 3) return route.abort('connectionrefused');
@@ -112,6 +113,7 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
     assert.equal(await page.locator('.wall-selected .wall-tile-title').innerText(), 'The Test Film', 'slug becomes a display label, not a media rename');
     assert.equal(await page.locator('#wall-focus').getAttribute('data-selected'), 'collection:extra content|the-test-film', 'display cleanup preserves the existing queue key');
     await page.waitForFunction(() => { const img = document.querySelector('.wall-selected .wall-art img'); return img && img.complete && img.naturalWidth > 0; });
+    assert.match(await page.locator('.wall-selected .wall-art img').getAttribute('src'), /family-cover.jpg\?version=1/, 'explicit family image replaces the clip thumbnail');
     assert.equal(await page.locator('.wall-selected .wall-tile-meta').innerText(), '2002 - Bonus content', 'a missing UMS year no longer hides matched artwork');
     await selectCaption(page, 'Stale Poster Film -');
     assert.equal(await page.locator('.wall-selected .wall-art img').count(), 0, 'reviewed stale poster stays hidden even when UMS has corrected its title');
@@ -156,6 +158,22 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
     assert.equal(await page.locator('#search').isVisible(), true);
     const record = await page.evaluate(() => JSON.parse(localStorage.getItem('kids-tv-parent-code')));
     assert.equal(record.length, 6); assert.equal(JSON.stringify(record).includes('907314'), false);
+    await page.locator('#settings').click();
+    await page.locator('#save-density').focus(); await page.keyboard.press('ArrowRight');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'family-artwork', 'remote can reach artwork settings');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => /folders have/.test(document.getElementById('artwork-status').textContent));
+    assert.match(await page.locator('#artwork-list').innerText(), /The Test Film: Chosen folder image/);
+    fixtures.namedfamily[0] = familyCover(2);
+    await page.locator('#refresh-artwork').click();
+    await page.waitForFunction(() => /folders have/.test(document.getElementById('artwork-status').textContent));
+    await page.keyboard.press('Escape'); await page.locator('#back-to-kids').click();
+    await page.locator('#wall-focus[data-selected]').waitFor();
+    assert.equal(await page.locator('#family-artwork').isVisible(), false, 'kids cannot see image controls');
+    await selectCaption(page, 'The Test Film -');
+    await page.waitForFunction(() => { const img = document.querySelector('.wall-selected .wall-art img'); return img && img.complete && img.naturalWidth > 0 && img.src.includes('version=2'); });
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('kids-tv-parent-code')).digest), record.digest, 'art refresh preserves the personal code');
+    await digits(page, '907314'); await page.getByRole('heading', { name: 'Adults', exact: true }).waitFor();
     await page.locator('.tile').filter({ hasText: 'Adult collection' }).click(); await page.getByRole('heading', { name: 'Adult collection', exact: true }).waitFor();
     await page.getByRole('button', { name: 'Use this collection as Home' }).click();
     await page.locator('#settings').click(); await page.locator('#reset-home').click();

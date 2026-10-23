@@ -1,5 +1,20 @@
 # Testing
 
+## Family artwork (0.3.0)
+
+`node --test test/*.test.cjs` in tv-app covers explicit same-server sidecars,
+downward inheritance, deeper override/update/removal, image-validation failure,
+duplicate choices, cancellation, identity preservation and seed-tool safety.
+The online/offline/empty browser fixtures exercise parent-only artwork preview
+and refreshed images with the personal code retained. `TV_CODE_RECOVERY=1`
+remains a synthetic fixture only, never a deployment configuration.
+
+`TV_USER_AGENT` optionally sets the live test browser's renderer identity when
+using `TV_DESCRIPTION_URL`. Record the profile and catalogue replay separately
+from physical Samsung acceptance. Never interpret image HTTP success or local
+scene scoring as owner approval of every picture. Private media/source/hash
+journals, live snapshots and contact sheets stay outside Git.
+
 ## Workstation checks
 
 Use Maven 3.8.6 or newer with Java 17. The focused folder-art check is:
