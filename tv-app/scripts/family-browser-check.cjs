@@ -14,13 +14,15 @@ function film(id, title, parent = 'films') { return '<item id="' + id + '" paren
 const fixtures = {
   0: [container('share', 'Shared library')],
   share: [container('kids', 'kids'), container('adult', 'adults')],
-  kids: [container('films', 'Films'), container('series', 'Series'), container('extras', 'Extras'), container('excluded', 'DVD-Reviewed')],
+  kids: [container('films', 'Films'), container('series', 'Series'), container('extras', 'Extras'), container('namedfamily', 'the-test-film'), container('excluded', 'DVD-Reviewed')],
   films: Array.from({ length: 42 }, (_, i) => {
     const item = film('film' + i, '(film) (2002) Film ' + String(i).padStart(2, '0') + ' (1080p BluRay)');
     return i % 2 ? item.replace('<upnp:albumArtURI>/art.png</upnp:albumArtURI>', '') : item;
   }),
   series: Array.from({ length: 6 }, (_, i) => film('episode' + (i + 1), '(tv show) Example - S01E0' + (i + 1) + ' - Episode ' + (i + 1), 'series')),
   extras: Array.from({ length: 3 }, (_, i) => film('bonus' + i, '(extra content) Parent Film - Clip ' + i, 'extras')),
+  namedfamily: [container('namedextras', 'extras')],
+  namedextras: [film('namedclip', 'The Test Film Clip 1', 'namedextras').replace('/movie-namedclip.mp4', '/media/-extra-content-2002-The-Test-Film-Clip-1.mp4')],
   adult: [container('adultcollection', 'Adult collection')],
   adultcollection: [film('adultfilm', '(film) (2000) Adult test film', 'adultcollection')]
 };
@@ -106,6 +108,11 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
     assert.equal(await page.locator('.wall-selected .wall-tile-meta').innerText(), '2002 - Film', 'missing artwork does not hide metadata');
     assert.equal(browseIds.includes('adult'), false, 'kids catalogue must not crawl adult siblings');
     assert.equal(browseIds.includes('excluded'), false, 'initial review copy must be ignored');
+    await selectCaption(page, 'The Test Film -');
+    assert.equal(await page.locator('.wall-selected .wall-tile-title').innerText(), 'The Test Film', 'slug becomes a display label, not a media rename');
+    assert.equal(await page.locator('#wall-focus').getAttribute('data-selected'), 'collection:extra content|the-test-film', 'display cleanup preserves the existing queue key');
+    await page.waitForFunction(() => { const img = document.querySelector('.wall-selected .wall-art img'); return img && img.complete && img.naturalWidth > 0; });
+    assert.equal(await page.locator('.wall-selected .wall-tile-meta').innerText(), '2002 - Bonus content', 'a missing UMS year no longer hides matched artwork');
     assert.equal(await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('kids-tv-progress'))).find(r => r.item.title.includes('Film 00')).position), 120, 'unambiguous rename alias retains existing resume state');
     const selected = await page.locator('#wall-focus').getAttribute('data-selected'), before = await page.locator('#wall-focus').boundingBox();
     await page.keyboard.press('ArrowRight'); await page.waitForTimeout(200);

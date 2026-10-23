@@ -118,7 +118,7 @@
     }
     var record = stored[key(item)];
     if (record && (record.watched || record.position > 10)) art.appendChild(node('span', 'badge', record.watched ? 'WATCHED' : 'RESUME'));
-    el.appendChild(art); el.appendChild(node('span', 'tile-label', C.cleanTitle(item.title)));
+    el.appendChild(art); el.appendChild(node('span', 'tile-label', item.folder ? C.collectionTitle(item.title) : C.cleanTitle(item.title)));
     el.appendChild(node('small', '', item.folder ? 'Explore collection' : (record && record.position > 10 && !record.watched ? Math.floor(record.position / 60) + ' min watched' : 'Press OK to watch')));
     el.title = item.title; return el;
   }
@@ -133,7 +133,7 @@
     if (remember) history.push(current); current = { id: folder.id, title: folder.title };
     clearContent(); status('Loading library…');
     var hero = node('section', 'hero'); hero.appendChild(node('div', 'eyebrow', 'YOUR FAVOURITES. YOUR LITTLE CINEMA.'));
-    hero.appendChild(node('h1', '', C.cleanTitle(folder.title))); hero.appendChild(node('p', '', 'Pick something good. Settle in together.'));
+    hero.appendChild(node('h1', '', C.collectionTitle(folder.title))); hero.appendChild(node('p', '', 'Pick something good. Settle in together.'));
     if (folder.id !== homeFolder.id) hero.appendChild(button('Use this collection as Home', function () {
       homeFolder = current;
       try { localStorage.setItem('kids-tv-parent-home:' + connection, JSON.stringify(homeFolder)); } catch (e) { status('The TV could not save Home.'); return; }
@@ -158,7 +158,7 @@
         catch (err) { if (token === viewToken) status('A collection preview is unavailable. You can still open other collections.'); break; }
         if (token !== viewToken) return;
         var entries = preview.filter(function (item) { return !item.folder; }).slice(0, 16);
-        if (entries.length) (function (f) { shelf(C.cleanTitle(f.title), entries, function () { openFolder(f, true); }); }(child));
+        if (entries.length) (function (f) { shelf(C.collectionTitle(f.title), entries, function () { openFolder(f, true); }); }(child));
       }
     } catch (err) { if (token === viewToken) { if (!document.hidden && !activeItem && err.retryable === true) connect(connection); else { status(err.message); $('home').focus(); } } }
   }

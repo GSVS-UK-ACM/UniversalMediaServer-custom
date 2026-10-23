@@ -115,7 +115,9 @@
         // UMS inherits a folder's image from its first child. If that child
         // was misidentified online, the same bad poster can contaminate every
         // collection. Only use child artwork that survived filename checks.
-        groups[groupKey] = { id: 'collection:' + groupKey, title: title, kind: kind, series: series || title, artwork: row.item.artwork || '', description: '', year: info.year || row.item.year || '', items: [], folder: true };
+        // Keep the old raw group key so a label-only update cannot restart a
+        // family's rotating episode queue or split an existing collection.
+        groups[groupKey] = { id: 'collection:' + groupKey, title: C.collectionTitle(title), kind: kind, series: series || title, artwork: row.item.artwork || '', description: '', year: info.year || row.item.year || '', items: [], folder: true };
         entries.push(groups[groupKey]);
       }
       groups[groupKey].items.push(row.item);

@@ -58,6 +58,14 @@
     return '(' + kind + ') ' + (year ? '(' + year + ') ' : '') + rest.replace(/-/g, ' ') + (quality ? ' (' + quality + ')' : '') + '.' + match[3];
   }
   function titleIdentity(title) { var info = mediaName(title); return resourceKey(info.title) + '|' + info.year; }
+  /** A missing server year is unknown, not evidence of a remake. Titles still
+   * have to agree, including episode, sequel and edition labels. When both
+   * sides supply a year, disagreement remains a conflict. Never use dc:date.
+   */
+  function titleConflict(authoritative, reported) {
+    var file = mediaName(authoritative), server = mediaName(reported);
+    return resourceKey(file.title) !== resourceKey(server.title) || !!(file.year && server.year && file.year !== server.year);
+  }
   function parseResult(xml, base, Parser, names) {
     var soap = parseXml(xml, Parser), fault = elements(soap, 'Fault')[0];
     if (fault) throw new Error(text(fault, 'errorDescription') || text(fault, 'faultstring') || 'UMS rejected the request');
@@ -73,7 +81,7 @@
       // UMS dc:date can be the FILE MODIFICATION date, not a release year.
       // Keep release years from the explicit storage/title contract instead.
       var serverTitle = text(node, 'title'), explicit = video ? storageName(video.url, names) : '', info = mediaName(explicit);
-      var conflict = explicit && titleIdentity(explicit) !== titleIdentity(serverTitle);
+      var conflict = explicit && titleConflict(explicit, serverTitle);
       return { id: node.getAttribute('id'), parentId: node.getAttribute('parentID'), title: explicit || serverTitle, serverTitle: serverTitle, folder: node.localName === 'container', className: text(node, 'class'), description: conflict ? '' : text(node, 'longDescription') || text(node, 'description'), series: explicit ? info.series : text(node, 'seriesTitle'), season: explicit ? info.season : text(node, 'episodeSeason'), episode: explicit ? info.episode : text(node, 'episodeNumber'), artwork: conflict ? '' : art || '', url: video ? video.url : '', duration: video ? video.duration : '' };
     }).filter(function (item) { return item.id !== null && !/^#.*#$/.test(item.title) && (item.folder || item.url); });
     return { items: items, returned: Number(text(soap, 'NumberReturned')), total: Number(text(soap, 'TotalMatches')) };
@@ -125,6 +133,21 @@
     return { title: title, year: year, quality: quality, kind: kind || (episode ? 'tv show' : ''), series: episode ? episode[1].replace(/\s*-\s*$/, '').trim() : '', season: episode ? Number(episode[2]) : null, episode: episode ? Number(episode[3]) : null };
   }
   function cleanTitle(title) { return mediaName(title).title; }
+  /** Presentation only. Never reuse these labels as resource, progress or
+   * queue identities. Existing human titles retain punctuation and casing;
+   * canonical lower-case filesystem slugs receive a readable fallback.
+   */
+  function collectionTitle(value) {
+    var title = cleanTitle(value);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(title)) return title;
+    var brands = { spiderman: 'Spider-Man', ironman: 'Iron Man', 'paw-patrol': 'PAW Patrol', 'spongebob-squarepants': 'SpongeBob SquarePants' };
+    if (Object.prototype.hasOwnProperty.call(brands, title)) return brands[title];
+    return title.split('-').map(function (word, index) {
+      if (/^(tv|dvd|bbc|dc|uk|usa)$/.test(word)) return word.toUpperCase();
+      if (index && /^(a|an|and|at|for|in|of|on|or|the|to|with)$/.test(word)) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
   function progressKey(server, item) {
     // Media URLs contain a renderer UUID and IDs can be versioned. Use the
     // server description identity + parent + title, never the renderer URL.
@@ -136,5 +159,5 @@
     duration = Number.isFinite(duration) ? Math.max(0, duration) : 0;
     return { position: position, duration: duration, watched: duration > 0 && position / duration >= 0.95 };
   }
-  return { SERVICE: SERVICE, escapeXml: escapeXml, parseXml: parseXml, description: description, parseResult: parseResult, envelope: envelope, searchCriteria: searchCriteria, client: client, cleanTitle: cleanTitle, mediaName: mediaName, resourceFilename: resourceFilename, resourceKey: resourceKey, titleIdentity: titleIdentity, storageName: storageName, progress: progress, progressKey: progressKey, httpUrl: httpUrl };
+  return { SERVICE: SERVICE, escapeXml: escapeXml, parseXml: parseXml, description: description, parseResult: parseResult, envelope: envelope, searchCriteria: searchCriteria, client: client, cleanTitle: cleanTitle, collectionTitle: collectionTitle, mediaName: mediaName, resourceFilename: resourceFilename, resourceKey: resourceKey, titleIdentity: titleIdentity, storageName: storageName, progress: progress, progressKey: progressKey, httpUrl: httpUrl };
 }));
