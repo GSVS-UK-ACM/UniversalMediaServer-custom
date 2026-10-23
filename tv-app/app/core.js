@@ -66,7 +66,7 @@
     var file = mediaName(authoritative), server = mediaName(reported);
     return resourceKey(file.title) !== resourceKey(server.title) || !!(file.year && server.year && file.year !== server.year);
   }
-  function parseResult(xml, base, Parser, names) {
+  function parseResult(xml, base, Parser, names, rejectedArtwork) {
     var soap = parseXml(xml, Parser), fault = elements(soap, 'Fault')[0];
     if (fault) throw new Error(text(fault, 'errorDescription') || text(fault, 'faultstring') || 'UMS rejected the request');
     var result = parseXml(text(soap, 'Result') || '<DIDL-Lite/>', Parser);
@@ -81,7 +81,11 @@
       // UMS dc:date can be the FILE MODIFICATION date, not a release year.
       // Keep release years from the explicit storage/title contract instead.
       var serverTitle = text(node, 'title'), explicit = video ? storageName(video.url, names) : '', info = mediaName(explicit);
-      var conflict = explicit && titleConflict(explicit, serverTitle);
+      // A corrected title cannot prove that UMS replaced an older cached
+      // poster. Reviewed private rejections stay blocked until that artwork
+      // is repaired, without dropping the playable item or changing its name.
+      var rejected = explicit && Array.isArray(rejectedArtwork) && rejectedArtwork.indexOf(resourceKey(explicit)) !== -1;
+      var conflict = explicit && (titleConflict(explicit, serverTitle) || rejected);
       return { id: node.getAttribute('id'), parentId: node.getAttribute('parentID'), title: explicit || serverTitle, serverTitle: serverTitle, folder: node.localName === 'container', className: text(node, 'class'), description: conflict ? '' : text(node, 'longDescription') || text(node, 'description'), series: explicit ? info.series : text(node, 'seriesTitle'), season: explicit ? info.season : text(node, 'episodeSeason'), episode: explicit ? info.episode : text(node, 'episodeNumber'), artwork: conflict ? '' : art || '', url: video ? video.url : '', duration: video ? video.duration : '' };
     }).filter(function (item) { return item.id !== null && !/^#.*#$/.test(item.title) && (item.folder || item.url); });
     return { items: items, returned: Number(text(soap, 'NumberReturned')), total: Number(text(soap, 'TotalMatches')) };
@@ -91,10 +95,11 @@
   }
   function searchCriteria(query) { return 'upnp:class derivedfrom "object.item.videoItem" and dc:title contains "' + String(query).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'; }
   function client(request, Parser) {
-    var server, names, namesServer;
+    var server, names, namesServer, rejectedArtwork;
     async function action(name, args) {
       var xml = await request(server.control, { method: 'POST', headers: { 'Content-Type': 'text/xml; charset=utf-8', SOAPAction: '"' + SERVICE + '#' + name + '"' }, body: envelope(name, args) });
-      return parseResult(xml, server.control, Parser, server.description === namesServer ? names : null);
+      var indexedServer = server.description === namesServer;
+      return parseResult(xml, server.control, Parser, indexedServer ? names : null, indexedServer ? rejectedArtwork : null);
     }
     async function pages(name, args) {
       var all = [], offset = 0;
@@ -108,7 +113,7 @@
       throw new Error('This folder exceeds the 20,000-item safety limit. Open a smaller category.');
     }
     return {
-      setNames: function (index, descriptionUrl) { names = index; namesServer = descriptionUrl; },
+      setNames: function (index, descriptionUrl, rejected) { names = index; namesServer = descriptionUrl; rejectedArtwork = rejected; },
       connect: async function (url) { server = description(await request(httpUrl(url), {}), url, Parser); return server; },
       browse: function (id) { return pages('Browse', { ObjectID: id, BrowseFlag: 'BrowseDirectChildren', Filter: '*', SortCriteria: '' }); },
       search: function (id, query) { return pages('Search', { ContainerID: id, SearchCriteria: searchCriteria(query), Filter: '*', SortCriteria: '' }); }

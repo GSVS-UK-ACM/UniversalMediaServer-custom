@@ -4,7 +4,7 @@
   var server, current = { id: '0', title: 'Your library' }, history = [], cache = {}, viewToken = 0, activeItem = null, lastSave = 0, hudTimer;
   var stored = {}, connection = '', homeFolder = { id: '0', title: 'Your library' }, defaultHome, wakeSettings, lastPosition = 0, lastDuration = 0;
   var familyUI, playQueue = [];
-  var sourceNames = {}, titleAliases = [], namesServer = '';
+  var sourceNames = {}, titleAliases = [], rejectedArtwork = [], namesServer = '';
   try { stored = JSON.parse(localStorage.getItem('kids-tv-progress') || '{}'); connection = localStorage.getItem('kids-tv-server') || ''; } catch (e) {}
   function persist() {
     try {
@@ -50,7 +50,7 @@
       // Each probe owns its client. A stale connection must never replace the
       // active renderer URLs, home folder or cache after a settings change.
       var candidate = C.client(function (endpoint, options) { options.timeout = options.method ? 20000 : 5000; return request(endpoint, options); }, window.DOMParser);
-      candidate.setNames(sourceNames, namesServer);
+      candidate.setNames(sourceNames, namesServer, rejectedArtwork);
       var info;
       try { info = await candidate.connect(url); }
       catch (err) { if (err.retryable === undefined) err.retryable = false; throw err; }
@@ -301,7 +301,7 @@
   if (window.tizen && window.tizen.tvinputdevice) ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop', 'MediaFastForward', 'MediaRewind'].forEach(function (name) { try { window.tizen.tvinputdevice.registerKey(name); } catch (e) {} });
   request('connection.json', {}).then(function (text) {
     var config = JSON.parse(text); defaultHome = config.homeFolder; familyUI.start(config);
-    sourceNames = config.sourceNames || {}; titleAliases = config.titleAliases || []; namesServer = config.descriptionUrl ? C.httpUrl(config.descriptionUrl) : '';
+    sourceNames = config.sourceNames || {}; titleAliases = config.titleAliases || []; rejectedArtwork = config.rejectedArtwork || []; namesServer = config.descriptionUrl ? C.httpUrl(config.descriptionUrl) : '';
     if (config.wake && config.descriptionUrl) wakeSettings = { server: C.httpUrl(config.descriptionUrl), config: config.wake };
     if (config.displayName) { document.title = config.displayName; $('brand-name').textContent = config.displayName; }
     if (connection || config.descriptionUrl) connect(connection || config.descriptionUrl); else showSetup();

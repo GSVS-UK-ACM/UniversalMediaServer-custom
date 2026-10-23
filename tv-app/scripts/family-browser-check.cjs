@@ -18,7 +18,7 @@ const fixtures = {
   films: Array.from({ length: 42 }, (_, i) => {
     const item = film('film' + i, '(film) (2002) Film ' + String(i).padStart(2, '0') + ' (1080p BluRay)');
     return i % 2 ? item.replace('<upnp:albumArtURI>/art.png</upnp:albumArtURI>', '') : item;
-  }),
+  }).concat([film('staleposter', 'Stale Poster Film').replace('/movie-staleposter.mp4', '/media/-film-2002-Stale-Poster-Film.mp4')]),
   series: Array.from({ length: 6 }, (_, i) => film('episode' + (i + 1), '(tv show) Example - S01E0' + (i + 1) + ' - Episode ' + (i + 1), 'series')),
   extras: Array.from({ length: 3 }, (_, i) => film('bonus' + i, '(extra content) Parent Film - Clip ' + i, 'extras')),
   namedfamily: [container('namedextras', 'extras')],
@@ -62,7 +62,7 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
     } };
   }, { url: descriptionUrl, mock: !live, recoveryNonce });
   if (!live) {
-    await page.route('**/connection.json', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ descriptionUrl, parentalRecoveryNonce: recoveryNonce, libraryPaths: { kids: ['Shared library', 'kids'], adults: ['Shared library', 'adults'] }, titleAliases: [{ oldParentId: 'legacyfilms', oldTitle: 'Old film title', newTitle: '(film) (2002) Film 00 (1080p BluRay)' }], wake: { descriptionUrl: router + '/tr64desc.xml', macAddress: '02:00:00:00:00:01' } }) }));
+    await page.route('**/connection.json', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ descriptionUrl, parentalRecoveryNonce: recoveryNonce, libraryPaths: { kids: ['Shared library', 'kids'], adults: ['Shared library', 'adults'] }, rejectedArtwork: [C.resourceKey('(film) (2002) Stale Poster Film.mp4')], titleAliases: [{ oldParentId: 'legacyfilms', oldTitle: 'Old film title', newTitle: '(film) (2002) Film 00 (1080p BluRay)' }], wake: { descriptionUrl: router + '/tr64desc.xml', macAddress: '02:00:00:00:00:01' } }) }));
     await page.route(router + '/**', route => {
       const headers = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'content-type,soapaction' };
       if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 200, headers });
@@ -113,6 +113,8 @@ async function title(page, pattern) { await page.waitForFunction(p => new RegExp
     assert.equal(await page.locator('#wall-focus').getAttribute('data-selected'), 'collection:extra content|the-test-film', 'display cleanup preserves the existing queue key');
     await page.waitForFunction(() => { const img = document.querySelector('.wall-selected .wall-art img'); return img && img.complete && img.naturalWidth > 0; });
     assert.equal(await page.locator('.wall-selected .wall-tile-meta').innerText(), '2002 - Bonus content', 'a missing UMS year no longer hides matched artwork');
+    await selectCaption(page, 'Stale Poster Film -');
+    assert.equal(await page.locator('.wall-selected .wall-art img').count(), 0, 'reviewed stale poster stays hidden even when UMS has corrected its title');
     assert.equal(await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('kids-tv-progress'))).find(r => r.item.title.includes('Film 00')).position), 120, 'unambiguous rename alias retains existing resume state');
     const selected = await page.locator('#wall-focus').getAttribute('data-selected'), before = await page.locator('#wall-focus').boundingBox();
     await page.keyboard.press('ArrowRight'); await page.waitForTimeout(200);

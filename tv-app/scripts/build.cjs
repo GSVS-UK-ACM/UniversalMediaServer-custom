@@ -18,6 +18,12 @@ if (config.descriptionUrl) {
 // stay outside Git. Only the data, never its workstation path, enters the app.
 const privateNames = config.privateNamesFile ? JSON.parse(fs.readFileSync(path.resolve(root, config.privateNamesFile), 'utf8')) : {};
 const runtimeConfig = { descriptionUrl: config.descriptionUrl || '', displayName: config.displayName || 'UMS TV', homeFolder: config.homeFolder, libraryPaths: config.libraryPaths || {}, sourceNames: privateNames.sourceNames || config.sourceNames || {}, titleAliases: privateNames.titleAliases || config.titleAliases || [], wake: Startup.wakeConfig(config.wake) };
+// These reviewed filename keys reject known stale/wrong cached posters only.
+// Keep private titles and hash-review evidence outside Git; no image fetching
+// or pixel heuristics are performed in the TV's rendering path.
+const rejectedArtwork = privateNames.rejectedArtwork || config.rejectedArtwork || [];
+if (!Array.isArray(rejectedArtwork) || rejectedArtwork.some(key => typeof key !== 'string' || !/^[a-z0-9]+$/.test(key))) throw new Error('Artwork rejections must be normalised filename keys');
+runtimeConfig.rejectedArtwork = [...new Set(rejectedArtwork)];
 // Administrative code recovery is explicit private build configuration, not a
 // public fallback PIN. A consumed token never resets a later replacement code.
 if (config.parentalRecoveryNonce) {

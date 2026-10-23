@@ -31,6 +31,24 @@ No assertion that every recovered link is the desired owner-selected poster.
 Remaining browser scenarios, fresh live rendering, approved Linux CI and signed
 package checks/install are required before calling this delivered.
 
+### Live-preview correction before deployment
+
+The first live preview exposed a stale wrong poster under a now-correct reported
+title. That candidate was held, not installed. Matching names alone cannot
+prove UMS replaced its cached artwork. A private image-byte audit of all 894
+eligible links found 24 exact matches to that visually confirmed wrong poster.
+The final candidate carries reviewed filename-key rejections scoped to the
+indexed server. Those items remain playable but their stale artwork/plot stays
+hidden. Keys/hash evidence remain private, not committed. No database wipe,
+server restart, automatic image guessing or family-image implementation.
+
+Final implementation adds two contracts for matching-title stale rejection and
+server isolation, bringing the workstation count to 61. The browser also checks
+the explicitly rejected image never paints. Expected restored links are now
+869, not the earlier 893, while original file/progress/queue identities remain.
+Private exact-name/progress/connection settings are unchanged except the new
+reviewed rejection list. Final package/test identities supersede the held one.
+
 ## Findings
 
 UnknownRenderer's PC SOAP snapshot advertises 165 transcode MIME placeholders
