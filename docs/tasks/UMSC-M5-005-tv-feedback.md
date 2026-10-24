@@ -142,3 +142,18 @@ Single canonical Hub row is updated locally, not pushed; metrics unchanged,
 no Android rebuild or viewer acceptance. M5-005 remains VERIFYING until physical
 checks pass. Final DVD/artwork/content/duplicate/root/migration audits remain
 separate work.
+
+## Owner acceptance update, 23 October 2026
+
+Owner confirms 0.2.1 reset the code and accepted the newly configured parental
+code on re-entry. The size-changing menu works and looks good on the physical
+TV. Owner prefers 5x3, large artwork and text at the bottom of tiles. Preserve
+that layout. Some labels remain missing; defer investigation/correction to
+the visual/library audit rather than claiming the library is complete.
+
+This is owner-observed code recovery/re-entry, remote size controls and layout
+acceptance, not a direct TV storage inspection or proof of every label. No
+additional app build, install, reset, server action or media change. This
+acceptance update is local documentation only, not pushed. Keep M5-005 VERIFYING
+for an explicit scrollbar-bleed check; audio/seek, full queues, old-progress
+retention and physical wake remain in the existing broader acceptance work.

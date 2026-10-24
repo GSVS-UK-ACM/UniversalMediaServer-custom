@@ -1,5 +1,143 @@
 # Handover
 
+## README and integration checkpoint, 24 October 2026
+
+[M5-010](tasks/UMSC-M5-010-readme-integration.md): GSVS feature intro and image
+placeholders added above preserved upstream README. Owner authorises clean
+feature push and main integration. Fresh workstation syntax, 70 tests and build
+pass. Runtime remains the earlier Linux-tested source, whose full Java baseline
+failure is still recorded. No private assets, binaries or configuration in Git.
+After publication and clean status, ask the owner whether the other chat has
+been told to move the checkout, then resume private artwork work.
+
+## Active artwork audit, 24 October 2026
+
+Owner supersedes the hitlist limit: generate all 77 distinct family covers
+across 78 existing role folders and install reviewed results progressively,
+keeping old image backups privately. Base covers have no text. Film/Tv-Show/
+Extras overlays follow AFTER family covers, not in this pass. M5-009 tracks
+per-family delivery separately from physical-TV confirmation. No app redeploy.
+
+Current private artwork checkpoint: 43 role-family covers installed and verified
+by hash plus live Samsung-profile image HTTP 200 checks. The remaining 34
+distinct families (35 role folders) retain existing covers and need attention.
+Generation failures and the two rejected source-image edits are recorded.
+Owner asks for unresolved images as a final list rather than endless retries.
+
+[M5-009](tasks/UMSC-M5-009-artwork-photo-audit.md): owner confirms pictures now
+show, but supplies 40 photos identifying 34 family fixes. Private PHOTO-AUDIT-03.md
+maps every principal tile. Prefer large instantly recognizable main characters,
+not scenery/plain-clothes/supporting cast. Normalize shape/size across ALL
+images, not just rejected families; 16:9 proposed, not yet implemented. Ben 10
+issue is primarily portrait composition. Generated crisp art is now preferred
+for most replacements, especially animation. Ben 10 candidate quality approved
+by the owner, image and exact prompt saved privately. First parallel sample run
+failed moderation, no usable output. This earlier sample/hitlist checkpoint is
+superseded by the all-family rollout above. Ben 10, Fireman Sam, Postman Pat,
+Bluey and Gruffalo are now sidecar-installed with verified previous-image
+backups. Live Samsung-profile browse recognises exactly one cover for each and
+all five image URLs return HTTP 200. Not physical-TV verified. No app redeploy.
+
+## Latest delivery: 0.3.0 family artwork, 23 October 2026
+
+Owner authorised implementation, provisional images for every family, feature
+push for Linux checks and an in-place TV update. Local 0.3.0 uses portable
+family-cover.jpg/jpeg/png sidecars, nearest deeper overrides and parent-only
+preview/refresh. See [M5-006](tasks/UMSC-M5-006-family-artwork.md). No merge,
+public release, PIN reset, media rename or UMS restart.
+
+Private Family-Artwork evidence: 67 kids covers seeded, one Ben 10 preserved,
+10 adult covers seeded. Fresh Samsung-profile replay has all 158 kids tiles
+and 15 adult catalogue entries with images; all 1,245 video/queue identities
+match 0.2.3. All 78 image URLs return HTTP 200. This is not native TV acceptance.
+70 contracts, online/offline/empty/recovery fixtures and live browser rendering
+pass. Linux app/custom/cleanup pass; full Java has only the known M1-002 failure.
+Official SDK in-place install/launch both passed. Source bfea788954c2c96880cc8aa1fc2a81e4d5f8ed12;
+package SHA and full evidence are in M5-006. Private configuration and author
+chain unchanged, no PIN reset. All media identities/queues retained. Next: owner
+checks actual pictures, refresh navigation and retained state. Hub local-only.
+
+## Latest delivery: TV 0.2.3 artwork/name fix, 23 October 2026
+
+[M5-008](tasks/UMSC-M5-008-catalogue-artwork-diagnosis.md) is implemented, tested,
+pushed and privately DEPLOYED. Official SDK install/launch both passed. Source
+`d264c8b6d1c9a09a37f978595f6b53f3aafc0af9`; package SHA and full evidence are
+in that task. Missing server year no longer falsely rejects matching artwork;
+readable labels leave media/progress/collection IDs unchanged. A live preview
+caught poisoned cached images, so 24 privately reviewed filename keys stay
+blocked. No PIN reset/uninstall, media rename or UMS restart.
+
+61 contracts, online/offline/empty fixtures, live browser render and private
+catalogue identity comparison pass. Linux app/custom Java/cleanup pass; full
+Java retains only M1-002 (538 tests, one failure, eight skips), not all-green CI.
+869 child artwork links are restored; the same 158 kids tiles remain, with 41
+collections now having image links. Some film posters and 12 series collections
+remain blank intentionally rather than showing wrong pictures. Owner visual
+acceptance and planned M5-006 inheritance are next. Hub row local-only.
+
+Owner's next nine physical-TV photos confirm readable labels and recovered
+series/bonus pictures. Private PHOTO-AUDIT-02.md deduplicates the remaining
+visible blanks and poor frames separately. See M5-008 follow-up. Full catalogue,
+playback and retained-state acceptance remain unverified; no new deployment.
+
+## Latest diagnosis: blank artwork and catalogue freshness, 23 October 2026
+
+See [M5-008](tasks/UMSC-M5-008-catalogue-artwork-diagnosis.md). No runtime or
+deployment change. Samsung-profile SOAP/parser replay retains all 1,245 videos,
+with zero MIME placeholders; the prior 165-placeholder finding is specific to
+UnknownRenderer. Kids replay produces 158 tiles containing 1,163 videos.
+This is not a physical-screen completeness claim.
+
+Artwork guard is over-strict when UMS omits a year: 893 suppressed links have
+matching normalised names. Genuine unrelated matches must remain blocked.
+Owner's seven photos confirm widespread blank art and raw-slug collection
+labels. Owner then closed/reopened and reports the same result, no repeat photos
+needed. Freshness did not resolve the observed blank pictures.
+Do not redo the whole photo audit or manually replace every blank poster first.
+Family inheritance remains planned M5-006. Next: direction for scoped
+guard/display-label fixes and separate candidate testing.
+
+## Verified library merge and TV 0.2.2 delivery, 23 October 2026
+
+Owner approved M5-001 production family/type layout, metadata completion,
+clear adult routing, verified DVD moves and redundant-download removal after
+replacement. Unresolved material stays outside UMS. Staging originals are
+deleted only after full-file copy/hash verification, not retained as duplicates.
+See [M5-001](tasks/UMSC-M5-001-library-merge.md). Private media inventories,
+journals and path authority remain outside Git. Migration is verified: 530 DVD
+videos imported, 23 replaced downloads removed, 35 unresolved existing videos
+held outside UMS. Final share has 1,245 videos plus 93 companions. Final sweep
+corrected 45 family placements and removed 97 genuinely empty directories.
+No imported staging originals remain. All expected files appear uniquely in
+the live catalogue; film/episode/extra served-byte checks pass.
+
+Owner also approved [M5-007](tasks/UMSC-M5-007-library-index-refresh.md), 0.2.2
+private index refresh in place after file reconciliation. Current-server
+snapshot tests reproduce generic TV grouping with the old index and remove it
+with the new exact-name index. Progress aliases retain pre-move identities.
+Runtime JS/HTML/CSS is unchanged. Package/test/installed/acceptance states remain
+separate. No PIN reset/recovery request, uninstall, server restart or artwork
+work. Official SDK installed and launched 0.2.2 in place. Exact package identity
+and test evidence are in M5-007. No fresh Linux run, no all-green Java CI claim.
+Owner checks actual TV playback, PIN/progress retention and catalogue next.
+The PC UnknownRenderer snapshot includes 165 transcode MIME placeholders that
+the app parser omits in that diagnostic view. Do not call that TV acceptance
+or silently change server policy. Four accented slugs use schema fallback.
+No push, merge, public release or new Hub metrics authorised by this task.
+
+## Planned family artwork, 23 October 2026
+
+Owner agreed [M5-006](tasks/UMSC-M5-006-family-artwork.md): choose an image for
+a family master folder and inherit it downward through films, series and bonus
+content. Nearest explicit deeper-folder override wins. Master-image changes
+update inheriting descendants without replacing deeper overrides. No per-file
+tags required; scraping must not replace chosen art. Storage/selector details
+remain open. This is PLANNED, not implemented in installed 0.2.1.
+
+Finish intake, content audit/cleanup and approved UMS transfer before the photo
+audit of the full library. Keep 5x3, large images and bottom text. This request
+adds local planning notes only, not media changes, image fetching or deployment.
+
 ## Latest delivery: TV 0.2.1 installed, 23 October 2026
 
 Owner-approved in-place update and SDK launch succeeded, source
@@ -14,13 +152,16 @@ one-time code-only recovery, not a total wipe. No UMS restart or media changes.
 render passes. Linux custom Java/app/cleanup pass; full suite retains only known
 M1-002 (538 tests, one failure, eight skips). Not all-green CI.
 
-Next: owner enters 12345, sets a fresh code twice, returns to kids and verifies
-re-entry, then remote-only Save and labels. Do not collect the personal code.
-0.2.0 dwell/playback starting are owner-confirmed; 0.2.1 code/input/visual/state,
-audio/seek/queues and wake still need explicit acceptance. Remove private build
-recovery request after delivery and retain signed recovery packages. Hub row
+Owner now confirms 0.2.1 code reset and new-code re-entry, working size controls
+and preferred 5x3 layout with large artwork/text at the bottom. See M5-005's
+owner acceptance update. Missing labels/artwork go to the later visual/library
+audit; their causes are not all verified. Do not collect the personal code.
+0.2.0 dwell/playback starting are confirmed. Explicit scrollbar, audio/seek,
+queues, old progress and wake checks remain. Private build recovery request
+was removed after delivery; retain signed recovery packages. Hub row
 local-only, no Android rebuild/publication. Keep DVD staging offline. This
 supersedes older pending-install checkpoints below.
+Latest owner acceptance notes are local only, not pushed. No runtime changes.
 
 ## Active follow-up: first TV feedback, 23 October 2026
 

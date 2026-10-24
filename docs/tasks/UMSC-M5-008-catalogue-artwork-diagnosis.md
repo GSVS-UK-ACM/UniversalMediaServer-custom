@@ -140,3 +140,19 @@ working-tree changes remain untouched. Owner checks actual pictures, labels,
 playback and retained state next. Missing/wrong film posters and the remaining
 12 image-less series collections still need artwork review or planned M5-006
 family inheritance. Do not present 869 child image links as 869 wall tiles.
+
+## Owner photo follow-up after deployment
+
+On 23 October 2026 the owner supplied nine overlapping physical-TV photos and
+asked to continue correcting issues progressively. The photos show readable
+collection labels and several recovered series/bonus images. They also show
+remaining blank tiles and generated images that are technically displayed but
+unhelpful, such as logos, credits, title cards and nearly black frames. These
+are separate audit categories, not evidence of missing videos. Repeat sightings
+are not duplicate media. The deduplicated private PHOTO-AUDIT-02.md records 25
+visible blank title/type tiles and nine unsuitable bonus images, plus provisional
+recognizable images. Counts describe this photo coverage only.
+
+This is physical-TV visual evidence, not complete catalogue, playback, PIN or
+progress acceptance. No new runtime/library/deployment changes or tests for this
+documentation checkpoint. Family-image inheritance remains planned M5-006.

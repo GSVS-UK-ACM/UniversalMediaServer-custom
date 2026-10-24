@@ -2,13 +2,26 @@
 
 Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 
+README/integration: **UMSC-M5-010**, VERIFYING. Owner authorises the GSVS-first
+README with image placeholders and preserved upstream text, then clean feature
+push and main fast-forward. No public binaries or private artwork included.
+See `docs/tasks/UMSC-M5-010-readme-integration.md`.
+
+Current artwork rollout: **UMSC-M5-009**, IN_PROGRESS. Owner now requests all
+77 distinct family covers across 78 role folders, installed progressively with
+verified previous-image backups. Text-free masters first; child Film/Tv-Show/
+Extras overlays later. See `docs/tasks/UMSC-M5-009-artwork-photo-audit.md`.
+
 Current physical-TV follow-up: **UMSC-M5-005**, VERIFYING. See
 `docs/tasks/UMSC-M5-005-tv-feedback.md`. Owner confirms 0.2.0 parental bootstrap,
 personal-code confirmation and saving, working dwell and playback starting.
 Labels, remote settings and slow-verification/OK race are fixed in 0.2.1,
 installed in place and SDK-launched with approval. Code-only recovery included.
 54 contracts/browser flows pass; Linux app/custom Java/cleanup pass, full suite
-retains known M1-002 only. Device acceptance pending; preserve progress.
+retains known M1-002 only. Owner confirms code reset/new-code re-entry, size
+controls and 5x3 layout with large artwork/bottom text. Missing labels/artwork
+deferred to visual audit. Explicit scrollbar and broader playback/state/wake
+checks remain; preserve progress. Latest acceptance notes local, not pushed.
 
 ## M1: Build and verification infrastructure
 
@@ -118,6 +131,16 @@ retains known M1-002 only. Device acceptance pending; preserve progress.
 
 ## M5: Library conventions and app polish
 
+Active artwork follow-up: **UMSC-M5-006**, owner-selected master-folder family
+image inherited downward, with nearest deeper overrides. Updating the master
+preserves those overrides. See `docs/tasks/UMSC-M5-006-family-artwork.md`.
+Photo audit follows completed intake, content cleanup and approved UMS copy.
+Owner now authorises implementation, provisional family images and separately
+feature CI push plus in-place TV update. 0.3.0 sidecar inheritance and parent-only
+preview/refresh are tested, pushed and privately deployed. All 158 kids tiles
+have image coverage in Samsung-profile replay; owner device acceptance and
+provisional-picture refinement remain. See M5-006 for exact delivery evidence.
+
 Owner approved the family UI and existing non-rip filename-schema pass on
 22 October while DVD intake continues, implemented under M5-004. Final rip
 migration/curation remains deferred. This is not permission to migrate shares.
@@ -127,20 +150,50 @@ bulk transfer and replacement still need a preview and owner approval.
 
 ### UMSC-M5-001: Agree library layout and addition rules
 
-- Status: IN_PROGRESS
+- Status: DONE for the authorised layout and verified migration.
 - Goal: Define a stable film/series layout and naming, artwork, metadata and
   collection conventions that make new additions predictable and child-friendly.
-- Next action: With permission, inspect the completed library read-only and
-  propose rules from its actual contents, including exceptions and DVD extras.
+- Next action: Owner reviews held/retry items and later artwork. Migration,
+  naming/layout sweep and final path/count/byte reconciliation passed. See
+  `docs/tasks/UMSC-M5-001-library-merge.md`. Private media evidence stays local.
 - Acceptance: Owner agrees the layout, repeatable intake/validation rules and
   tagging/grouping contract. Any migration has a preview, recovery plan and
   separate approval. Preserve playback and existing media throughout.
-- Boundary: Owner approved filename-only schema changes to existing non-rip
-  titles, with protected moves/recovery journals. No title relocation or rip
-  bulk transfer. Physical adult-root rename is pending a Windows lock; owner
-  declined a service restart. The app uses the adult role without that rename.
-- Compatibility: Preserve the agreed storage type prefixes. Current app title
-  cleanup does not hide them; agree visible title/grouping metadata explicitly.
+- Boundary: On 23 October the owner superseded the earlier filename-only hold
+  and approved family/type layout, clear adult routing, resolved DVD imports,
+  redundant-download removal after verification and staging-source deletion.
+  Unresolved items stay off UMS. Physical adult-root rename remains deferred.
+  No server restart, artwork work, stream stripping or media encoding.
+- Compatibility: Preserve storage prefixes and clean app labels. M5-007 refreshes
+  the private name/progress index for moved and imported titles.
+
+### UMSC-M5-007: Refresh post-merge TV name and progress index
+
+- Status: VERIFYING owner device acceptance. PACKAGED and DEPLOYED.
+- Evidence: `docs/tasks/UMSC-M5-007-library-index-refresh.md`.
+- Owner approved testing and in-place TV refresh after M5-001 verifies.
+- Version 0.2.2 updates private catalogue names/aliases without runtime changes,
+  credential recovery, uninstall, storage wipe, Git push or public publication.
+- Same official app ID/author certificate. Preserve PIN/progress and record
+  packaging, installation and physical acceptance separately. Artwork deferred.
+- Official SDK installed/launched 0.2.2 in place. Runtime unchanged, 54 contracts
+  and three fixture flows pass. Actual TV catalogue/progress checks remain;
+  UnknownRenderer MIME placeholders in the PC diagnostic are not TV acceptance.
+
+### UMSC-M5-008: Diagnose post-merge catalogue and blank artwork
+
+- Status: VERIFYING owner acceptance. Fixes tested, pushed and DEPLOYED as 0.2.3.
+- Evidence: `docs/tasks/UMSC-M5-008-catalogue-artwork-diagnosis.md`.
+- Samsung-profile replay retains every video with zero MIME placeholders.
+  UnknownRenderer's 165-placeholder result is not the Samsung result.
+- Missing-year artwork guard has 893 same-title false conflicts. Keep genuine
+  unrelated posters blocked. Raw collection slug labels also need display fixes.
+- Owner reopened with no visible change, then approved fixes/test/TV install
+  and separately the feature push for CI. 61 contracts and browser flows pass;
+  Linux app/custom/cleanup pass with only the old full-Java M1-002 failure.
+- 869 child artwork links recovered, 24 reviewed stale posters blocked. Display
+  names preserve collection/progress identities. Official SDK install/launch
+  passed. Next: owner visual acceptance, then M5-006 and remaining poster audit.
 
 ### UMSC-M5-002: Polish the TV library experience
 
