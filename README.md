@@ -1,5 +1,10 @@
 <div align="center">
 
+> **New repository home:** This project moved from `xboxnuker-rgb` to
+> [GSVS-UK-ACM/UniversalMediaServer-custom](https://github.com/GSVS-UK-ACM/UniversalMediaServer-custom).
+> Existing GitHub links redirect here. Keep using this checkout and update its
+> `origin` URL to the organisation address.
+
 # GSVS · UMS Custom + TV Client
 
 ### Your library. Your artwork. Your remote.
@@ -7,7 +12,7 @@
 A custom Universal Media Server fork and a Samsung TV companion built for a
 proper home library, from a simple kids' artwork wall to the parents' collection.
 
-[![GSVS](https://img.shields.io/badge/GSVS-Custom_Build-8250df?style=for-the-badge)](https://github.com/xboxnuker-rgb/GSVS-Projects-Hub)
+[![GSVS](https://img.shields.io/badge/GSVS-Custom_Build-8250df?style=for-the-badge)](https://github.com/GSVS-UK-ACM/GSVS-Projects-Hub)
 [![TV client](https://img.shields.io/badge/TV_Client-0.3.0-0969da?style=for-the-badge)](tv-app/README.md)
 [![Samsung Tizen](https://img.shields.io/badge/Samsung-Tizen_5.5-1428a0?style=for-the-badge)](tv-app/README.md#samsung-developer-mode-and-signing)
 [![Licence](https://img.shields.io/badge/Licence-GPL_v2-238636?style=for-the-badge)](LICENSE.txt)
