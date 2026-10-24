@@ -2,16 +2,6 @@ name: Self-hosted Linux verification
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'feature/**'
-    paths:
-      - '.github/workflows/self-hosted-verify.yml'
-      - 'pom.xml'
-      - 'react-client/**'
-      - 'scripts/ci/**'
-      - 'src/**'
-      - 'tv-app/**'
 
 permissions:
   contents: read
@@ -22,7 +12,12 @@ concurrency:
 
 jobs:
   verify:
-    if: github.actor == github.repository_owner
+    # Organisation ownership is not a user identity. Keep the private runner
+    # restricted to the original operator and explicit manual dispatches.
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.repository == 'GSVS-UK-ACM/UniversalMediaServer-custom' &&
+      github.actor == 'xboxnuker-rgb'
     name: Linux Java verification
     runs-on: [self-hosted, Linux, X64, ums-custom-ci]
     timeout-minutes: 90

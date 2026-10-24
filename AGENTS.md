@@ -5,7 +5,7 @@ tested and easy to replay when `upstream/main` moves.
 
 ## Working rules
 
-- `origin` is `xboxnuker-rgb/UniversalMediaServer-custom`; `upstream` is the
+- `origin` is `GSVS-UK-ACM/UniversalMediaServer-custom`; `upstream` is the
   official Universal Media Server repository.
 - Record durable custom work in `docs/BACKLOG.md`, `docs/HANDOVER.md` and the
   matching `docs/tasks/` report.

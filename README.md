@@ -1,5 +1,10 @@
 <div align="center">
 
+> **New repository home:** This project moved from `xboxnuker-rgb` to
+> [GSVS-UK-ACM/UniversalMediaServer-custom](https://github.com/GSVS-UK-ACM/UniversalMediaServer-custom).
+> Existing GitHub links redirect here. Keep using this checkout and update its
+> `origin` URL to the organisation address.
+
 # GSVS · UMS Custom + TV Client
 
 ### Your library. Your artwork. Your remote.

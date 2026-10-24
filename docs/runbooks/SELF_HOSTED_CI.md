@@ -2,17 +2,19 @@
 
 ## Trust boundary
 
-This public repository uses a private owner-managed runner only for pushes to
-`feature/**` by the repository owner and manual dispatches by that owner. Do not
+This public repository uses a private owner-managed runner only for manual
+dispatches by `xboxnuker-rgb` on `GSVS-UK-ACM/UniversalMediaServer-custom`. Do not
 add `pull_request`, `pull_request_target` or issue-driven triggers to the
 self-hosted workflow. Disable the runner before changing that boundary.
 
 The runner registration, host address and credentials stay outside Git.
 
-At the time this route was added, the repository had no direct collaborator
-other than `xboxnuker-rgb`. Recheck that condition before enabling the runner.
-If another account gains write access, disable the feature-branch push route
-until the trust boundary is reviewed.
+The organisation transfer added another trusted organisation administrator.
+The automatic feature-branch push route was therefore removed during
+`GHM-M1-001`. An organisation name cannot match a human actor, so the old
+`github.actor == github.repository_owner` guard was replaced with an explicit
+repository, event and operator check. Keep this manual-only boundary unless
+the owner approves a separate review of runner access.
 
 ## One-time runner setup
 
@@ -73,10 +75,10 @@ keeps synthetic test databases and configuration inside the cleanup boundary.
 
 ## Dispatch and evidence
 
-1. Push the `feature/**` task branch. Its exact commit queues automatically.
+1. Push the task branch without expecting automatic runner execution.
 2. Confirm the runner reports online and idle with all four expected labels.
-3. If a rerun is needed after this workflow reaches `main`, dispatch
-   **Self-hosted Linux verification** against the task branch.
+3. As `xboxnuker-rgb`, dispatch **Self-hosted Linux verification** against the
+   reviewed task branch or `main`.
 4. Record the exact commit, run URL, job ID, runner name and labels in the task
    report.
 5. Confirm the final cleanup step passed, including after any test failure.

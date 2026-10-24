@@ -1,5 +1,25 @@
 # Handover
 
+## Organisation migration, 24 October 2026
+
+`GHM-M1-001`: the canonical repository is now
+[`GSVS-UK-ACM/UniversalMediaServer-custom`](https://github.com/GSVS-UK-ACM/UniversalMediaServer-custom).
+GitHub repository identity, four branch heads, fork parent and runner ID `2`
+were preserved by transfer. The existing Windows checkout remains in place.
+The private runner route is now manual-only, restricted to `xboxnuker-rgb`,
+because organisation ownership is not a human actor and another organisation
+administrator has access. See the updated [runner runbook](runbooks/SELF_HOSTED_CI.md).
+No server installation, service, TV app or private media/configuration changed.
+Transfer evidence and final link acceptance are recorded under `GHM-M1-001`
+in the GSVS Projects Hub. On migration source `87159ee3a`, self-hosted run
+`40095905542` executed on `gsvs-ums-custom`: custom Java regressions, TV app
+checks/tests/build and final cleanup passed. The full Java suite ran 538 tests
+with one failure, zero errors and eight skips: only the already recorded
+`JettyStreamClientImplTest.testJettyClientConnectTimeout` baseline mismatch
+(SocketException instead of SocketTimeoutException, UMSC-M1-002). No all-green
+Java claim or new runtime deployment is made. The runner reconnected after a
+transient post-transfer offline interval without re-registration or host edits.
+
 ## README and integration checkpoint, 24 October 2026
 
 [M5-010](tasks/UMSC-M5-010-readme-integration.md): GSVS feature intro and image
