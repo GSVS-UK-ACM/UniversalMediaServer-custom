@@ -11,8 +11,14 @@ because organisation ownership is not a human actor and another organisation
 administrator has access. See the updated [runner runbook](runbooks/SELF_HOSTED_CI.md).
 No server installation, service, TV app or private media/configuration changed.
 Transfer evidence and final link acceptance are recorded under `GHM-M1-001`
-in the GSVS Projects Hub. Post-change CI results must be recorded there before
-claiming verified runner execution.
+in the GSVS Projects Hub. On migration source `87159ee3a`, self-hosted run
+`40095905542` executed on `gsvs-ums-custom`: custom Java regressions, TV app
+checks/tests/build and final cleanup passed. The full Java suite ran 538 tests
+with one failure, zero errors and eight skips: only the already recorded
+`JettyStreamClientImplTest.testJettyClientConnectTimeout` baseline mismatch
+(SocketException instead of SocketTimeoutException, UMSC-M1-002). No all-green
+Java claim or new runtime deployment is made. The runner reconnected after a
+transient post-transfer offline interval without re-registration or host edits.
 
 ## README and integration checkpoint, 24 October 2026
 
