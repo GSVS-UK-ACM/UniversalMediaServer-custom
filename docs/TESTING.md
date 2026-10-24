@@ -36,9 +36,9 @@ on the private GSVS Linux box. The dedicated runner labels are:
 - `X64`
 - `ums-custom-ci`
 
-The workflow is owner-only because this is a public repository. It runs for an
-owner push to `feature/**` and can also be dispatched manually after the
-workflow reaches the default branch. It must not gain a `pull_request` trigger
+The workflow is manual-only because this is a public repository. Only
+`xboxnuker-rgb` may dispatch it on the exact organisation repository. The
+automatic feature-branch push route was removed during GHM-M1-001. It must not gain a `pull_request` trigger
 while using a private self-hosted runner. The runner is persistent and handles
 one UMS job at a time. Preparation and always-run cleanup remove only known
 generated paths inside the verified GitHub workspace.
