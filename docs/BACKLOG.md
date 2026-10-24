@@ -2,9 +2,10 @@
 
 Task IDs use the `UMSC` project prefix. Issued IDs are permanent.
 
-README/integration: **UMSC-M5-010**, VERIFYING. Owner authorises the GSVS-first
-README with image placeholders and preserved upstream text, then clean feature
-push and main fast-forward. No public binaries or private artwork included.
+README/integration: **UMSC-M5-010**, DONE, PUSHED and MERGED. Owner authorises the GSVS-first
+README with image placeholders and preserved upstream text. Integration commit
+4b6e460c8 is on fork main after a non-forced fast-forward. No public binaries
+or private artwork included.
 See `docs/tasks/UMSC-M5-010-readme-integration.md`.
 
 Current artwork rollout: **UMSC-M5-009**, IN_PROGRESS. Owner now requests all

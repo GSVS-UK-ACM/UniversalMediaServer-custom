@@ -1,6 +1,6 @@
 # UMSC-M5-010: GSVS README and clean branch integration
 
-- Status: VERIFYING
+- Status: DONE for README and authorised source integration
 - Date: 24 October 2026
 - Baseline: feature/umsc-m3-001-folder-thumbnails at
   784c73201cd7afaa7e16868c9db70e7c308d0768.
@@ -49,4 +49,28 @@ Then return to the private family-artwork rollout. No repo directory move is
 performed here. M5-009 remains in progress, with attention-needed art listed
 privately and existing covers preserved where generation fails.
 
-Delivery state and exact published commit are recorded after verification.
+## Published outcome
+
+PUSHED and MERGED by ordinary fast-forward on 24 October 2026. Integration
+commit: 4b6e460c8c4b0d97d4cc65d47c74867694557593. The feature branch and fork
+main both received that commit. No force push, history rewrite, PR, release,
+tag or upstream push. Main now tracks origin/main rather than upstream/main;
+the local GitHub CLI default is explicitly the owner's fork.
+
+The staged change was Markdown only. Targeted credential, local-path and LAN-
+address checks passed. New README local links exist. Its original upstream
+section matches the prior README exactly after newline normalization. Fresh
+syntax, all 70 Node contracts and unsigned build pass. The existing Linux source
+evidence and full-Java baseline exception above remain the accurate runtime
+verification record. No fresh Linux run is claimed for these documentation edits.
+
+Hub checkpoint: the existing canonical Workshop row already describes 0.3.0.
+That separate checkout has overlapping uncommitted README and Android work, so
+it is not committed or published here. The source/TV/handover/backlog links can
+now use main instead of feature/umsc-m3-001-folder-thumbnails. Pending targets:
+https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/tree/main
+https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/tree/main/tv-app
+https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/blob/main/docs/HANDOVER.md
+https://github.com/xboxnuker-rgb/UniversalMediaServer-custom/blob/main/docs/BACKLOG.md
+No product version, download claim or Hub metric change follows this source
+integration. Existing feature links remain valid because the branch is kept.

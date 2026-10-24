@@ -3,8 +3,10 @@
 ## README and integration checkpoint, 24 October 2026
 
 [M5-010](tasks/UMSC-M5-010-readme-integration.md): GSVS feature intro and image
-placeholders added above preserved upstream README. Owner authorises clean
-feature push and main integration. Fresh workstation syntax, 70 tests and build
+placeholders added above preserved upstream README. Commit 4b6e460c8 is pushed
+to the feature branch and merged/pushed to fork main by ordinary fast-forward.
+Main tracks origin/main; GitHub CLI default is the fork, not upstream.
+Fresh workstation syntax, 70 tests and build
 pass. Runtime remains the earlier Linux-tested source, whose full Java baseline
 failure is still recorded. No private assets, binaries or configuration in Git.
 After publication and clean status, ask the owner whether the other chat has
